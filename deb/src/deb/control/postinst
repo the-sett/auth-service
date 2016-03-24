@@ -1,0 +1,20 @@
+#!/bin/sh
+
+adduser \
+  --quiet \
+  --system \
+  --home /opt/auth \
+  --no-create-home \
+  --shell /bin/bash \
+  --group \
+  --gecos "TheSett Content Trial" \
+  auth
+
+mkdir -p /var/log/auth
+chmod 755 /var/log/auth
+chown auth:nogroup /var/log/auth
+
+# Don't migrate the db or start it.
+#su - auth -c "java -jar /opt/auth/auth.jar db migrate /opt/auth/config.yml >> /var/log/auth/auth.log 2>&1"
+#su - auth -c "java -jar /opt/auth/auth.jar refdata    /opt/auth/config.yml >> /var/log/auth/auth.log 2>&1"
+#service auth start

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.thesett</groupId>
+        <artifactId>auth</artifactId>
+        <version>1.0-SNAPSHOT</version><!--BuildVersion-->
+    </parent>
+
+    <artifactId>auth-deb</artifactId>
+    <packaging>deb</packaging>
+
+    <name>TheSett Auth Debian Package</name>
+
+    <properties>
+        <deployedName>auth</deployedName>
+    </properties>
+    
+    <dependencies>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>auth_top</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.thesett.jenerator.utils</groupId>
+            <artifactId>jenerator_util_logging</artifactId>
+            <version>${jenerator.utils.version}</version>
+        </dependency>
+        
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <id>regex-property</id>
+                        <goals>
+                            <goal>regex-property</goal>
+                        </goals>
+                        <configuration>
+                            <name>deb.version</name>
+                            <value>${project.version}</value>
+                            <regex>-SNAPSHOT</regex>
+                            <replacement>~SNAPSHOT</replacement>
+                            <failIfNoMatch>false</failIfNoMatch>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.9</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <excludeTransitive>true</excludeTransitive>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-logging</id>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.thesett.jenerator.utils</groupId>
+                                    <artifactId>jenerator_util_logging</artifactId>
+                                    <version>${jenerator.utils.version}</version>
+                                    <outputDirectory>${basedir}/target/logging</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>                  
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <outputDirectory>${basedir}/target/config</outputDirectory>
+                    <resources>
+                        <resource>
+                            <directory>${basedir}/target/logging</directory>
+                            <filtering>true</filtering>
+                            <includes>
+                                <include>*.xml</include>
+                            </includes>
+                        </resource>
+                    </resources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <artifactId>jdeb</artifactId>
+                <groupId>org.vafer</groupId>
+                <version>1.3</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <verbose>true</verbose>
+                    <controlDir>${basedir}/src/deb/control</controlDir>
+                    <dataSet>
+                        <data>
+                            <src>${basedir}/src/deb/init/auth.conf</src>
+                            <type>file</type>
+                            <mapper>
+                                <type>perm</type>
+                                <prefix>/etc/init</prefix>
+                            </mapper>
+                        </data>
+                        <data>
+                            <src>${project.build.directory}/dependency/auth_top-${project.version}.jar</src>
+                            <dst>auth.jar</dst>
+                            <type>file</type>
+                            <mapper>
+                                <type>perm</type>
+                                <prefix>/opt/auth</prefix>
+                            </mapper>
+                        </data>
+                        <data>
+                            <src>${basedir}/target/config/logback_prod.xml</src>
+                            <dst>logback.xml</dst>
+                            <type>file</type>
+                            <mapper>
+                                <type>perm</type>
+                                <prefix>/opt/auth</prefix>
+                            </mapper>
+                        </data>                        
+                        <data>
+                            <src>${basedir}/../top/src/main/resources/config.yml</src>
+                            <type>file</type>
+                            <mapper>
+                                <type>perm</type>
+                                <prefix>/opt/auth</prefix>
+                            </mapper>
+                        </data>                        
+                        <data>
+                            <src>${basedir}/src/deb/run.sh</src>
+                            <type>file</type>
+                            <mapper>
+                                <type>perm</type>
+                                <prefix>/opt/auth</prefix>
+                                <filemode>755</filemode>
+                            </mapper>
+                        </data>
+                        <data>
+                            <type>template</type>
+                            <paths>
+                                <path>var/log/auth</path>
+                            </paths>
+                            <mapper>
+                                <type>perm</type>
+                                <user>auth</user>
+                                <group>nogroup</group>
+                            </mapper>
+                        </data>
+                    </dataSet>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

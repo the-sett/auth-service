@@ -1,0 +1,8 @@
+Package: auth
+Version: [[version]]
+Section: thesett_com
+Priority: optional
+Architecture: all
+Description: [[description]]
+Maintainer: rupert@thesett.com
+Depends: java8-runtime-headless
