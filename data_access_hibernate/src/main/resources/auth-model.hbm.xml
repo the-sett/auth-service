@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.thesett.auth.model">
+  <typedef class="org.jadira.usertype.dateandtime.joda.PersistentLocalDate" name="date_only"/>
+  <typedef class="com.thesett.catalogue.customtypes.TimeOnlyUserType" name="time_only"/>
+  <typedef class="org.jadira.usertype.dateandtime.joda.PersistentDateTime" name="timestamp"/>
+  <class name="Account" table="account"  lazy="true">
+    <id name="id" column="id" type="long">
+      <generator class="native"/>
+    </id>
+    <property name="username" column="username" type="text"/>
+    <property name="password" column="password" type="text"/>
+
+    <!--REL: roles -> Role:accounts Many-Many account_role  bi-->
+    <set name="roles" table="account_role">
+      <key column="account_id"/>
+      <many-to-many column="role_id" class="Role"/>
+    </set>
+
+
+
+  </class>
+
+  <class name="Role" table="role"  lazy="true">
+    <id name="id" column="id" type="long">
+      <generator class="native"/>
+    </id>
+    <property name="name" column="name" type="text"/>
+
+    <!--REL: accounts -> Account:roles Many-Many account_role  bi-->
+    <set name="accounts" table="account_role">
+      <key column="role_id"/>
+      <many-to-many column="account_id" class="Account"/>
+    </set>
+
+
+
+
+    <set name="permissions" table="role_permissions" lazy="false">
+      <key column="permissions_id"/>
+      <element column="permissions" type="java.lang.String"/> 
+    </set>
+
+
+  </class>
+
+  <class name="com.thesett.catalogue.model.ExternalId" table="external_id">
+    <id name="id" type="string">
+      <column name="id" sql-type="char(32)" not-null="false"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="resource" type="string"/>
+  </class>
+</hibernate-mapping>

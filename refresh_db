@@ -1,0 +1,11 @@
+#!/bin/bash
+
+psql -c "DROP DATABASE IF EXISTS authdb"
+psql -c "DROP USER IF EXISTS authdb"
+psql -c "CREATE USER authdb WITH PASSWORD 'authdb'"
+psql -c "CREATE DATABASE authdb"
+psql -c "GRANT ALL PRIVILEGES ON DATABASE authdb TO authdb"
+
+java -jar top/target/auth_top-1.0-SNAPSHOT.jar db drop-all --confirm-delete-everything top/src/main/resources/config.yml
+java -jar top/target/auth_top-1.0-SNAPSHOT.jar db migrate top/src/main/resources/config.yml
+java -jar top/target/auth_top-1.0-SNAPSHOT.jar refdata top/src/main/resources/config.yml

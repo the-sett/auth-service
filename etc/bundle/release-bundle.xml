@@ -1,0 +1,73 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0
+                              http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+    <id>bin</id>
+    <formats>
+        <format>zip</format>
+        <format>tar.gz</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <dependencySets>
+        <!-- The libraries. -->
+        <dependencySet>
+            <includes/>
+            <useTransitiveDependencies>true</useTransitiveDependencies>
+            <outputDirectory>lib</outputDirectory>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <!-- Copy and transform the run-plugin generated scripts. -->
+        <fileSet>
+            <directory>${symbol_dollar}{topdir}/target/cli</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+            <filtered>true</filtered>
+            <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+
+        <!-- Pick up other useful scripts that are not generated. -->
+        <fileSet>
+            <directory>${symbol_dollar}{topdir}/etc/scripts</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+            <filtered>false</filtered>
+            <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+
+        <!-- Include the configuration files. -->
+        <fileSet>
+            <directory>${symbol_dollar}{topdir}/top/src/main/resources</directory>
+            <outputDirectory>conf</outputDirectory>
+            <includes>
+                <include>config.yml</include>
+            </includes>
+            <filtered>false</filtered>
+            <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+
+        <!-- Include the Heroku config files. -->
+        <fileSet>
+            <directory>${symbol_dollar}{topdir}/etc/heroku</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>Procfile</include>
+                <include>system.properties</include>
+            </includes>
+            <filtered>false</filtered>
+            <fileMode>0644</fileMode>
+        </fileSet>
+        
+    </fileSets>
+
+</assembly>

@@ -1,0 +1,151 @@
+/*
+ * HibernateDAOInterface is an implementation of the Generator interface, that creates
+ * interfaces for DAOs based on Hibernate, for all top-level entities in a model.
+ */
+group HibernateDAOInterface : JavaCommon implements Generator;
+
+/*
+ * Creates the opening section of an output file, if one is required.
+ */
+file_open(catalogue, package) ::= <<
+package <package>;
+
+import java.util.List;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.proxy.WebResourceFactory;
+
+import com.thesett.auth.services.ServiceFactory;
+
+import com.thesett.util.client.WebExceptionCodeClientProxy;
+import com.thesett.util.json.JodaTimeObjectMapperProvider;
+import com.thesett.util.model.RefDataItem;    
+import com.thesett.util.services.ReferenceDataService;
+import com.thesett.aima.attribute.impl.EnumeratedStringAttribute;    
+
+>>
+
+/*
+ * Generates the output for a bean in the specified catalogue.
+ */
+for_beans(catalogue, package, decorators) ::= <<
+<decorators:{decorator|<if(decorator.entitySubType)>
+<imports_for_bean(catalogue=catalogue, package=package, decorator=decorator)>
+<endif>}>
+<class_header(catalogue=catalogue, package=package)>
+<decorators:{decorator|<if(decorator.entitySubType)>
+<entity_service(catalogue=catalogue, package=package, decorator=decorator, name=decorator.name)>
+<endif>}>
+>>   
+    
+class_header(catalogue, package) ::= <<
+
+/**
+ * RestJSONClientFactory implements a factory that can supply instances of the service interfaces, as web
+ * clients over REST and JSON.
+ */
+public class ClientServiceFactory implements ServiceFactory {
+    /** The base URL to access the services through. */
+    private final String baseURL;
+
+    /** A client configuration to use for all services. */
+    private final ClientConfig clientConfig;
+
+    /**
+     * Creates an instance of the client factory.
+     *
+     * @param baseURL The base URL to access the api through. This should include the full path to the root of the api
+     *                resources, for example, "http://localhost:8080/api".
+     */
+    public ClientServiceFactory(String baseURL) {
+        this.baseURL = baseURL;
+
+        // Set things up to use Jackson JSON.
+
+        clientConfig = new ClientConfig();
+        clientConfig.register(JacksonJsonProvider.class);
+        clientConfig.register(JodaTimeObjectMapperProvider.class);
+
+        initializeReferenceData();
+    }
+
+    /**
+     * Creates a proxied client using the supplied interface.
+     *
+     * @param  resourceInterface The interface to proxy.
+     * @param  \<T>               The type of the service being proxied.
+     *
+     * @return A proxied client service.
+     */
+    public \<T> T createClientProxy(Class\<T> resourceInterface) {
+        Client client = ClientBuilder.newClient(clientConfig);
+        WebTarget target = client.target(baseURL);
+
+        T clientProxy = WebResourceFactory.newResource(resourceInterface, target);
+
+        return WebExceptionCodeClientProxy.proxy(clientProxy, resourceInterface);
+    }
+
+    public ReferenceDataService getReferenceDataService() {
+        Class\<ReferenceDataService> resourceInterface = ReferenceDataService.class;
+
+        return createClientProxy(resourceInterface);
+    }
+>>
+
+imports_for_bean(catalogue, package, decorator) ::= <<
+import com.thesett.auth.services.<decorator.name; format="ccu">Client;
+import com.thesett.auth.services.<decorator.name; format="ccu">Service;
+>>
+
+/*
+ * Creates the closing section of an output file, if one is required.
+ */
+file_close() ::= <<
+
+    /** Queries the reference data service to get the ids of all reference data items, and caches them locally. */
+    private void initializeReferenceData() {
+        ReferenceDataService referenceDataService = getReferenceDataService();
+
+        List\<String> allTypes = referenceDataService.findAllTypes();
+
+        for (String type : allTypes) {
+            EnumeratedStringAttribute.EnumeratedStringAttributeFactory factoryForClass =
+                EnumeratedStringAttribute.getFactoryForClass(type);
+
+            List\<RefDataItem> byName = referenceDataService.findByName(type);
+
+            for (RefDataItem item : byName) {
+                factoryForClass.createStringAttribute(item.getName()).setId(item.getId());
+            }
+        }
+    }
+}
+>>
+
+/*
+ * Creates a bean class for an entity type, with name/type fields, for a given catalogue model.
+ */
+entity_service(catalogue, package, decorator, name) ::= <<
+<service_interface(catalogue=catalogue, package=package, decorator=decorator, name=name)>
+>>
+
+/*
+ * Creates a service interface for a top-level entity.
+ */
+service_interface(catalogue, package, decorator, name) ::= <<
+
+    /** {@inheritDoc} */
+    public <name; format="ccu">Service get<name; format="ccu">Service() {
+        Class\<<name; format="ccu">Client> resourceInterface = <name; format="ccu">Client.class;
+
+        return createClientProxy(resourceInterface);
+    }    
+
+>>

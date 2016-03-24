@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.thesett</groupId>
+        <artifactId>auth</artifactId>
+        <version>1.0-SNAPSHOT</version><!--BuildVersion-->
+    </parent>
+
+    <artifactId>auth_jenerator</artifactId>
+    <name>${project.artifactId}</name>
+
+    <packaging>pom</packaging>
+
+    <properties>
+        <topdir>${basedir}/..</topdir>
+    </properties>
+
+    <build>
+        <plugins>
+
+            <!-- Generates the source code for the back end from its model. -->
+            <plugin>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.thesett.jenerator.utils</groupId>
+                        <artifactId>jenerator_custom</artifactId>
+                        <version>${jenerator.utils.version}</version>
+                    </dependency>
+                </dependencies>
+
+                <groupId>com.thesett</groupId>
+                <artifactId>catalogue-maven-plugin</artifactId>
+                <version>${jenerator.version}</version>
+
+                <executions>
+                    <execution>
+                        <id>javasource</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <model>${basedir}/src/main/resources/auth-model.xml</model>
+                            <templateDir>${basedir}/etc/templates</templateDir>
+
+                            <debugModelFilename>auth-model.pl</debugModelFilename>
+
+                            <generators>
+                                <generator>
+                                    <config>
+                                        <type>com.thesett.catalogue.generator.JavaBeanGenerator</type>
+                                        <outputPackage>com.thesett.auth.model</outputPackage>
+                                        <outputDir>${topdir}/service_api/src/generated/java</outputDir>
+                                        <viewImplementations>false</viewImplementations>
+                                    </config>
+                                </generator>
+
+                                <generator>
+                                    <config>
+                                        <type>com.thesett.jenerator.ServiceIfaceGenerator</type>
+                                        <outputPackage>com.thesett.auth.services</outputPackage>
+                                        <modelPackage>com.thesett.auth.model</modelPackage>
+                                        <outputDir>${topdir}/service_api/src/generated/java</outputDir>
+                                    </config>
+                                </generator>
+
+                                <generator>
+                                    <config>
+                                        <type>com.thesett.jenerator.ServiceRESTGenerator</type>
+                                        <outputPackage>com.thesett.auth.services.rest</outputPackage>
+                                        <modelPackage>com.thesett.auth.model</modelPackage>
+                                        <outputDir>${topdir}/service_impl/src/generated/java</outputDir>
+                                    </config>
+                                </generator>
+
+                                <generator>
+                                    <config>
+                                        <type>com.thesett.jenerator.ServiceFactoryGenerator</type>
+                                        <modelPackage>com.thesett.auth.model</modelPackage>
+                                        <outputPackage>com.thesett.auth.services</outputPackage>
+                                        <clientPackage>com.thesett.auth.client</clientPackage>
+                                        <localPackage>com.thesett.auth.services.local</localPackage>
+                                        <outputDir>${topdir}/service_api/src/generated/java</outputDir>
+                                        <clientOutputDir>${topdir}/client_impl/src/generated/java</clientOutputDir>
+                                        <localOutputDir>${topdir}/service_impl/src/generated/java</localOutputDir>
+                                    </config>
+                                </generator>
+
+                                <generator>
+                                    <config>
+                                        <type>com.thesett.jenerator.HibernateDAOGenerator</type>
+                                        <outputPackage>com.thesett.auth.dao</outputPackage>
+                                        <modelPackage>com.thesett.auth.model</modelPackage>
+                                        <outputDir>${topdir}/data_access_hibernate/src/generated/java</outputDir>
+                                        <apiOutputDir>${topdir}/data_access_api/src/generated/java</apiOutputDir>
+                                    </config>
+                                </generator>
+                                
+                                <generator>
+                                    <config>
+                                        <type>com.thesett.catalogue.generator.HibernateGenerator</type>
+                                        <outputPackage>com.thesett.auth.dao.usertype</outputPackage>
+                                        <outputDir>${topdir}/data_access_hibernate/src/generated/java</outputDir>
+                                        <mappingOutputDir>${topdir}/data_access_hibernate/src/main/resources</mappingOutputDir>
+                                        <mappingFileName>auth-model.hbm.xml</mappingFileName>
+                                    </config>
+                                </generator>
+
+                                <generator>
+                                    <config>
+                                        <type>com.thesett.catalogue.generator.BeanValidationGenerator</type>
+                                        <outputPackage>com.thesett.auth.model</outputPackage>
+                                        <outputDir>${topdir}/service_api/src/main/resources</outputDir>
+                                    </config>
+                                </generator>
+
+                                <generator>
+                                    <config>
+                                        <type>com.thesett.jenerator.DropWizardTopGenerator</type>
+                                        <modelPackage>com.thesett.auth.model</modelPackage>
+                                        <outputPackage>com.thesett.auth.top</outputPackage>
+                                        <outputDir>${topdir}/top/src/generated/java</outputDir>
+                                    </config>
+                                </generator>
+
+                                <generator>
+                                    <config>
+                                        <type>com.thesett.jenerator.TestStackGenerator</type>
+                                        <modelPackage>com.thesett.auth.model</modelPackage>
+                                        <outputPackage>com.thesett.auth.test</outputPackage>
+                                        <unitTestOutputDir>${topdir}/top/src/generated_unittest/java</unitTestOutputDir>
+                                        <integrationTestOutputDir>${topdir}/top/src/generated_integrationtest/java</integrationTestOutputDir>
+                                    </config>
+                                </generator>
+                            </generators>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

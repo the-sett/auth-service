@@ -1,0 +1,71 @@
+/*
+ * HibernateDAO is an implementation of the Generator interface, that creates
+ * interfaces for DAOs based on Hibernate, for all top-level entities in a model.
+ */
+group HibernateDAO : JavaCommon implements Generator;
+
+/*
+ * Creates the opening section of an output file, if one is required.
+ */
+file_open(catalogue, package) ::= <<
+file_open
+>>
+
+/*
+ * Generates the output for a bean in the specified catalogue.
+ */
+for_bean(catalogue, package, decorator, fields, extraFields) ::= <<
+<if(decorator.entitySubType)>
+<entity_dao(catalogue=catalogue, package=package, decorator=decorator, name=decorator.name)>
+<endif>
+>>
+
+/*
+ * Creates the closing section of an output file, if one is required.
+ */
+file_close() ::= <<
+file_close
+>>
+
+/*
+ * Creates a bean class for an entity type, with name/type fields, for a given catalogue model.
+ */
+entity_dao(catalogue, package, decorator, name) ::= <<
+<dao_impl(catalogue=catalogue, package=package, decorator=decorator, name=name)>
+>>
+
+/*
+ * Creates a DAO interface for a top-level entity.
+ */
+dao_impl(catalogue, package, decorator, name) ::= <<
+package <package>;
+
+import javax.persistence.MappedSuperclass;
+import javax.persistence.NamedQueries;
+import javax.validation.ValidatorFactory;
+
+import org.hibernate.SessionFactory;
+
+import com.thesett.util.dao.HibernateBaseDAO;
+import <catalogue.modelPackage>.<name; format="ccu">;
+         
+/**
+ * <name; format="ccu">DAOImpl provides an implementation of the DAO for <name; format="ccu"> using
+ * Hibernate.
+ *
+ * @author Generated Code
+ */
+@MappedSuperclass
+@NamedQueries({})
+public class <name; format="ccu">DAOImpl extends HibernateBaseDAO\<<name; format="ccu">, Long> implements <name; format="ccu">DAO {
+    /**
+     * Creates the DAO on the provided Hibernate session factory.
+     *
+     * @param sessionFactory   The hibernate session factory to use.
+     * @param validatorFactory The bean validator factory to use to validate all data prior to insertion.
+     */
+    public <name; format="ccu">DAOImpl(SessionFactory sessionFactory, ValidatorFactory validatorFactory) {
+        super(sessionFactory, validatorFactory);
+    }
+}
+>>

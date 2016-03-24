@@ -1,0 +1,53 @@
+/*
+ * HibernateDAOInterface is an implementation of the Generator interface, that creates
+ * interfaces for DAOs based on Hibernate, for all top-level entities in a model.
+ */
+import "JavaCommon.stg"
+
+/*
+ * Creates the opening section of an output file, if one is required.
+ */
+file_open(catalogue, package) ::= <<
+file_open
+>>
+
+/*
+ * Generates the output for a bean in the specified catalogue.
+ */
+for_bean(catalogue, package, decorator, fields, extraFields) ::= <<
+<if(decorator.entitySubType)>
+<entity_dao(catalogue=catalogue, package=package, decorator=decorator, name=decorator.name)>
+<endif>
+>>
+
+/*
+ * Creates the closing section of an output file, if one is required.
+ */
+file_close() ::= <<
+file_close
+>>
+
+/*
+ * Creates a bean class for an entity type, with name/type fields, for a given catalogue model.
+ */
+entity_dao(catalogue, package, decorator, name) ::= <<
+<dao_interface(catalogue=catalogue, package=package, decorator=decorator, name=name)>
+>>
+
+/*
+ * Creates a DAO interface for a top-level entity.
+ */
+dao_interface(catalogue, package, decorator, name) ::= <<
+package <package>;
+        
+import com.thesett.util.dao.BaseDAO;
+import <catalogue.modelPackage>.<name; format="ccu">;
+         
+/**
+ * DAO interface for persisting <name; format="ccu">
+ *
+ * @author Generated Code
+ */
+public interface <name; format="ccu">DAO extends BaseDAO\<<name; format="ccu">, Long> {
+}
+>>

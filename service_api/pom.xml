@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.thesett</groupId>
+        <artifactId>auth</artifactId>
+        <version>1.0-SNAPSHOT</version><!--BuildVersion-->
+    </parent>
+
+    <artifactId>auth_service_api</artifactId>
+    <name>${project.artifactId}</name>
+
+    <packaging>jar</packaging>
+
+    <properties>
+        <topdir>${basedir}/..</topdir>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.smoketurner</groupId>
+            <artifactId>dropwizard-swagger</artifactId>
+            <version>0.9.2-1</version>
+        </dependency>
+        
+        <!-- This ensures code gen happens first. -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>auth_jenerator</artifactId>
+            <version>${project.version}</version><!--BuildVersion-->
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.thesett.jenerator.utils</groupId>
+            <artifactId>jenerator_util_api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.thesett.validation</groupId>
+            <artifactId>unified-validation</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.thesett</groupId>
+            <artifactId>power_model</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.strategicgains</groupId>
+            <artifactId>HyperExpress-HAL</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/generated/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,317 @@
+/*
+ * HibernateDAOInterface is an implementation of the Generator interface, that creates
+ * interfaces for DAOs based on Hibernate, for all top-level entities in a model.
+ */
+group HibernateDAOInterface : JavaCommon implements Generator;
+
+/*
+ * Creates the opening section of an output file, if one is required.
+ */
+file_open(catalogue, package) ::= <<
+package <package>;
+
+import java.io.InputStream;
+
+import javax.sql.DataSource;
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
+
+import com.ninja_squad.dbsetup.DbSetup;
+import com.ninja_squad.dbsetup.DbSetupTracker;
+import static com.ninja_squad.dbsetup.Operations.deleteAllFrom;
+import static com.ninja_squad.dbsetup.Operations.sequenceOf;
+import com.ninja_squad.dbsetup.destination.DataSourceDestination;
+import com.ninja_squad.dbsetup.operation.Operation;
+
+import io.dropwizard.db.DataSourceFactory;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import com.thesett.test.controllers.HibernateTransactionDAOFactory;
+import com.thesett.test.controllers.LocalReflectiveServiceFactory;
+import com.thesett.test.controllers.ReflectiveDAOFactory;
+import com.thesett.test.controllers.ReflectiveServiceFactory;    
+import com.thesett.test.controllers.TestSetupController;
+import com.thesett.test.stack.ModelEqualityByValue;
+import com.thesett.util.commands.refdata.RefDataLoadCommand;
+import com.thesett.util.commands.refdata.RefDataLoadException;
+import com.thesett.util.config.refdata.RefDataSetupBundle;
+import com.thesett.util.config.validation.BeanValidationBundle;
+
+import com.thesett.auth.services.ServiceFactory;
+import com.thesett.auth.services.local.LocalServiceFactory;    
+import com.thesett.auth.config.AppConfiguration;
+
+>>
+
+/*
+ * Generates the output for a bean in the specified catalogue.
+ */
+for_beans(catalogue, package, decorators) ::= <<
+<decorators:{decorator|<if(decorator.entitySubType)>
+<imports_for_bean(catalogue=catalogue, package=package, decorator=decorator)>
+<endif>}>
+<class_header(catalogue=catalogue, package=package)>
+<decorators:{decorator|<if(decorator.entitySubType)>
+        <list_tables(catalogue=catalogue, package=package, decorator=decorator, name=decorator.name)><endif>}>
+<class_part2(catalogue=catalogue, package=package)>
+<decorators:{decorator|<if(decorator.entitySubType)>
+        <add_annotated_daos(catalogue=catalogue, package=package, decorator=decorator, name=decorator.name)>
+<endif>}>
+<class_part3(catalogue=catalogue, package=package)>
+<decorators:{decorator|<if(decorator.entitySubType)>
+        <create_dao(catalogue=catalogue, package=package, decorator=decorator)>
+<endif>}>
+<decorators:{decorator|<if(decorator.entitySubType)>
+        <add_dao_to_factory(catalogue=catalogue, package=package, decorator=decorator)>
+<endif>}>
+<class_part4(catalogue=catalogue, package=package)>
+<decorators:{decorator|<if(decorator.entitySubType)>
+        <create_dao(catalogue=catalogue, package=package, decorator=decorator)>
+<endif>}>    
+<decorators:{decorator|<if(decorator.entitySubType)>
+        <create_service(catalogue=catalogue, package=package, decorator=decorator)>
+<endif>}>
+<decorators:{decorator|<if(decorator.entitySubType)>
+        <add_service_to_factory(catalogue=catalogue, package=package, decorator=decorator)>
+<endif>}>
+<class_part5(catalogue=catalogue, package=package)>
+<decorators:{decorator|<if(decorator.entitySubType)>
+        <create_dao(catalogue=catalogue, package=package, decorator=decorator)>
+<endif>}>    
+<decorators:{decorator|<if(decorator.entitySubType)>
+        <create_service(catalogue=catalogue, package=package, decorator=decorator)>
+<endif>}>
+<class_part6(catalogue=catalogue, package=package)>
+<decorators:{decorator|<if(decorator.entitySubType)>
+        <list_resources(catalogue=catalogue, package=package, decorator=decorator, name=decorator.name)><endif>}; separator=", ">
+<class_footer(catalogue=catalogue, package=package)>
+>>   
+    
+class_header(catalogue, package) ::= <<
+
+/**
+ * AccountsTestSetupController defines some static helper methods for setting up tests. This allows these set up methods
+ * to be pulled into tests as needed, with the @BeforeCass annotation.
+ *
+ * \<pre>\<p/>\<table id="crc">\<caption>CRC Card\</caption>
+ * \<tr>\<th> Responsibilities \</th>\<th> Collaborations \</th>
+ * \<tr>\<td> Provide a data source for direct access to the database. \</td>\</tr>
+ * \<tr>\<td> Create Hibernate session factory. \</td>\</tr>
+ * \<tr>\<td> Load all reference data into the database. \</td>\</tr>
+ * \<tr>\<td> Read all reference data from the database into memory. \</td>\</tr>
+ * \<tr>\<td> Load the bean validator configuration. \</td>\</tr>
+ * \</table>\</pre>
+ */
+public class AppTestSetupController implements TestSetupController\<AppConfiguration>
+{
+    /** Clears the whole database apart from reference data tables. */
+    public static final Operation DELETE_ALL =
+        deleteAllFrom(
+>>
+
+imports_for_bean(catalogue, package, decorator) ::= <<
+import com.thesett.auth.dao.<decorator.name; format="ccu">DAOImpl;
+import com.thesett.auth.dao.<decorator.name; format="ccu">DAO;
+import com.thesett.auth.services.<decorator.name; format="ccu">Service;
+import com.thesett.auth.services.rest.<decorator.name; format="ccu">Resource;
+>>
+
+/*
+ * Creates the closing section of an output file, if one is required.
+ */
+file_close() ::= <<
+>>
+
+list_tables(catalogue, package, decorator, name) ::= <%
+%>
+
+class_part2(catalogue, package) ::= <<
+        );
+
+    /** An equality checker for the model. */
+    public static final ModelEqualityByValue MODEL_EQUALITY_BY_VALUE =
+        new ModelEqualityByValue(new String[] { "class" });
+
+    /** Used to track the state of the database undergoing testing. */
+    private static DbSetupTracker dbTracker = new DbSetupTracker();
+
+    /** {@inheritDoc} */
+    public BasicDataSource initDatasource(AppConfiguration configuration)
+    {
+        DataSourceFactory dataSourceFactory = configuration.getDataSourceFactory();
+        BasicDataSource ds = new BasicDataSource();
+
+        ds.setDriverClassName(dataSourceFactory.getDriverClass());
+        ds.setUsername(dataSourceFactory.getUser());
+        ds.setPassword(dataSourceFactory.getPassword());
+        ds.setUrl(dataSourceFactory.getUrl());
+        ds.setMaxIdle(1);
+        ds.setInitialSize(1);
+        ds.setValidationQuery("SELECT 1");
+
+        return ds;
+    }
+
+    /** {@inheritDoc} */
+    public SessionFactory initHibernateSessionFactory(AppConfiguration configuration)
+    {
+        DataSourceFactory dataSourceFactory = configuration.getDataSourceFactory();
+
+        Configuration config = new Configuration();
+        config.setProperty("hibernate.connection.url", dataSourceFactory.getUrl());
+        config.setProperty("hibernate.connection.username", dataSourceFactory.getUser());
+        config.setProperty("hibernate.connection.password", dataSourceFactory.getPassword());
+        config.setProperty("hibernate.connection.driver_class", dataSourceFactory.getDriverClass());
+        config.setProperty("hibernate.current_session_context_class", "thread");
+        config.setProperty("hibernate.show_sql", "false");
+        config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+
+        config.addResource("auth-model.hbm.xml");    
+>>
+
+add_annotated_daos(catalogue, package, decorator, name) ::= <%
+    config.addAnnotatedClass(<decorator.name; format="ccu">DAOImpl.class);    
+%>
+
+class_part3(catalogue, package) ::= <<
+
+        ServiceRegistry serviceRegistry =
+            new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+
+        return config.buildSessionFactory(serviceRegistry);
+    }
+
+    /** {@inheritDoc} */
+    public void insertReferenceData(AppConfiguration configuration) throws RefDataLoadException
+    {
+        new RefDataLoadCommand\<AppConfiguration>()
+            {
+                /** {@inheritDoc} */
+                public String getRefdataPackage(AppConfiguration configuration)
+                {
+                    return configuration.getRefdata();
+                }
+
+                /** {@inheritDoc} */
+                public DataSourceFactory getDataSourceFactory(AppConfiguration configuration)
+                {
+                    return configuration.getDataSourceFactory();
+                }
+            }.loadReferenceData(configuration);
+    }
+
+    /** {@inheritDoc} */
+    public void loadReferenceData(AppConfiguration configuration) throws RefDataLoadException
+    {
+        new RefDataSetupBundle\<AppConfiguration>()
+            {
+                /** {@inheritDoc} */
+                public String getRefdataPackage(AppConfiguration configuration) {
+                    return configuration.getRefdata();
+                }
+
+                /** {@inheritDoc} */
+                public DataSourceFactory getDataSourceFactory(AppConfiguration configuration)
+                {
+                    return configuration.getDataSourceFactory();
+                }
+            }.run(configuration, null);    
+    }
+
+    /** {@inheritDoc} */
+    public ValidatorFactory loadBeanValidation(AppConfiguration configuration)
+    {
+        BeanValidationBundle beanValidationBundle =
+            new BeanValidationBundle\<AppConfiguration>()
+            {
+                /** {@inheritDoc} */
+                public ValidatorFactory getValidatorFactory(AppConfiguration configuration)
+                {
+                    String constraintsResource = configuration.getBeanValidationConstraints();
+                    InputStream resource = this.getClass().getClassLoader().getResourceAsStream(constraintsResource);
+
+                    return Validation.byDefaultProvider().configure().addMapping(resource).buildValidatorFactory();
+                }
+            };
+        beanValidationBundle.run(configuration, null);
+
+        return beanValidationBundle.getValidatorFactory(configuration);
+    }
+
+    /** {@inheritDoc} */
+    public void clearDatabase(DataSource dataSource)
+    {
+        // Ensure the database is in a known clean state.
+        Operation operation = sequenceOf(DELETE_ALL);
+        DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), operation);
+        dbTracker.launchIfNecessary(dbSetup);
+    }
+    
+    /** {@inheritDoc} */
+    public ReflectiveDAOFactory getTransactionalReflectiveDAOFactory(SessionFactory sessionFactory,
+        ValidatorFactory validatorFactory)
+    {
+        HibernateTransactionDAOFactory daoFactory =
+            new HibernateTransactionDAOFactory(sessionFactory, validatorFactory);
+
+>>
+
+create_dao(catalogue, package, decorator) ::= <<
+<decorator.name; format="ccu">DAO <decorator.name; format="cc">DAO = new <decorator.name; format="ccu">DAOImpl(sessionFactory, validatorFactory);
+>>
+
+add_dao_to_factory(catalogue, package, decorator) ::= <<
+daoFactory.addDAO(<decorator.name; format="ccu">DAO.class, <decorator.name; format="cc">DAO);
+>>
+    
+class_part4(catalogue, package) ::= <<
+        return daoFactory;
+    }
+
+    /** {@inheritDoc} */
+    public ReflectiveServiceFactory getLocalReflectiveServiceFactory(SessionFactory sessionFactory,
+        ValidatorFactory validatorFactory)
+    {
+        LocalReflectiveServiceFactory serviceFactory =
+            new LocalReflectiveServiceFactory(sessionFactory, validatorFactory);
+
+>>
+    
+create_service(catalogue, package, decorator) ::= <<
+<decorator.name; format="ccu">Resource <decorator.name; format="cc">Resource = new <decorator.name; format="ccu">Resource(<decorator.name; format="cc">DAO);
+>>
+
+add_service_to_factory(catalogue, package, decorator) ::= <<
+serviceFactory.addService(<decorator.name; format="ccu">Service.class, <decorator.name; format="cc">Resource);
+>>
+
+class_part5(catalogue, package) ::= <<
+        return serviceFactory;
+    }
+
+    /** {@inheritDoc} */
+    public Object getLocalServiceFactory(SessionFactory sessionFactory,
+        ValidatorFactory validatorFactory)
+    {
+>>
+
+class_part6(catalogue, package) ::= <<
+        ServiceFactory serviceFactory =
+            new LocalServiceFactory(sessionFactory,
+>>
+
+list_resources(catalogue, package, decorator, name) ::= <%
+    <decorator.name ; format="cc">Resource
+%>
+
+class_footer(catalogue, package) ::= <<
+        );
+
+        return serviceFactory;
+    }        
+}
+>>

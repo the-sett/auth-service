@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Parse arguements taking all - prefixed args as JAVA_OPTS
+for arg in "$@"; do
+    if [[ $arg == -java#* ]]; then
+        JAVA_OPTS="${JAVA_OPTS}-`echo $arg|cut -d '#' -f 2`  "
+    else
+        ARGS="${ARGS}$arg "
+    fi
+done
+
+CV=`cat current_version`
+java ${JAVA_OPTS} -jar top/target/auth_top-$CV.jar server top/src/main/resources/config.yml

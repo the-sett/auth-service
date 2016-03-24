@@ -1,0 +1,213 @@
+/*
+ * HibernateDAOInterface is an implementation of the Generator interface, that creates
+ * interfaces for DAOs based on Hibernate, for all top-level entities in a model.
+ */
+group HibernateDAOInterface : JavaCommon implements Generator;
+
+/*
+ * Creates the opening section of an output file, if one is required.
+ */
+file_open(catalogue, package) ::= <<
+file_open
+>>
+
+/*
+ * Generates the output for a bean in the specified catalogue.
+ */
+for_bean(catalogue, package, decorator, fields, extraFields) ::= <<
+<if(decorator.entitySubType)>
+<entity_service(catalogue=catalogue, package=package, decorator=decorator, name=decorator.name)>
+<endif>
+>>
+
+/*
+ * Creates the closing section of an output file, if one is required.
+ */
+file_close() ::= <<
+file_close
+>>
+
+/*
+ * Creates a bean class for an entity type, with name/type fields, for a given catalogue model.
+ */
+entity_service(catalogue, package, decorator, name) ::= <<
+<service_interface(catalogue=catalogue, package=package, decorator=decorator, name=name)>
+>>
+
+/*
+ * Creates a service interface for a top-level entity.
+ */
+service_interface(catalogue, package, decorator, name) ::= <<
+package <package>;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.util.List;
+
+import com.codahale.metrics.annotation.Timed;
+import com.strategicgains.hyperexpress.HyperExpress;
+import static com.strategicgains.hyperexpress.RelTypes.SELF;
+import com.strategicgains.hyperexpress.domain.Resource;
+
+import com.thesett.util.entity.EntityException;
+import com.thesett.util.jersey.UnitOfWorkWithDetach;
+import com.thesett.util.validation.core.JsonSchemaUtil;
+import com.thesett.util.validation.model.JsonSchema;
+
+import <catalogue.modelPackage>.<name; format="ccu">;
+import com.thesett.auth.dao.<name; format="ccu">DAO;
+import com.thesett.auth.services.<name; format="ccu">Service;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ApiResponse;
+
+/**
+ * REST API implementation for working with <name; format="ccu">
+ *
+ * @author Generated Code
+ */
+@Path("/api/<name; format="cc">/")
+@Api(value = "/api/<name; format="cc">/", description = "API implementation for working with <name; format="ccu">")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(value = MediaType.APPLICATION_JSON)
+public class <name; format="ccu">Resource implements <name; format="ccu">Service {
+    /** The DAO to use for persisting <name; format="cc">. */
+    private final <name; format="ccu">DAO <name; format="cc">DAO;
+
+    /** Defines the name of the entity this service works with. */
+    private static final String ENTITY_NAME = "<name>";
+       
+    /**
+     * Creates the <name; format="cc"> RESTful service implementation.
+     *
+     * @param <name; format="cc">DAO The DAO to use for persisting <name; format="cc">.
+     */
+    public <name; format="ccu">Resource(<name; format="ccu">DAO <name; format="cc">DAO) {
+        this.<name; format="cc">DAO = <name; format="cc">DAO;
+
+        initHal();
+    }
+
+    /**
+     * Configures HyperExpress to produce HAL for this service (experimental and not complete).
+     */
+    private void initHal() {
+        HyperExpress.relationships()
+            .forClass(<name; format="ccu">Resource.class)
+            .rel(SELF, "http://localhost:9070/api/<name; format="cc">/hal");
+
+        HyperExpress.relationships()
+            .forClass(<name; format="ccu">Resource.class)
+            .rels("curies", "http://localhost:9070/api/<name; format="cc">/{rel}")
+            .name("<name; format="cc">")
+            .type("application/schema+json")
+            .templated(true);
+
+        HyperExpress.relationships()
+            .forClass(<name; format="ccu">Resource.class)
+            .rel("<name; format="cc">:schema", "http://localhost:9070/api/<name; format="cc">/")
+            .type("application/json");
+    }
+
+    /** {@inheritDoc} */    
+    @GET
+    @Path("/hal")
+    @Produces("application/hal+json")
+    @ApiOperation(value = "Provides a HAL description of the <name; format="ccu"> services.")
+    public Resource root() {
+        return HyperExpress.createResource(this, "application/hal+json");
+    }        
+
+    /** {@inheritDoc} */
+    @GET
+    @Path("/schema")
+    @Produces("application/schema+json")
+    @ApiOperation(value = "Provides a json-schema describing <name; format="ccu">.")
+    public JsonSchema schema() {
+        return JsonSchemaUtil.getJsonSchema(<name; format="ccu">.class);
+    }
+
+    /** {@inheritDoc} */
+    @GET
+    @UnitOfWorkWithDetach
+    @ApiOperation(value = "Provides a list of all <name; format="ccu"> items.")
+    public List\<<name; format="ccu">\> findAll() {
+        return <name; format="cc">DAO.browse(ENTITY_NAME);
+    }
+
+    /** {@inheritDoc} */
+    @POST
+    @Path("/example")
+    @UnitOfWorkWithDetach
+    @ApiOperation(value = "Provides a list of all <name; format="ccu"> items that match the fields in the posted example.")        
+    public List\<<name; format="ccu">\> findByExample(<name; format="ccu"> example) {
+        return <name; format="cc">DAO.findByExample(example, ENTITY_NAME);
+    }
+        
+    /** {@inheritDoc} */
+    @POST
+    @UnitOfWorkWithDetach
+    @ApiOperation(value = "Creates a new <name; format="ccu">.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success.", response = <name; format="ccu">.class),        
+        @ApiResponse(code = 422, message = "Invalid data supplied.")
+    })
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "body", value = "The item to create.", required = true, dataType = "<catalogue.modelPackage>.<name; format="ccu">", paramType = "body")
+    })
+    public <name; format="ccu"> create(<name; format="ccu"> <name; format="cc">) throws EntityException {
+        return <name; format="cc">DAO.create(<name; format="cc">);
+    }
+
+    /** {@inheritDoc} */
+    @GET
+    @Path("/{<name; format="cc">Id}")
+    @Timed
+    @UnitOfWorkWithDetach
+    @ApiOperation(value = "Retreives a <name; format="ccu"> by its id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success.", response = <name; format="ccu">.class),        
+        @ApiResponse(code = 400, message = "No item found matching the supplied id.")
+    })        
+    public <name; format="ccu"> retrieve(@ApiParam(value = "The id of the item to retrieve.", required = true) @PathParam("<name; format="cc">Id") Long id) {
+        return <name; format="cc">DAO.retrieve(id);
+    }
+
+    /** {@inheritDoc} */
+    @PUT
+    @UnitOfWorkWithDetach
+    @Path("/{<name; format="cc">Id}")
+    @ApiOperation(value = "Replaces a <name; format="ccu"> with an updated version, match by its id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 422, message = "Invalid data supplied."),
+        @ApiResponse(code = 400, message = "No item found matching the supplied id.")
+    })        
+    public <name; format="ccu"> update(@ApiParam(value = "The id of the item to update.", required = true) @PathParam("<name; format="cc">Id") Long id, <name; format="ccu"> <name; format="cc">) throws EntityException {
+        return <name; format="cc">DAO.update(id, <name; format="cc">);
+    }
+
+    /** {@inheritDoc} */
+    @DELETE
+    @UnitOfWorkWithDetach
+    @Path("/{<name; format="cc">Id}")
+    @ApiOperation(value = "Deletes a <name; format="ccu"> by its id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "No item found matching the supplied id.")
+    })
+    public void delete(@ApiParam(value = "The id of the item to delete.", required = true) @PathParam("<name; format="cc">Id") Long id) throws EntityException {
+        <name; format="cc">DAO.delete(id);
+    }
+}
+>>    

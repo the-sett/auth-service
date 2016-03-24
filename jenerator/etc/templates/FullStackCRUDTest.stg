@@ -1,0 +1,91 @@
+/*
+ * HibernateDAOInterface is an implementation of the Generator interface, that creates
+ * interfaces for DAOs based on Hibernate, for all top-level entities in a model.
+ */
+import "JavaCommon.stg"
+
+/*
+ * Creates the opening section of an output file, if one is required.
+ */
+file_open(catalogue, package) ::= <<
+file_open
+>>
+
+/*
+ * Generates the output for a bean in the specified catalogue.
+ */
+for_bean(catalogue, package, decorator, fields, extraFields) ::= <<
+<if(decorator.entitySubType)>
+<entity_service(catalogue=catalogue, package=package, decorator=decorator, name=decorator.name)>
+<endif>
+>>
+
+/*
+ * Creates the closing section of an output file, if one is required.
+ */
+file_close() ::= <<
+file_close
+>>
+
+/*
+ * Creates a bean class for an entity type, with name/type fields, for a given catalogue model.
+ */
+entity_service(catalogue, package, decorator, name) ::= <<
+<service_interface(catalogue=catalogue, package=package, decorator=decorator, name=name)>
+>>
+
+service_interface(catalogue, package, decorator, name) ::= <<
+package <package>;
+
+import org.junit.Test;
+import com.thesett.auth.test.AppTestSetupController;
+import com.thesett.auth.top.Main;
+import com.thesett.test.base.FullStackCRUDTestBase;
+import com.thesett.util.dao.HibernateSessionAndDetachProxy;
+import com.thesett.util.entity.CRUD;
+import com.thesett.util.resource.ResourceUtils;
+
+import com.thesett.auth.dao.<name; format="ccu">DAOImpl;
+import com.thesett.auth.model.<name; format="ccu">;
+import com.thesett.auth.services.<name; format="ccu">Service;
+import com.thesett.auth.services.rest.<name; format="ccu">Resource;
+
+public class <name; format="ccu">FullStackCRUDTest extends FullStackCRUDTestBase\<<name; format="ccu">, Long>
+{
+    public <name; format="ccu">FullStackCRUDTest()
+    {
+        super(new <name; format="ccu">TestData(), <name; format="ccu">.class, new AppTestSetupController(), Main.class,
+            ResourceUtils.resourceFilePath("config.yml"));
+    }
+
+    /** {@inheritDoc} */
+    protected CRUD\<<name; format="ccu">, Long> getServiceLayer()
+    {
+        <name; format="ccu">DAOImpl <name; format="cc">DAO = new <name; format="ccu">DAOImpl(sessionFactory, validatorFactory);
+
+        <name; format="ccu">Resource <name; format="cc">Resource = new <name; format="ccu">Resource(<name; format="cc">DAO);
+
+        return HibernateSessionAndDetachProxy.proxy(<name; format="cc">Resource, <name; format="ccu">Service.class, sessionFactory);
+    }
+
+    @Test
+    public void testFindAllNotEmpty() throws Exception {
+        testFindAllNotEmpty("findAll");
+    }
+    
+    @Test
+    public void testFindByExampleNotEmpty() throws Exception {
+        testFindByExampleNotEmpty("findByExample");
+    }
+
+    @Test
+    public void testJsonSchema() throws Exception {
+        testJsonSchema("schema");
+    }
+
+    @Test
+    public void testRootHal() throws Exception {
+        testRootHal("root");
+    }
+}
+>>

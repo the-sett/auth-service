@@ -1,0 +1,74 @@
+/*
+ * JavaInterface is an implementation of the Generator interface, that creates Java interfaces for types
+ * in a catalogue model that require interfaces.
+ */
+import "JavaCommon.stg"
+
+/*
+ * Creates the opening section of an output file, if one is required.
+ */
+file_open(catalogue, package) ::= <<
+file_open
+>>
+
+/*
+ * Generates the output for a bean in the specified catalogue.
+ */
+for_bean(catalogue, package, decorator, fields, extraFields) ::= <<
+<if(decorator.view)>
+<catalogue_view_interface(catalogue=catalogue, decorator=decorator, name=decorator.name, fields=fields)>
+<endif>
+>>
+
+/*
+ * Creates the closing section of an output file, if one is required.
+ */
+file_close() ::= <<
+file_close
+>>
+
+/*
+ * Creates a view interface.
+ */
+catalogue_view_interface(catalogue, decorator, name, fields) ::= <<
+<interface(catalogue=catalogue, name=name, fields=fields, typeMap=componentBeanTypeMap)>
+>>
+
+/*
+ * Creates an interface with getters and setters for the specified fields as a bean.
+ */
+interface(catalogue, name, fields, typeMap) ::= <<
+<package(catalogue)>
+
+<data_model_imports(decorator)>
+
+/**
+ * Generated bean interface from catalogue model.
+ *
+ * @author Generated Code
+ */
+public interface <name; format="ccu"> {
+    <if(fields)>
+    <fields.keys:{it|<getters_setters_interface(it)>}; separator="\n\n">
+    <endif>
+}
+>>
+
+/*
+ * Creates public getters and setters method interfaces for all name/type attributes.
+ */
+getters_setters_interface(field) ::= <<
+/**
+ * Provides the <field> property.
+ *
+ * @return The <field> property.
+ */
+<(typeMap.(fields.(field).kind))(fields.(field))> get<field; format="ccu">();
+
+/**
+ * Accepts a new value for the <field> property.
+ *
+ * @param <field; format="cc"> The <field> property.
+ */
+void set<field; format="ccu">(<(typeMap.(fields.(field).kind))(fields.(field))> <field; format="cc">);
+>>

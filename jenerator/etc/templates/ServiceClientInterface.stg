@@ -1,0 +1,103 @@
+/*
+ * HibernateDAOInterface is an implementation of the Generator interface, that creates
+ * interfaces for DAOs based on Hibernate, for all top-level entities in a model.
+ */
+import "JavaCommon.stg"
+
+/*
+ * Creates the opening section of an output file, if one is required.
+ */
+file_open(catalogue, package) ::= <<
+file_open
+>>
+
+/*
+ * Generates the output for a bean in the specified catalogue.
+ */
+for_bean(catalogue, package, decorator, fields, extraFields) ::= <<
+<if(decorator.entitySubType)>
+<entity_service(catalogue=catalogue, package=package, decorator=decorator, name=decorator.name)>
+<endif>
+>>
+
+/*
+ * Creates the closing section of an output file, if one is required.
+ */
+file_close() ::= <<
+file_close
+>>
+
+/*
+ * Creates a bean class for an entity type, with name/type fields, for a given catalogue model.
+ */
+entity_service(catalogue, package, decorator, name) ::= <<
+<service_interface(catalogue=catalogue, package=package, decorator=decorator, name=name)>
+>>
+
+/*
+ * Creates a service interface for a top-level entity.
+ */
+service_interface(catalogue, package, decorator, name) ::= <<
+package <package>;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import com.thesett.util.entity.EntityException;
+import com.thesett.util.validation.model.JsonSchema;
+
+import com.thesett.auth.services.<name; format="ccu">Service;
+import <catalogue.modelPackage>.<name; format="ccu">;
+
+import java.util.List;
+
+/**
+ * Service interface for working with <name; format="ccu">
+ *
+ * @author Generated Code    
+ */
+@Path("/api/<name; format="cc">/")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(value = MediaType.APPLICATION_JSON)
+public interface <name; format="ccu">Client extends <name; format="ccu">Service {
+    /** {@inheritDoc} */
+    @GET
+    @Path("/schema")
+    @Produces("application/schema+json")    
+    JsonSchema schema();
+
+    /** {@inheritDoc} */
+    @GET
+    List\<<name; format="ccu">\> findAll();
+    
+    /** {@inheritDoc} */
+    @POST
+    @Path("/example")      
+    List\<<name; format="ccu">\> findByExample(<name; format="ccu"> example);
+    
+    /** {@inheritDoc} */
+    @POST
+    <name; format="ccu"> create(<name; format="ccu"> <name; format="cc">) throws EntityException;
+
+    /** {@inheritDoc} */
+    @GET
+    @Path("/{<name; format="cc">Id}")
+    <name; format="ccu"> retrieve(@PathParam("<name; format="cc">Id") Long id);
+
+    /** {@inheritDoc} */
+    @PUT
+    @Path("/<name; format="cc">Id")
+    <name; format="ccu"> update(@PathParam("<name; format="cc">Id") Long id, <name; format="ccu"> <name; format="cc">) throws EntityException;
+
+    /** {@inheritDoc} */
+    @DELETE
+    void delete(@PathParam("<name; format="cc">Id") Long id) throws EntityException;
+}
+>>

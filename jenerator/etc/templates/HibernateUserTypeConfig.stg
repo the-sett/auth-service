@@ -1,0 +1,34 @@
+/*
+ * Hibernate is an implementation of the Generator interface, that creates a Hibernate configuration for
+ * types in a catalogue model that should be persisted.
+ */
+delimiters "«", "»"
+import "HibernateCommon.stg"
+
+/*
+ * Creates the opening section of an output file, if one is required.
+ */
+file_open(catalogue, package) ::= <<
+>>
+
+/*
+ * Generates the output for a bean in the specified catalogue.
+ */
+for_bean(catalogue, package, decorator, fields, extraFields) ::= <<
+«if(decorator.hierarchyType)»
+«hibernate_config_hierarchy_typedef(catalogue=catalogue, package=package, name=decorator.name, fields=fields)»
+«endif»
+«if(decorator.enumerationType)»
+«hibernate_config_enumeration_typedef(catalogue=catalogue, package=package, name=decorator.name, fields=fields)»
+«endif»
+>>
+
+/*
+ * Creates the closing section of an output file, if one is required.
+ */
+file_close() ::= <<
+  <typedef class="org.jadira.usertype.dateandtime.joda.PersistentLocalDate" name="date_only"/>
+  <typedef class="com.thesett.catalogue.customtypes.TimeOnlyUserType" name="time_only"/>
+  <typedef class="org.jadira.usertype.dateandtime.joda.PersistentDateTime" name="timestamp"/>
+
+>>

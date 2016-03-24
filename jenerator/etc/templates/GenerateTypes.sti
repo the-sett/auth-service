@@ -1,0 +1,16 @@
+interface Generator;
+
+/*
+ * Creates the opening section of an output file, if one is required.
+ */
+file_open(catalogue, package);
+
+/*
+ * Generates the output for all types lists that are in the specified catalogue.
+ */
+for_beans(catalogue, package, decorators);
+
+/*
+ * Creates the closing section of an output file, if one is required.
+ */
+file_close();

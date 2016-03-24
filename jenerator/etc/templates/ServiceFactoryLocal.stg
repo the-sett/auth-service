@@ -1,0 +1,88 @@
+/*
+ * HibernateDAOInterface is an implementation of the Generator interface, that creates
+ * interfaces for DAOs based on Hibernate, for all top-level entities in a model.
+ */
+group HibernateDAOInterface : JavaCommon implements Generator;
+
+/*
+ * Creates the opening section of an output file, if one is required.
+ */
+file_open(catalogue, package) ::= <<
+package <package>;
+
+import com.thesett.auth.services.ServiceFactory;
+
+import org.hibernate.SessionFactory;
+import static com.thesett.util.dao.HibernateSessionAndDetachProxy.proxy;
+
+
+>>
+
+/*
+ * Generates the output for a bean in the specified catalogue.
+ */
+for_beans(catalogue, package, decorators) ::= <<
+<decorators:{decorator|<if(decorator.entitySubType)>
+<imports_for_bean(catalogue=catalogue, package=package, decorator=decorator)>
+<endif>}>
+<class_header(catalogue=catalogue, package=package)>
+<decorators:{decorator|<if(decorator.entitySubType)>
+<fields_for_bean(catalogue=catalogue, package=package, decorator=decorator)>
+<endif>}>
+<constructor_for_bean(catalogue=catalogue, package=package, decorators=decorators)>
+<decorators:{decorator|<if(decorator.entitySubType)>
+<entity_service(catalogue=catalogue, package=package, decorator=decorator, name=decorator.name)>
+<endif>}>
+>>   
+
+class_header(catalogue, package) ::= <<
+
+public class LocalServiceFactory implements ServiceFactory {
+
+>>
+
+imports_for_bean(catalogue, package, decorator) ::= <<
+import com.thesett.auth.services.<decorator.name; format="ccu">Service;
+
+>>
+
+fields_for_bean(catalogue, package, decorator) ::= <<
+    private final <decorator.name; format="ccu">Service <decorator.name; format="cc">Service;
+
+>>
+
+constructor_for_bean(catalogue, package, decorators) ::= <<
+    public LocalServiceFactory(SessionFactory sessionFactory, <decorators:{decorator|<if(decorator.entitySubType)><decorator.name; format="ccu">Service <decorator.name; format="cc">Service<endif>}; separator=", ">) {
+<decorators:{decorator|<if(decorator.entitySubType)>
+        this.<decorator.name; format="cc">Service = proxy(<decorator.name; format="cc">Service, <decorator.name; format="ccu">Service.class, sessionFactory);
+<endif>}; separator="\n">
+    }
+
+>>
+
+/*
+ * Creates the closing section of an output file, if one is required.
+ */
+file_close() ::= <<
+
+}
+>>
+
+/*
+ * Creates a bean class for an entity type, with name/type fields, for a given catalogue model.
+ */
+entity_service(catalogue, package, decorator, name) ::= <<
+<service_interface(catalogue=catalogue, package=package, decorator=decorator, name=name)>
+>>
+
+/*
+ * Creates a service interface for a top-level entity.
+ */
+service_interface(catalogue, package, decorator, name) ::= <<
+
+    /** {@inheritDoc} */
+    public <name; format="ccu">Service get<name; format="ccu">Service() {
+        return <name; format="cc">Service;
+    }
+
+>>

@@ -1,0 +1,71 @@
+/*
+ * HibernateDAOInterface is an implementation of the Generator interface, that creates
+ * interfaces for DAOs based on Hibernate, for all top-level entities in a model.
+ */
+import "JavaCommon.stg"
+
+/*
+ * Creates the opening section of an output file, if one is required.
+ */
+file_open(catalogue, package) ::= <<
+package <package>;
+
+
+>>
+
+/*
+ * Generates the output for a bean in the specified catalogue.
+ */
+for_beans(catalogue, package, decorators) ::= <<
+<decorators:{decorator|<if(decorator.entitySubType)>
+<imports_for_bean(catalogue=catalogue, package=package, decorator=decorator)>
+<endif>}>
+<class_header(catalogue=catalogue, package=package)>
+<decorators:{decorator|<if(decorator.entitySubType)>
+<entity_service(catalogue=catalogue, package=package, decorator=decorator, name=decorator.name)>
+<endif>}>
+>>   
+
+class_header(catalogue, package) ::= <<
+
+/**
+ * ServiceFactory describes a factory for creating clients to access the services built on the top-level
+ * entities.
+ */    
+public interface ServiceFactory {
+
+>>
+
+imports_for_bean(catalogue, package, decorator) ::= <<
+import com.thesett.auth.services.<decorator.name; format="ccu">Service;
+
+>>
+    
+
+/*
+ * Creates the closing section of an output file, if one is required.
+ */
+file_close() ::= <<
+}
+>>
+
+/*
+ * Creates a bean class for an entity type, with name/type fields, for a given catalogue model.
+ */
+entity_service(catalogue, package, decorator, name) ::= <<
+<service_interface(catalogue=catalogue, package=package, decorator=decorator, name=name)>
+>>
+
+/*
+ * Creates a service interface for a top-level entity.
+ */
+service_interface(catalogue, package, decorator, name) ::= <<
+
+    /**
+     * Supplies a proxied instance of the <name; format="ccu">Service.
+     *
+     * @return A proxied instance of the <name; format="ccu">Service.
+     */
+    <name; format="ccu">Service get<name; format="ccu">Service();
+
+>>

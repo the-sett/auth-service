@@ -1,0 +1,43 @@
+database:
+  driverClass: org.postgresql.Driver
+  user: authdb
+  password: authdb
+  url: jdbc:postgresql://localhost/authdb
+  minSize: 1
+
+server:
+  type: simple
+  applicationContextPath: /
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: 9070
+  requestLog:
+    appenders: []    
+
+#assets:
+# overrides:
+#   /assets: some_ui/src/main/webapp/assets/
+        
+logging:
+  level: INFO
+  loggers:
+    io.dropwizard: INFO    
+    org.hibernate.SQL: INFO
+    com.sun.jersey.api.container.filter.LoggingFilter: WARN
+  appenders:
+    - type: console
+
+refdata: refdata
+
+modelResource: auth-model.xml
+   
+beanValidationConstraints: constraints.xml
+
+shiro:
+  enabled: true
+  session_handler: true
+  url_pattern: /*
+
+swagger:
+  resourcePackage: com.thesett.auth.services
