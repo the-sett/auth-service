@@ -34,7 +34,13 @@
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-views</artifactId>
-        </dependency>        
+        </dependency>
+
+        <dependency>
+            <groupId>com.thesett.laf</groupId>
+            <artifactId>thesett-laf</artifactId>
+            <version>0.9.0</version>
+        </dependency>
     </dependencies>
 
     <build>

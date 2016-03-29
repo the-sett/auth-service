@@ -21,6 +21,7 @@ import com.thesett.util.swagger.EnumTypeModelConverter;
 import com.thesett.util.views.handlebars.HandlebarsBundle;
 import com.thesett.util.views.handlebars.HandlebarsBundleConfig;
 
+import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
@@ -73,6 +74,10 @@ public class Example
             /** {@inheritDoc} */
             protected void configureHandlebars(HandlebarsBundleConfig configuration)
             {
+                addTemplatePath("/META-INF/resources/webjars/thesett-laf/views/layouts");
+                addTemplatePath("/META-INF/resources/webjars/thesett-laf/views/partials");
+                addTemplatePath("/META-INF/resources/webjars/thesett-laf/views");
+
                 addTemplatePath("/webapp/views/layouts");
                 addTemplatePath("/webapp/views/partials");
                 addTemplatePath("/webapp/views");
@@ -91,7 +96,8 @@ public class Example
         bootstrap.addBundle(swaggerBundle);
         ModelConverters.getInstance().addConverter(new EnumTypeModelConverter());
 
-        bootstrap.addBundle(new ConfiguredAssetsBundle("/webapp/assets/", "/assets/"));
+        bootstrap.addBundle(new AssetsBundle("/META-INF/resources/webjars/thesett-laf/", "/assets"));
+        //bootstrap.addBundle(new ConfiguredAssetsBundle("/webapp/assets/", "/assets/"));
         bootstrap.addBundle(handlebarsBundle);
     }
 
