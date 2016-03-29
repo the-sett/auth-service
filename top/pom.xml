@@ -29,6 +29,12 @@
             <artifactId>auth_data_access_hibernate</artifactId>
             <version>${project.version}</version><!--BuildVersion-->
         </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>auth_web_ui</artifactId>
+            <version>${project.version}</version><!--BuildVersion-->
+        </dependency>
         
         <dependency>
             <groupId>com.thesett.jenerator.utils</groupId>

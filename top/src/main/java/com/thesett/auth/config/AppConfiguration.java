@@ -9,6 +9,8 @@ import com.bazaarvoice.dropwizard.assets.AssetsConfiguration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thesett.util.config.shiro.ShiroConfiguration;
 
+import com.thesett.util.views.handlebars.HandlebarsBundleConfig;
+import com.thesett.util.views.handlebars.HandlebarsConfig;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
@@ -16,7 +18,7 @@ import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 /**
  * AppConfiguration holds configuration items for Accounts.
  */
-public class AppConfiguration extends Configuration implements AssetsBundleConfiguration
+public class AppConfiguration extends Configuration implements AssetsBundleConfiguration, HandlebarsBundleConfig
 {
     @JsonProperty("swagger")
     public SwaggerBundleConfiguration swaggerBundleConfiguration;
@@ -43,6 +45,14 @@ public class AppConfiguration extends Configuration implements AssetsBundleConfi
 
     /** Holds the configuration settings for Shiro. */
     private ShiroConfiguration shiroConfiguration;
+
+    /** Holds the configuration settings to locate the handlebars templates. */
+    private HandlebarsConfig handlebars = new HandlebarsConfig();
+
+    /** {@inheritDoc} */
+    public HandlebarsConfig getHandlebars() {
+        return handlebars;
+    }
 
     /**
      * Provides the data source factory.

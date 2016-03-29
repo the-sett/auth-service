@@ -15,10 +15,10 @@ server:
   requestLog:
     appenders: []    
 
-#assets:
-# overrides:
-#   /assets: some_ui/src/main/webapp/assets/
-        
+assets:
+ overrides:
+   /assets: web_ui/src/main/webapp/assets/
+
 logging:
   level: INFO
   loggers:
@@ -41,3 +41,10 @@ shiro:
 
 swagger:
   resourcePackage: com.thesett.auth.services
+
+handlebars:
+  cacheTemplates: false
+  overrides:
+    - /webapp/views/layouts: web_ui/src/main/webapp/views/layouts
+    - /webapp/views/partials: web_ui/src/main/webapp/views/partials
+    - /webapp/views: web_ui/src/main/webapp/views

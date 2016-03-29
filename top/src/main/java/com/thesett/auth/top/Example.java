@@ -6,9 +6,11 @@ import java.util.EnumSet;
 import javax.servlet.DispatcherType;
 import javax.validation.ValidatorFactory;
 
+import com.bazaarvoice.dropwizard.assets.ConfiguredAssetsBundle;
 import com.thesett.auth.config.AppConfiguration;
 import com.thesett.auth.dao.UserSecurityDAOImpl;
 import com.thesett.auth.services.ServiceFactory;
+import com.thesett.jtrial.web.WebResource;
 import com.thesett.util.config.shiro.ShiroBundle;
 import com.thesett.util.config.shiro.ShiroConfiguration;
 import com.thesett.util.dao.HibernateSessionAndDetachProxy;
@@ -16,6 +18,8 @@ import com.thesett.util.security.dao.UserSecurityDAO;
 import com.thesett.util.security.web.ShiroDBRealmSetupListener;
 import com.thesett.util.servlet.filter.CORSFilter;
 import com.thesett.util.swagger.EnumTypeModelConverter;
+import com.thesett.util.views.handlebars.HandlebarsBundle;
+import com.thesett.util.views.handlebars.HandlebarsBundleConfig;
 
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -62,6 +66,19 @@ public class Example
             }
         };
 
+    /** Configure the locations of the handlebars templates. */
+    private final HandlebarsBundle handlebarsBundle =
+        new HandlebarsBundle()
+        {
+            /** {@inheritDoc} */
+            protected void configureHandlebars(HandlebarsBundleConfig configuration)
+            {
+                addTemplatePath("/webapp/views/layouts");
+                addTemplatePath("/webapp/views/partials");
+                addTemplatePath("/webapp/views");
+            }
+        };
+
     /**
      * Sets up some additional DropWizard modules.
      *
@@ -73,6 +90,9 @@ public class Example
 
         bootstrap.addBundle(swaggerBundle);
         ModelConverters.getInstance().addConverter(new EnumTypeModelConverter());
+
+        bootstrap.addBundle(new ConfiguredAssetsBundle("/webapp/assets/", "/assets/"));
+        bootstrap.addBundle(handlebarsBundle);
     }
 
     /**
@@ -109,6 +129,9 @@ public class Example
                 sessionFactory);
 
         environment.servlets().addServletListeners(new ShiroDBRealmSetupListener(userSecurityDAO));
+
+        WebResource webResource = new WebResource(serviceFactory);
+        environment.jersey().register(webResource);
     }
 
     /**
