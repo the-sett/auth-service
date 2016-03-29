@@ -39,7 +39,6 @@
         <dependency>
             <groupId>com.thesett.laf</groupId>
             <artifactId>thesett-laf</artifactId>
-            <version>0.9.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

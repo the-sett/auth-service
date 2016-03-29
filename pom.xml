@@ -54,6 +54,8 @@
         <snakeyaml.version>1.15</snakeyaml.version>
         <lanterna.version>2.1.8</lanterna.version>
         <jersey.version>2.22.1</jersey.version>
+
+        <com.thesett.laf.version>0.9.0-SNAPSHOT</com.thesett.laf.version>
         
         <!--
             The 'sonar.dynamicAnalysis' is needed to prevent sonar from throwing away coverage
@@ -141,6 +143,12 @@
                 <groupId>com.thesett.jenerator.utils</groupId>
                 <artifactId>jenerator_util_shiro_db_realm</artifactId>
                 <version>${jenerator.utils.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.thesett.laf</groupId>
+                <artifactId>thesett-laf</artifactId>
+                <version>${com.thesett.laf.version}</version>
             </dependency>
             
             <dependency>
