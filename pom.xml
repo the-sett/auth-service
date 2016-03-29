@@ -482,5 +482,6 @@
     <module>service_impl</module>
     <module>top</module>
     <module>client_impl</module>
+    <module>web_ui</module>
   </modules>
 </project>
