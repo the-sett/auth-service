@@ -96,8 +96,7 @@ public class Example
         bootstrap.addBundle(swaggerBundle);
         ModelConverters.getInstance().addConverter(new EnumTypeModelConverter());
 
-        bootstrap.addBundle(new AssetsBundle("/META-INF/resources/webjars/thesett-laf/", "/assets"));
-        //bootstrap.addBundle(new ConfiguredAssetsBundle("/webapp/assets/", "/assets/"));
+        bootstrap.addBundle(new AssetsBundle("/META-INF/resources/webjars/thesett-laf/", "/thesett-laf"));
         bootstrap.addBundle(handlebarsBundle);
     }
 
