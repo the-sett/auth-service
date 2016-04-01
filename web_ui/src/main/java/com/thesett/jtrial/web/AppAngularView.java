@@ -15,10 +15,16 @@ import com.thesett.util.views.handlebars.Layout;
  */
 public class AppAngularView extends Layout
 {
+    private String appName;
+
     public AppAngularView()
     {
         super("/app-angular.hbs", "/angular.hbs");
+        appName = "auth-service";
     }
 
-    public String getAppName() { return "auth-service"; }
+    public String getAppName()
+    {
+        return appName;
+    }
 }
