@@ -17,7 +17,7 @@ server:
 
 assets:
  overrides:
-   /assets: web_ui/src/main/webapp/assets/
+   /app: web_ui/src/main/webapp/
 
 logging:
   level: INFO

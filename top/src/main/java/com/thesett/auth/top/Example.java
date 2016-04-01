@@ -6,7 +6,6 @@ import java.util.EnumSet;
 import javax.servlet.DispatcherType;
 import javax.validation.ValidatorFactory;
 
-import com.bazaarvoice.dropwizard.assets.ConfiguredAssetsBundle;
 import com.thesett.auth.config.AppConfiguration;
 import com.thesett.auth.dao.UserSecurityDAOImpl;
 import com.thesett.auth.services.ServiceFactory;
@@ -96,7 +95,9 @@ public class Example
         bootstrap.addBundle(swaggerBundle);
         ModelConverters.getInstance().addConverter(new EnumTypeModelConverter());
 
-        bootstrap.addBundle(new AssetsBundle("/META-INF/resources/webjars/thesett-laf/", "/thesett-laf"));
+        bootstrap.addBundle(new AssetsBundle("/META-INF/resources/webjars/thesett-laf/", "/thesett-laf", null,
+                "thesett-laf"));
+        bootstrap.addBundle(new AssetsBundle("/webapp/", "/app", null, "webapp"));
         bootstrap.addBundle(handlebarsBundle);
     }
 

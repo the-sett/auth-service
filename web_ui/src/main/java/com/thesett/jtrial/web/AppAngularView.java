@@ -4,17 +4,21 @@ package com.thesett.jtrial.web;
 import com.thesett.util.views.handlebars.Layout;
 
 /**
+ * AppAngularView provides a standard template for an angular application.
+ *
  * <pre><p/><table id="crc"><caption>CRC Card</caption>
  * <tr><th> Responsibilities <th> Collaborations
- * <tr><td>
+ * <tr><td> Provide the angular app name. </td></tr>
  * </table></pre>
  *
  * @author Rupert Smith
  */
-public class TestView extends Layout
+public class AppAngularView extends Layout
 {
-    public TestView()
+    public AppAngularView()
     {
-        super("/test.hbs", "/standard.hbs");
+        super("/app-angular.hbs", "/angular.hbs");
     }
+
+    public String getAppName() { return "auth-service"; }
 }

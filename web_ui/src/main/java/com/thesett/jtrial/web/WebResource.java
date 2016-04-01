@@ -48,6 +48,6 @@ public class WebResource
     @UnitOfWork
     public View getPerformanceOverview()
     {
-        return new TestView();
+        return new AppAngularView();
     }
 }
