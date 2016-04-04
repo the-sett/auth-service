@@ -1,6 +1,6 @@
 'use strict';
 
-auth-service.controller('ClassEditorController', ['$scope', '$http', '$filter', 'RefDataService', 'ViewsService', 'dtaRefData', function($scope, $http, $filter, RefDataService, ViewsService, dtaRefData) {
+authService.controller('ClassEditorController', ['$scope', '$http', '$filter', 'RefDataService', 'ViewsService', 'dtaRefData', function($scope, $http, $filter, RefDataService, ViewsService, dtaRefData) {
 
     var vm = $scope;
     /*

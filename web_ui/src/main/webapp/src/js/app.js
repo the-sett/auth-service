@@ -1,12 +1,12 @@
 'use strict';
 
-var auth-service = angular.module('auth-service', [
+var authService = angular.module('authService', [
     'ngResource',
     'ui.router',
-    'auth-service'
+    'authService'
 ]);
 
-auth-service.config(['$stateProvider'/*, '$stateParams'*/, '$urlRouterProvider', function($stateProvider/*, $stateParams*/, $urlRouterProvider) {
+authService.config(['$stateProvider'/*, '$stateParams'*/, '$urlRouterProvider', function($stateProvider/*, $stateParams*/, $urlRouterProvider) {
     $urlRouterProvider.otherwise("/");
     
     $stateProvider.

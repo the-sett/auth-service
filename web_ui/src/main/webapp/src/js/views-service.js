@@ -1,8 +1,8 @@
 'use strict';
 
-auth-service.service('ViewsService', function($resource, $http, config, $q) {
+authService.service('ViewsService', function($resource, $http, config, $q) {
 
-    var resource = $resource(config.auth-service.endpoint + 'view/:id', {
+    var resource = $resource(config.authService.endpoint + 'view/:id', {
         id: '@id'
     }, {
         get: {

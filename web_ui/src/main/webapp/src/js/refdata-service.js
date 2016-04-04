@@ -1,8 +1,8 @@
 'use strict';
 
-auth-service.service('RefDataService', function($resource, $http, config, $q) {
+authService.service('RefDataService', function($resource, $http, config, $q) {
 
-    var resource = $resource(config.auth-service.endpoint + 'refdata/:id', {
+    var resource = $resource(config.authService.endpoint + 'refdata/:id', {
         id: '@id'
     }, {
         get: {
@@ -37,7 +37,7 @@ auth-service.service('RefDataService', function($resource, $http, config, $q) {
                 refDataArray.unshift(
                     $http({
                         method: 'GET',
-                        url: config.auth-service.endpoint + 'refdata/' + item,
+                        url: config.authService.endpoint + 'refdata/' + item,
                         cache: 'true',
                         title: item,
                         headers: {
