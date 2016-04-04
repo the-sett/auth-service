@@ -1,13 +1,12 @@
 'use strict';
 
-var jModeller = angular.module('jModeller', [
+var auth-service = angular.module('auth-service', [
     'ngResource',
     'ui.router',
-    'toastr',
-    'jModeller'
+    'auth-service'
 ]);
 
-jModeller.config(['$stateProvider'/*, '$stateParams'*/, '$urlRouterProvider', function($stateProvider/*, $stateParams*/, $urlRouterProvider) {
+auth-service.config(['$stateProvider'/*, '$stateParams'*/, '$urlRouterProvider', function($stateProvider/*, $stateParams*/, $urlRouterProvider) {
     $urlRouterProvider.otherwise("/");
     
     $stateProvider.

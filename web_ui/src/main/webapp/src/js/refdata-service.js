@@ -1,8 +1,8 @@
 'use strict';
 
-jModeller.service('RefDataService', function($resource, $http, config, $q) {
+auth-service.service('RefDataService', function($resource, $http, config, $q) {
 
-    var resource = $resource(config.jmodeller.endpoint + 'refdata/:id', {
+    var resource = $resource(config.auth-service.endpoint + 'refdata/:id', {
         id: '@id'
     }, {
         get: {
@@ -37,7 +37,7 @@ jModeller.service('RefDataService', function($resource, $http, config, $q) {
                 refDataArray.unshift(
                     $http({
                         method: 'GET',
-                        url: config.jmodeller.endpoint + 'refdata/' + item,
+                        url: config.auth-service.endpoint + 'refdata/' + item,
                         cache: 'true',
                         title: item,
                         headers: {

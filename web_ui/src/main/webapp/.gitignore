@@ -1,1 +1,3 @@
-/libs/
+/app/libs/
+/node_modules/
+/tmp/

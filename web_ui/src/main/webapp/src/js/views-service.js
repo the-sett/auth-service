@@ -1,8 +1,8 @@
 'use strict';
 
-jModeller.service('ViewsService', function($resource, $http, config, $q) {
+auth-service.service('ViewsService', function($resource, $http, config, $q) {
 
-    var resource = $resource(config.jmodeller.endpoint + 'view/:id', {
+    var resource = $resource(config.auth-service.endpoint + 'view/:id', {
         id: '@id'
     }, {
         get: {

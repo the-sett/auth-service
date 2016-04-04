@@ -5,7 +5,7 @@ function lowerFirstLetter(string) {
 }
 
 function createRestService(name) {
-    jModeller.service(name + 'Service', ['$http', '$filter', '$resource', 'config', function($http, $filter, $resource, config) {        
+    auth-service.service(name + 'Service', ['$http', '$filter', '$resource', 'config', function($http, $filter, $resource, config) {        
         function filterData(data, filter) {
             // Re-arrange nested filters so that they work. This only supports one level of nesting, but more
             // could be added by making the function recursive.
@@ -51,7 +51,7 @@ function createRestService(name) {
             counter.setCount(filteredData.length);
         }
         
-        var resource = $resource(config.jmodeller.endpoint + lowerFirstLetter(name) + '/:id', {
+        var resource = $resource(config.auth-service.endpoint + lowerFirstLetter(name) + '/:id', {
             id: '@_id'
         }, {
             findAll: {
