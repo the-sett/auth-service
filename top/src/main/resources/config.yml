@@ -17,7 +17,7 @@ server:
 
 assets:
  overrides:
-   /app: web_ui/src/main/webapp/
+   /app: web_ui/src/main/webapp/app/
 
 logging:
   level: INFO
@@ -45,6 +45,6 @@ swagger:
 handlebars:
   cacheTemplates: false
   overrides:
-    - /webapp/views/layouts: web_ui/src/main/webapp/views/layouts
-    - /webapp/views/partials: web_ui/src/main/webapp/views/partials
-    - /webapp/views: web_ui/src/main/webapp/views
+    - /webapp/app/views/layouts: web_ui/src/main/webapp/app/views/layouts
+    - /webapp/app/views/partials: web_ui/src/main/webapp/app/views/partials
+    - /webapp/app/views: web_ui/src/main/webapp/app/views

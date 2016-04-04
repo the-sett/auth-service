@@ -77,9 +77,9 @@ public class Example
                 addTemplatePath("/META-INF/resources/webjars/thesett-laf/views/partials");
                 addTemplatePath("/META-INF/resources/webjars/thesett-laf/views");
 
-                addTemplatePath("/webapp/views/layouts");
-                addTemplatePath("/webapp/views/partials");
-                addTemplatePath("/webapp/views");
+                addTemplatePath("/webapp/app/views/layouts");
+                addTemplatePath("/webapp/app/views/partials");
+                addTemplatePath("/webapp/app/views");
             }
         };
 
@@ -97,7 +97,7 @@ public class Example
 
         bootstrap.addBundle(new AssetsBundle("/META-INF/resources/webjars/thesett-laf/", "/thesett-laf", null,
                 "thesett-laf"));
-        bootstrap.addBundle(new AssetsBundle("/webapp/", "/app", null, "webapp"));
+        bootstrap.addBundle(new AssetsBundle("/webapp/app/", "/app", null, "webapp"));
         bootstrap.addBundle(handlebarsBundle);
     }
 
