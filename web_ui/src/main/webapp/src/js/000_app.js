@@ -8,7 +8,7 @@ var authService = angular.module('authService', [
     'authService'
 ]);
 
-authService.config(['$stateProvider'/*, '$stateParams'*/, '$urlRouterProvider', function($stateProvider/*, $stateParams*/, $urlRouterProvider) {
+authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise("/");
     
     $stateProvider.
