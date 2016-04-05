@@ -123,7 +123,6 @@ function createRestService(name) {
         return resource;
     }]);
 }
-/*
-createRestService('Dashboard');
-createRestService('TransactionSummaryUpload');
-*/
+
+createRestService('Account');
+createRestService('Role');

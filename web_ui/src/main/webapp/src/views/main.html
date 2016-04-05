@@ -1,3 +1,36 @@
 <div>
-    <p>Main view</p>
+  <header class="publishing-header">
+    <h1 class="publishing-header__title">Users</h1>
+    <span class="publishing-header__state badge">{{itemCount}} <ng-pluralize count="itemCount" when="{'1': 'item', 'other': 'items'}"></ng-pluralize> shown</span>
+  </header>
+  
+  <div ng-show="!itemCount > 0" class="col-xs-12 col-sm-12">
+    <h3>There are no user accounts in the database.</h3>
+  </div>
+  
+  <table ng-show="$data" ng-table="tableParams" class="table table-striped panel panel-default" show-filter="true">
+    <tbody>
+      <tr ng-repeat="item in $data">
+        <td width="200" data-title="'Username'" filter="{username: 'text'}" sortable="'username'">
+            {{item.username}}
+        </td>
+        <td width="60" data-title="'Actions'">
+          <a class="btn btn-primary btn-xs" href="/#/dashboard/{{item.id}}/upload">Profile</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
 </div>
+
+<nav class="button-bar clearfix">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-11">
+        <div class="btn-group dropup pull-right">
+          <button type="button" class="btn btn-primary" ui-sref="newDashboard">Create Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

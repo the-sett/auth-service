@@ -1,8 +1,10 @@
 'use strict';
 
 var authService = angular.module('authService', [
+    'ngTable',    
     'ngResource',
     'ui.router',
+    'toastr',    
     'authService'
 ]);
 
