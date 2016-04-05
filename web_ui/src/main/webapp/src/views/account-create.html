@@ -1,0 +1,15 @@
+{{account}}
+
+<ngForm class="form-horizontal" role="form">
+  <div ng-include="'app/views/account-form.html'"></div>
+</ngForm>
+<section class="button-bar">    
+  <div class="col-xs-5">
+    <a class="btn btn-default " id="button-back" ui-sref="root"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
+  </div>  
+  <div class="col-xs-5">
+    <div class="pull-right">
+      <button type="submit" class="update-action btn btn-primary content-action" id="buttonCreate" ng-click="create(account)">Create</button>
+    </div>
+  </div>
+</section>

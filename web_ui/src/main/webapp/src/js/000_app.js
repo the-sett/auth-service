@@ -21,5 +21,28 @@ authService.config(['$stateProvider'/*, '$stateParams'*/, '$urlRouterProvider', 
                     return RefDataService.getRefData().$promise;                    
                 }
             }
+        }).
+        state('newAccount', {
+            url: '/account/new',
+            templateUrl: 'app/views/account-create.html',
+            controller: 'AccountCreateController',
+            resolve: {
+                dtaRefData: function(RefDataService) {
+                    return RefDataService.getRefData();
+                }
+            }
+        }).
+        state('editAccount', {
+            url: '/account/:id/edit',
+            templateUrl: 'app/views/account-edit.html',
+            controller: 'AccountEditController',
+            resolve: {
+                dtaRefData: function(RefDataService) {
+                    return RefDataService.getRefData();
+                },
+                dtaAccount: function(AccountService, $stateParams) {
+                    return AccountService.get({ id: $stateParams.id }).$promise;
+                }
+            }
         });
 }]);

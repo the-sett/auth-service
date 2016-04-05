@@ -4,6 +4,11 @@ authService.controller('AccountListController', ['$scope', '$http', '$filter', '
 
     var vm = $scope;
 
+    vm.refData = {};
+    angular.forEach(dtaRefData, function(ref) {
+        vm.refData[ref.config.title] = ref.data;
+    });
+
     $scope.itemCount = 0;
     
     $scope.tableParams = new ngTableParams(
