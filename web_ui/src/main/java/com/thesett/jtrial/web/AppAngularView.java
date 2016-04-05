@@ -20,7 +20,7 @@ public class AppAngularView extends Layout
     public AppAngularView()
     {
         super("/app-angular.hbs", "/angular.hbs");
-        appName = "auth-service";
+        appName = "authService";
     }
 
     public String getAppName()
