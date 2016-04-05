@@ -1,0 +1,90 @@
+.preview {
+  background: $color__grey--darker;
+  margin-bottom: 20px;
+  padding: 1px;
+
+  &__header {
+    padding: 15px;
+    text-align: center;
+  }
+
+  &__icon {
+    background: url() no-repeat center transparent;
+    background-size: contain;
+    border: 0;
+    height: 32px;
+    margin-left: 0.5em;
+    text-indent: -999em;
+    width: 32px;
+
+    &--phone-portrait {
+      background-image: url('../images/iphone.png')
+    }
+
+    &--phone-landscape {
+      background-image: url('../images/iphonerotate.png')
+    }
+
+    &--tablet-portrait {
+      background-image: url('../images/ipadrotate.png')
+    }
+
+    &--tablet-landscape {
+      background-image: url('../images/ipad.png')
+    }
+
+    &--desktop {
+      background-image: url('../images/imac.png')
+    }
+
+    &:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+  }
+
+  &__iframe {
+    display: block;
+    height: 460px;
+    margin: 0 auto;
+    overflow: scroll;
+    width: 100%;
+    @include transition(all 0.2s);
+  }
+
+  &__container {
+    &.phone-portrait {
+      .preview__iframe{
+        width: 370px;
+        height: 650px;
+      }
+    }
+
+    &.phone-landscape {
+      .preview__iframe {
+        width: 526px;
+        height: 316px;
+      }
+    }
+
+    &.tablet-portrait {
+      .preview__iframe {
+        width: 634px;
+        height: 834px;
+      }
+    }
+
+    &.tablet-landscape {
+      .preview__iframe {
+        width: 800px;
+        height: 600px;
+      }
+    }
+
+    &.desktop {
+      .preview__iframe {
+        width: 1124;
+        height: 460px;
+      }
+    }
+  }
+}

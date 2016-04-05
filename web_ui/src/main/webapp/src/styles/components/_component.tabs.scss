@@ -1,0 +1,12 @@
+// N.B. most tab styles are in Bootstrap.
+.tab-panel {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top: 0;
+}
+
+.nav-tabs {
+  > li > a {
+    cursor: pointer;
+  }
+}

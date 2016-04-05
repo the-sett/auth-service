@@ -1,0 +1,15 @@
+.button-bar {
+  background: rgba(red($color__grey--lighter), green($color__grey--lighter), blue($color__grey--lighter), 0.9);
+  border-top: 1px solid $color__grey--light;
+  bottom: 0px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+  left: 0;
+  padding: 10px;
+  position: fixed;
+  right: 0;
+  z-index: 1000;
+}
+
+body.has-button-bar {
+  padding-bottom: 100px;
+}

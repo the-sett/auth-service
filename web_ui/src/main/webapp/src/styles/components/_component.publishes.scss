@@ -1,0 +1,22 @@
+.publishes {
+  min-height: 400px;
+
+  &__actions {
+    float: right;
+  }
+
+  &__buttons {
+    float: left;
+    margin-left: 1em;
+  }
+
+  &__list {
+    height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+.publishes .popover.bottom {
+  margin-left: -23px;
+}
