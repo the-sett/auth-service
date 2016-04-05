@@ -1,6 +1,6 @@
 'use strict';
 
-authService.controller('MainController', ['$scope', '$http', '$filter', 'ngTableParams', 'RefDataService', 'ViewsService', 'AccountService', 'dtaRefData', function($scope, $http, $filter, ngTableParams, RefDataService, ViewsService, AccountService, dtaRefData) {
+authService.controller('AccountListController', ['$scope', '$http', '$filter', 'ngTableParams', 'RefDataService', 'ViewsService', 'AccountService', 'dtaRefData', function($scope, $http, $filter, ngTableParams, RefDataService, ViewsService, AccountService, dtaRefData) {
 
     var vm = $scope;
 

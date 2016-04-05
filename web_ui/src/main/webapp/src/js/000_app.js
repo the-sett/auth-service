@@ -14,8 +14,8 @@ authService.config(['$stateProvider'/*, '$stateParams'*/, '$urlRouterProvider', 
     $stateProvider.
         state('root', {
             url: '/',
-            templateUrl: 'app/views/main.html',
-            controller: 'MainController',
+            templateUrl: 'app/views/account-list.html',
+            controller: 'AccountListController',
             resolve: {
                 dtaRefData: function(RefDataService) {
                     return RefDataService.getRefData().$promise;                    
