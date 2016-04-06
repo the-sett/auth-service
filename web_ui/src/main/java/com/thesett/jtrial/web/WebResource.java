@@ -40,13 +40,14 @@ public class WebResource
     }
 
     /**
-     * Provides the entry page and overview.
-     *
-     * @return The entry page view.
+     * Provides the auth service application.
+l    *
+     * @return The auth service application.
      */
     @GET
     @UnitOfWork
-    public View getPerformanceOverview()
+    @Path("auth-service")
+    public View getApplication()
     {
         return new AppAngularView();
     }

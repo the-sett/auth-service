@@ -12,19 +12,24 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
     $urlRouterProvider.otherwise("/");
     
     $stateProvider.
-        state('root', {
-            url: '/',
-            templateUrl: 'app/views/account-list.html',
+        state('login', {
+            url: '/login',
+            templateUrl: '/app/views/login.html',
+            controller: 'AuthController',
+        }).
+        state('listAccount', {
+            url: '/account',
+            templateUrl: '/app/views/account-list.html',
             controller: 'AccountListController',
             resolve: {
                 dtaRefData: function(RefDataService) {
                     return RefDataService.getRefData().$promise;                    
                 }
             }
-        }).
+        }).        
         state('newAccount', {
             url: '/account/new',
-            templateUrl: 'app/views/account-create.html',
+            templateUrl: '/app/views/account-create.html',
             controller: 'AccountCreateController',
             resolve: {
                 dtaRefData: function(RefDataService) {
@@ -34,7 +39,7 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
         }).
         state('editAccount', {
             url: '/account/:id/edit',
-            templateUrl: 'app/views/account-edit.html',
+            templateUrl: '/app/views/account-edit.html',
             controller: 'AccountEditController',
             resolve: {
                 dtaRefData: function(RefDataService) {
