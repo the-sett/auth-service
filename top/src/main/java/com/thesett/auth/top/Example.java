@@ -10,6 +10,7 @@ import com.bazaarvoice.dropwizard.assets.ConfiguredAssetsBundle;
 import com.thesett.auth.config.AppConfiguration;
 import com.thesett.auth.dao.UserSecurityDAOImpl;
 import com.thesett.auth.services.ServiceFactory;
+import com.thesett.auth.services.rest.AuthResource;
 import com.thesett.jtrial.web.WebResource;
 import com.thesett.util.config.shiro.ShiroBundle;
 import com.thesett.util.config.shiro.ShiroConfiguration;
@@ -139,6 +140,9 @@ public class Example
 
         WebResource webResource = new WebResource(serviceFactory);
         environment.jersey().register(webResource);
+
+        AuthResource authResource = new AuthResource();
+        environment.jersey().register(authResource);
     }
 
     /**

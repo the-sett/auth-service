@@ -95,6 +95,11 @@
             <artifactId>postgresql</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+        </dependency>
+        
         <!-- Test dependencies. -->
         <dependency>
             <groupId>junit</groupId>

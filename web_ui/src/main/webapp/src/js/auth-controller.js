@@ -19,7 +19,7 @@ authService.controller('AuthController', ['$scope', '$http', '$filter', '$state'
         console.log("login");
         
         $http
-            .post('/authenticate', vm.user)
+            .post('/api/authenticate', vm.user)
             .success(function (data, status, headers, config) {
                 $window.sessionStorage.token = data.token;
                 vm.message = 'Welcome';
