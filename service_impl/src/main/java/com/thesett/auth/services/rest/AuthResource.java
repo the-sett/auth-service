@@ -8,6 +8,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
 
@@ -37,16 +39,19 @@ public class AuthResource
     @Path("/authenticate")
     @UnitOfWorkWithDetach
     @ApiOperation(value = "Authenticate a user by username and password.")
-    public JWT authenticate()
+    public Response authenticate()
     {
-        return new JWT(createToken("test"));
+        String token = createToken("test");
+        NewCookie cookie = new NewCookie("jwt", token, null, null, null, 0, true, true);
+        JWT jwt = new JWT(token);
+        Response response = Response.ok().cookie(cookie).entity(jwt).build();
+
+        return response;
     }
 
     private String createToken(String subject)
     {
-        String token = Jwts.builder().setSubject(subject).signWith(SignatureAlgorithm.HS512, TEMP_KEY).compact();
-
-        return token;
+        return Jwts.builder().setSubject(subject).signWith(SignatureAlgorithm.HS512, TEMP_KEY).compact();
     }
 
     private void checkToken(String token)
@@ -56,21 +61,21 @@ public class AuthResource
 
     private class JWT
     {
-        private String token;
+        private String jwt;
 
-        public JWT(String token)
+        public JWT(String jwt)
         {
-            this.token = token;
+            this.jwt = jwt;
         }
 
-        public String getToken()
+        public String getJwt()
         {
-            return token;
+            return jwt;
         }
 
-        public void setToken(String token)
+        public void setJwt(String jwt)
         {
-            this.token = token;
+            this.jwt = jwt;
         }
     }
 }
