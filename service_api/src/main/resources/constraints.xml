@@ -6,6 +6,26 @@
 
     <default-package>com.thesett.auth.model</default-package>
 
+    <bean class="AuthRequest" ignore-annotations="true">
+        <field name="username">
+            <valid/>
+        </field>
+        <field name="password">
+            <valid/>
+        </field>
+    </bean>
+
+
+    <bean class="UserClaims" ignore-annotations="true">
+        <field name="username">
+            <valid/>
+        </field>
+        <field name="permissions">
+            <valid/>
+        </field>
+    </bean>
+
+
     <bean class="Account" ignore-annotations="true">
         <field name="username">
             <valid/>

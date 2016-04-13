@@ -2,22 +2,36 @@
 package com.thesett.auth.services.rest;
 
 import java.security.Key;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
+import com.thesett.auth.model.Account;
+import com.thesett.auth.model.AuthRequest;
+import com.thesett.auth.model.Role;
+import com.thesett.auth.model.UserClaims;
+import com.thesett.auth.services.AccountService;
+import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
+import com.thesett.util.string.StringUtils;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.dropwizard.hibernate.UnitOfWork;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 /**
  * <pre><p/><table id="crc"><caption>CRC Card</caption>
@@ -34,48 +48,126 @@ import io.swagger.annotations.ApiOperation;
 public class AuthResource
 {
     public static final Key TEMP_KEY = MacProvider.generateKey();
+    public static final Response UNAUTHORIZED = Response.status(401).build();
 
+    private final AccountService accountResource;
+
+    public AuthResource(AccountService accountResource)
+    {
+        this.accountResource = accountResource;
+    }
+
+    /**
+     * Authenticates a user by username and password. If the request is successful a JWT token is returned
+     * as an 'httpOnly' cookie. The JWT token will contain the username as subject, and the users roles
+     * as valid claims. The users permissions are extracted into a {@link UserClaims} object, which
+     * is returned in the clear, as it can be useful for a front-end to customize itself based on what
+     * rights a user has.
+     *
+     * @param authRequest The username/password authentication request.
+     *
+     * @return
+     */
     @POST
     @Path("/authenticate")
-    @UnitOfWorkWithDetach
-    @ApiOperation(value = "Authenticate a user by username and password.")
-    public Response authenticate()
+    @UnitOfWork
+    @ApiOperation(value = "Authenticates a user by username and password.")
+    @ApiResponses(
+        value =
+            {
+                @ApiResponse(code = 200, message = "Success.", response = UserClaims.class),
+                @ApiResponse(code = 401, message = "User not authenticated.")
+            }
+    )
+    public Response authenticate(AuthRequest authRequest)
     {
-        String token = createToken("test");
-        NewCookie cookie = new NewCookie("jwt", token, null, null, null, 0, true, true);
-        JWT jwt = new JWT(token);
-        Response response = Response.ok().cookie(cookie).entity(jwt).build();
+        // Check the request against the accounts.
+        Account account =
+            CollectionUtil.first(accountResource.findByExample(new Account().withUsername(authRequest.getUsername())));
+
+        if (account == null)
+        {
+            return UNAUTHORIZED;
+        }
+
+        if (!account.getPassword().equals(authRequest.getPassword()))
+        {
+            return UNAUTHORIZED;
+        }
+
+        // Create the JWT token with claims matching the account, as a cookie.
+        String token = createToken(account);
+        NewCookie cookie = new NewCookie("jwt", token, "/", "localhost", "jwt", 600, false, true);
+
+        // Extract the users permissions into a description of their access claims.
+        UserClaims userClaims = new UserClaims().withUsername(account.getUsername());
+        Set<String> permissions = new LinkedHashSet<>();
+
+        if (account.getRoles() != null)
+        {
+            for (Role role : account.getRoles())
+            {
+                if (role.getPermissions() != null)
+                {
+                    for (String permission : role.getPermissions())
+                    {
+                        permissions.add(permission);
+                    }
+                }
+            }
+        }
+
+        userClaims.setPermissions(permissions);
+
+        Response response = Response.ok().cookie(cookie).entity(userClaims).build();
 
         return response;
     }
 
-    private String createToken(String subject)
+    @GET
+    @UnitOfWorkWithDetach
+    @ApiOperation(value = "Checks if a user token is authenticated.")
+    public boolean isAuthenticated(@CookieParam(value = "jwt") Cookie cookie)
     {
-        return Jwts.builder().setSubject(subject).signWith(SignatureAlgorithm.HS512, TEMP_KEY).compact();
-    }
+        System.out.println("cookie = " + cookie);
 
-    private void checkToken(String token)
-    {
-        assert Jwts.parser().setSigningKey(TEMP_KEY).parseClaimsJws(token).getBody().getSubject().equals("Joe");
-    }
-
-    private class JWT
-    {
-        private String jwt;
-
-        public JWT(String jwt)
+        if (cookie == null)
         {
-            this.jwt = jwt;
+            return false;
         }
 
-        public String getJwt()
-        {
-            return jwt;
-        }
+        String token = cookie.getValue();
+        System.out.println("token = " + token);
 
-        public void setJwt(String jwt)
+        return !StringUtils.nullOrEmpty(token) && checkToken(token);
+    }
+
+    @POST
+    @Path("/logout")
+    @UnitOfWorkWithDetach
+    @ApiOperation(value = "Removes the authentication cookie.")
+    public Response logout()
+    {
+        return Response.ok().header("Set-Cookie",
+            "jwt=deleted;Domain=localhost;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT").build();
+    }
+
+    private String createToken(Account account)
+    {
+        return Jwts.builder().setSubject(account.getUsername()).signWith(SignatureAlgorithm.HS512, TEMP_KEY).compact();
+    }
+
+    private boolean checkToken(String token)
+    {
+        try
         {
-            this.jwt = jwt;
+            Jwts.parser().setSigningKey(TEMP_KEY).parseClaimsJws(token);
+
+            return true;
+        }
+        catch (SignatureException | UnsupportedJwtException | ExpiredJwtException | MalformedJwtException e)
+        {
+            return false;
         }
     }
 }

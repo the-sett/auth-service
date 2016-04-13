@@ -141,7 +141,7 @@ public class Example
         WebResource webResource = new WebResource(serviceFactory);
         environment.jersey().register(webResource);
 
-        AuthResource authResource = new AuthResource();
+        AuthResource authResource = new AuthResource(serviceFactory.getAccountService());
         environment.jersey().register(authResource);
     }
 
