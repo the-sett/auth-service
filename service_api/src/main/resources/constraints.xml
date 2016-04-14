@@ -16,16 +16,6 @@
     </bean>
 
 
-    <bean class="UserClaims" ignore-annotations="true">
-        <field name="username">
-            <valid/>
-        </field>
-        <field name="permissions">
-            <valid/>
-        </field>
-    </bean>
-
-
     <bean class="Account" ignore-annotations="true">
         <field name="username">
             <valid/>

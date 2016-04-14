@@ -37,11 +37,4 @@
         <String name="password"/>
     </ComponentDef>
 
-    <ComponentDef name="userClaims">
-        <String name="username"/>
-        <Set name="permissions">
-            <String name="permission"/>
-        </Set>
-    </ComponentDef>
-
 </CatalogueDefinition>

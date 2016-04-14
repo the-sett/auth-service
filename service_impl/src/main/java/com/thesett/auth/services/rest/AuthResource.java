@@ -19,7 +19,6 @@ import javax.ws.rs.core.Response;
 import com.thesett.auth.model.Account;
 import com.thesett.auth.model.AuthRequest;
 import com.thesett.auth.model.Role;
-import com.thesett.auth.model.UserClaims;
 import com.thesett.auth.services.AccountService;
 import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
@@ -60,9 +59,8 @@ public class AuthResource
     /**
      * Authenticates a user by username and password. If the request is successful a JWT token is returned
      * as an 'httpOnly' cookie. The JWT token will contain the username as subject, and the users roles
-     * as valid claims. The users permissions are extracted into a {@link UserClaims} object, which
-     * is returned in the clear, as it can be useful for a front-end to customize itself based on what
-     * rights a user has.
+     * as valid claims. The token is also returned in the body, as it can be useful for a front-end to customize
+     * itself based on what rights a user has.
      *
      * @param authRequest The username/password authentication request.
      *
@@ -95,12 +93,7 @@ public class AuthResource
             return UNAUTHORIZED;
         }
 
-        // Create the JWT token with claims matching the account, as a cookie.
-        String token = createToken(account);
-        NewCookie cookie = new NewCookie("jwt", token, "/", "localhost", "jwt", 600, false, true);
-
         // Extract the users permissions into a description of their access claims.
-        UserClaims userClaims = new UserClaims().withUsername(account.getUsername());
         Set<String> permissions = new LinkedHashSet<>();
 
         if (account.getRoles() != null)
@@ -117,9 +110,11 @@ public class AuthResource
             }
         }
 
-        userClaims.setPermissions(permissions);
+        // Create the JWT token with claims matching the account, as a cookie.
+        String token = createToken(account, permissions);
+        NewCookie cookie = new NewCookie("jwt", token, "/", "localhost", "jwt", 600, false, true);
 
-        Response response = Response.ok().cookie(cookie).entity("\""+token+"\"").build();
+        Response response = Response.ok().cookie(cookie).entity("\"" + token + "\"").build();
 
         return response;
     }
@@ -152,9 +147,19 @@ public class AuthResource
             "jwt=deleted;Domain=localhost;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT").build();
     }
 
-    private String createToken(Account account)
+    private String createToken(Account account, Set<String> permissions)
     {
-        return Jwts.builder().setSubject(account.getUsername()).signWith(SignatureAlgorithm.HS512, TEMP_KEY).compact();
+        JwtBuilder builder = Jwts.builder();
+        builder.setSubject(account.getUsername());
+
+        for (String permission : permissions)
+        {
+            builder.claim(permission, true);
+        }
+
+        builder.signWith(SignatureAlgorithm.HS512, TEMP_KEY);
+
+        return builder.compact();
     }
 
     private boolean checkToken(String token)
