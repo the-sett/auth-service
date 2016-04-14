@@ -21,10 +21,16 @@ authService.controller('AuthController', ['$scope', '$http', '$filter', '$state'
         $http
             .post('/api/auth/authenticate', vm.user)
             .success(function (data, status, headers, config) {
-                $window.sessionStorage.userClaims = data;
-                vm.message = 'Welcome';
-
                 console.log(data);
+
+                var base64Url = data.split('.')[1];
+                var base64 = base64Url.replace('-', '+').replace('_', '/');
+                var token = JSON.parse($window.atob(base64));
+
+                console.log(token);
+                
+                $window.sessionStorage.userClaims = token;
+                vm.message = 'Welcome';
                 
                 isAuthedServerCheck();
             })

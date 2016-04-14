@@ -75,7 +75,7 @@ public class AuthResource
     @ApiResponses(
         value =
             {
-                @ApiResponse(code = 200, message = "Success.", response = UserClaims.class),
+                @ApiResponse(code = 200, message = "Success.", response = String.class),
                 @ApiResponse(code = 401, message = "User not authenticated.")
             }
     )
@@ -119,7 +119,7 @@ public class AuthResource
 
         userClaims.setPermissions(permissions);
 
-        Response response = Response.ok().cookie(cookie).entity(userClaims).build();
+        Response response = Response.ok().cookie(cookie).entity("\""+token+"\"").build();
 
         return response;
     }
