@@ -42,9 +42,13 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 /**
+ * AuthResource provides authentication end-points, and supplies JWT tokens in response to valid requests.
+ *
  * <pre><p/><table id="crc"><caption>CRC Card</caption>
  * <tr><th> Responsibilities <th> Collaborations
- * <tr><td>
+ * <tr><td> Authenticate Users </td></tr>
+ * <tr><td> Refresh Logins </td></tr>
+ * <tr><td> Logout Users </td></tr>
  * </table></pre>
  *
  * @author Rupert Smith
