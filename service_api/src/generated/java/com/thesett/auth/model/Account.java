@@ -45,7 +45,6 @@ public class Account  implements Entity<Long>, Serializable {
     protected String password;
 
     /** Holds the roles property. */    
-    @ApiModelProperty(hidden = true)        
     protected Set<Role> roles;
 
     /** No-arg constructor for serialization. */

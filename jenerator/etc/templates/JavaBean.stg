@@ -812,8 +812,6 @@ public void setId(Long id) {
 >>
 
 componentFieldAnnotationTypeMap ::= [
-    "Entity":"hidden_field_annotation",
-    "Collection":"hidden_field_annotation"
 ]
 
 hidden_field_annotation(field) ::= <<

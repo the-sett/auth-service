@@ -42,11 +42,9 @@ public class Role  implements Entity<Long>, Serializable {
     protected String name;
 
     /** Holds the accounts property. */    
-    @ApiModelProperty(hidden = true)        
     protected Set<Account> accounts;
 
     /** Holds the permissions property. */    
-    @ApiModelProperty(hidden = true)        
     protected Set<String> permissions;
 
     /** No-arg constructor for serialization. */
