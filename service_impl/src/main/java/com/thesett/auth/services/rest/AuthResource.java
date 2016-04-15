@@ -1,7 +1,11 @@
 /* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 package com.thesett.auth.services.rest;
 
-import java.security.Key;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -25,8 +29,13 @@ import com.thesett.util.jersey.UnitOfWorkWithDetach;
 import com.thesett.util.string.StringUtils;
 
 import io.dropwizard.hibernate.UnitOfWork;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.impl.crypto.MacProvider;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -46,7 +55,32 @@ import io.swagger.annotations.ApiResponses;
 @Consumes(value = MediaType.APPLICATION_JSON)
 public class AuthResource
 {
-    public static final Key TEMP_KEY = MacProvider.generateKey();
+    /** The public key for signature verification. */
+    private static final PublicKey PUB_KEY;
+
+    /** The secret key for signing access tokens. */
+    private static final PrivateKey SECRET_KEY;
+
+    // Initialize the key pair.
+    static
+    {
+        KeyPairGenerator keyGenerator = null;
+
+        try
+        {
+            keyGenerator = KeyPairGenerator.getInstance("RSA");
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new IllegalStateException(e);
+        }
+
+        keyGenerator.initialize(1024);
+
+        KeyPair kp = keyGenerator.genKeyPair();
+        PUB_KEY = kp.getPublic();
+        SECRET_KEY = kp.getPrivate();
+    }
 
     /** Status code to respond to failed logins with. */
     public static final Response UNAUTHORIZED = Response.status(401).build();
@@ -62,6 +96,7 @@ public class AuthResource
     public AuthResource(AccountDAO accountDAO)
     {
         this.accountDAO = accountDAO;
+
     }
 
     /**
@@ -187,7 +222,7 @@ public class AuthResource
             builder.claim(permission, true);
         }
 
-        builder.signWith(SignatureAlgorithm.HS512, TEMP_KEY);
+        builder.signWith(SignatureAlgorithm.RS512, SECRET_KEY);
 
         return builder.compact();
     }
@@ -203,7 +238,7 @@ public class AuthResource
     {
         try
         {
-            Jwts.parser().setSigningKey(TEMP_KEY).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(PUB_KEY).parseClaimsJws(token);
 
             return true;
         }
