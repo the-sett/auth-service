@@ -46,9 +46,6 @@ public class AccountResource implements AccountService {
     /** The DAO to use for persisting account. */
     private final AccountDAO accountDAO;
 
-    /** Defines the name of the entity this service works with. */
-    private static final String ENTITY_NAME = "account";
-
     /**
      * Creates the account RESTful service implementation.
      *
@@ -104,7 +101,7 @@ public class AccountResource implements AccountService {
     @UnitOfWorkWithDetach
     @ApiOperation(value = "Provides a list of all Account items.")
     public List<Account> findAll() {
-        return accountDAO.browse(ENTITY_NAME);
+        return accountDAO.browse();
     }
 
     /** {@inheritDoc} */
@@ -113,7 +110,7 @@ public class AccountResource implements AccountService {
     @UnitOfWorkWithDetach
     @ApiOperation(value = "Provides a list of all Account items that match the fields in the posted example.")        
     public List<Account> findByExample(Account example) {
-        return accountDAO.findByExample(example, ENTITY_NAME);
+        return accountDAO.findByExample(example);
     }
 
     /** {@inheritDoc} */

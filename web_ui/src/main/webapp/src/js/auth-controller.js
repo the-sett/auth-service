@@ -19,7 +19,7 @@ authService.controller('AuthController', ['$scope', '$http', '$filter', '$state'
         console.log("login");
         
         $http
-            .post('/api/auth/authenticate', vm.user)
+            .post('/api/auth/login', vm.user)
             .success(function (data, status, headers, config) {
                 console.log(data);
 
@@ -71,7 +71,7 @@ authService.controller('AuthController', ['$scope', '$http', '$filter', '$state'
 
     function isAuthedServerCheck() {
         $http
-            .get('/api/auth')
+            .get('/api/auth/refresh')
             .success(function (data, status, headers, config) {
                 console.log("Server authed check: " + data);
 

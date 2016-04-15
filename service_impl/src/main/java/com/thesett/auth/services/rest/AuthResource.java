@@ -16,10 +16,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
+import com.thesett.auth.dao.AccountDAO;
 import com.thesett.auth.model.Account;
 import com.thesett.auth.model.AuthRequest;
 import com.thesett.auth.model.Role;
-import com.thesett.auth.services.AccountService;
 import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
 import com.thesett.util.string.StringUtils;
@@ -47,27 +47,36 @@ import io.swagger.annotations.ApiResponses;
 public class AuthResource
 {
     public static final Key TEMP_KEY = MacProvider.generateKey();
+
+    /** Status code to respond to failed logins with. */
     public static final Response UNAUTHORIZED = Response.status(401).build();
 
-    private final AccountService accountResource;
+    /** The account DAO for verifying logins against. */
+    private final AccountDAO accountDAO;
 
-    public AuthResource(AccountService accountResource)
+    /**
+     * Creates a set of authentication end-points, against the accounts accessible through the specified accounts DAO.
+     *
+     * @param accountDAO The accounts DAO, to verify user accounts against.
+     */
+    public AuthResource(AccountDAO accountDAO)
     {
-        this.accountResource = accountResource;
+        this.accountDAO = accountDAO;
     }
 
     /**
-     * Authenticates a user by username and password. If the request is successful a JWT token is returned
-     * as an 'httpOnly' cookie. The JWT token will contain the username as subject, and the users roles
-     * as valid claims. The token is also returned in the body, as it can be useful for a front-end to customize
-     * itself based on what rights a user has.
+     * Authenticates a user by username and password. If the request is successful a JWT token is returned as an
+     * 'httpOnly' cookie. The JWT token will contain the username as subject, and the users roles as valid claims. The
+     * token is also returned in the body, as it can be useful for a front-end to customize itself based on what rights
+     * a user has.
      *
-     * @param authRequest The username/password authentication request.
+     * @param  authRequest The username/password authentication request.
      *
-     * @return
+     * @return A response with the JWT as an httpOnly cookie, and in the body, or the {@link #UNAUTHORIZED} return code
+     *         when the login is not accepted.
      */
     @POST
-    @Path("/authenticate")
+    @Path("/login")
     @UnitOfWork
     @ApiOperation(value = "Authenticates a user by username and password.")
     @ApiResponses(
@@ -77,11 +86,11 @@ public class AuthResource
                 @ApiResponse(code = 401, message = "User not authenticated.")
             }
     )
-    public Response authenticate(AuthRequest authRequest)
+    public Response login(AuthRequest authRequest)
     {
         // Check the request against the accounts.
         Account account =
-            CollectionUtil.first(accountResource.findByExample(new Account().withUsername(authRequest.getUsername())));
+            CollectionUtil.first(accountDAO.findByExample(new Account().withUsername(authRequest.getUsername())));
 
         if (account == null)
         {
@@ -119,7 +128,15 @@ public class AuthResource
         return response;
     }
 
+    /**
+     * Refreshes the callers JWT token, provided they are currently logged in with a valid token.
+     *
+     * @param  cookie The callers JWT token cookie.
+     *
+     * @return <tt>true</tt> iff the caller has a currently valid token.
+     */
     @GET
+    @Path("/refresh")
     @UnitOfWorkWithDetach
     @ApiOperation(value = "Checks if a user token is authenticated.")
     public boolean isAuthenticated(@CookieParam(value = "jwt") Cookie cookie)
@@ -137,6 +154,11 @@ public class AuthResource
         return !StringUtils.nullOrEmpty(token) && checkToken(token);
     }
 
+    /**
+     * Removes the callers JWT token cookie.
+     *
+     * @return An OK response, with a JWT cookie set to expire in the past.
+     */
     @POST
     @Path("/logout")
     @UnitOfWorkWithDetach
@@ -147,6 +169,14 @@ public class AuthResource
             "jwt=deleted;Domain=localhost;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT").build();
     }
 
+    /**
+     * Builds a JWT token with claims matching the users account and permissions.
+     *
+     * @param  account     The user account to extract the subject from.
+     * @param  permissions The users permissions.
+     *
+     * @return A signed JWT token.
+     */
     private String createToken(Account account, Set<String> permissions)
     {
         JwtBuilder builder = Jwts.builder();
@@ -162,6 +192,13 @@ public class AuthResource
         return builder.compact();
     }
 
+    /**
+     * Parses a JWT token in order to confirm that it is valid.
+     *
+     * @param  token The JWT token to parse.
+     *
+     * @return <tt>true</tt> iff the token is valid.
+     */
     private boolean checkToken(String token)
     {
         try

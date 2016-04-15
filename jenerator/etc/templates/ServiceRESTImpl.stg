@@ -86,9 +86,6 @@ public class <name; format="ccu">Resource implements <name; format="ccu">Service
     /** The DAO to use for persisting <name; format="cc">. */
     private final <name; format="ccu">DAO <name; format="cc">DAO;
 
-    /** Defines the name of the entity this service works with. */
-    private static final String ENTITY_NAME = "<name>";
-       
     /**
      * Creates the <name; format="cc"> RESTful service implementation.
      *
@@ -144,7 +141,7 @@ public class <name; format="ccu">Resource implements <name; format="ccu">Service
     @UnitOfWorkWithDetach
     @ApiOperation(value = "Provides a list of all <name; format="ccu"> items.")
     public List\<<name; format="ccu">\> findAll() {
-        return <name; format="cc">DAO.browse(ENTITY_NAME);
+        return <name; format="cc">DAO.browse();
     }
 
     /** {@inheritDoc} */
@@ -153,7 +150,7 @@ public class <name; format="ccu">Resource implements <name; format="ccu">Service
     @UnitOfWorkWithDetach
     @ApiOperation(value = "Provides a list of all <name; format="ccu"> items that match the fields in the posted example.")        
     public List\<<name; format="ccu">\> findByExample(<name; format="ccu"> example) {
-        return <name; format="cc">DAO.findByExample(example, ENTITY_NAME);
+        return <name; format="cc">DAO.findByExample(example);
     }
         
     /** {@inheritDoc} */

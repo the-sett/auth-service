@@ -8,6 +8,8 @@ import javax.validation.ValidatorFactory;
 
 import com.bazaarvoice.dropwizard.assets.ConfiguredAssetsBundle;
 import com.thesett.auth.config.AppConfiguration;
+import com.thesett.auth.dao.AccountDAO;
+import com.thesett.auth.dao.AccountDAOImpl;
 import com.thesett.auth.dao.UserSecurityDAOImpl;
 import com.thesett.auth.services.ServiceFactory;
 import com.thesett.auth.services.rest.AuthResource;
@@ -141,7 +143,8 @@ public class Example
         WebResource webResource = new WebResource(serviceFactory);
         environment.jersey().register(webResource);
 
-        AuthResource authResource = new AuthResource(serviceFactory.getAccountService());
+        AccountDAO accountDAO = new AccountDAOImpl(sessionFactory, validatorFactory);
+        AuthResource authResource = new AuthResource(accountDAO);
         environment.jersey().register(authResource);
     }
 

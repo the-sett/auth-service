@@ -46,9 +46,6 @@ public class RoleResource implements RoleService {
     /** The DAO to use for persisting role. */
     private final RoleDAO roleDAO;
 
-    /** Defines the name of the entity this service works with. */
-    private static final String ENTITY_NAME = "role";
-
     /**
      * Creates the role RESTful service implementation.
      *
@@ -104,7 +101,7 @@ public class RoleResource implements RoleService {
     @UnitOfWorkWithDetach
     @ApiOperation(value = "Provides a list of all Role items.")
     public List<Role> findAll() {
-        return roleDAO.browse(ENTITY_NAME);
+        return roleDAO.browse();
     }
 
     /** {@inheritDoc} */
@@ -113,7 +110,7 @@ public class RoleResource implements RoleService {
     @UnitOfWorkWithDetach
     @ApiOperation(value = "Provides a list of all Role items that match the fields in the posted example.")        
     public List<Role> findByExample(Role example) {
-        return roleDAO.findByExample(example, ENTITY_NAME);
+        return roleDAO.findByExample(example);
     }
 
     /** {@inheritDoc} */
