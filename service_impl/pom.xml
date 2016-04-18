@@ -34,7 +34,12 @@
             <groupId>com.thesett.jenerator.utils</groupId>
             <artifactId>jenerator_util</artifactId>
         </dependency>
-        
+
+        <dependency>
+            <groupId>com.thesett.jenerator.utils</groupId>
+            <artifactId>jenerator_util_shiro_jwt_realm</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.strategicgains</groupId>
             <artifactId>HyperExpress-HAL</artifactId>
@@ -93,11 +98,6 @@
         <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
         </dependency>
         
         <!-- Test dependencies. -->

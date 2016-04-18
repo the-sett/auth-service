@@ -1,6 +1,9 @@
 /* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 package com.thesett.auth.top;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
@@ -16,9 +19,7 @@ import com.thesett.auth.services.rest.AuthResource;
 import com.thesett.jtrial.web.WebResource;
 import com.thesett.util.config.shiro.ShiroBundle;
 import com.thesett.util.config.shiro.ShiroConfiguration;
-import com.thesett.util.dao.HibernateSessionAndDetachProxy;
-import com.thesett.util.security.dao.UserSecurityDAO;
-import com.thesett.util.security.web.ShiroDBRealmSetupListener;
+import com.thesett.util.security.web.ShiroJWTRealmSetupListener;
 import com.thesett.util.servlet.filter.CORSFilter;
 import com.thesett.util.swagger.EnumTypeModelConverter;
 import com.thesett.util.views.handlebars.HandlebarsBundle;
@@ -35,9 +36,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 /**
- * Example is a DropWizard application extension point, allowing the environment to be configured,
- * additional services created, additional databse mappings to be created, and example data to be
- * inserted.
+ * Example is a DropWizard application extension point, allowing the environment to be configured, additional services
+ * created, additional databse mappings to be created, and example data to be inserted.
  *
  * <pre><p/><table id="crc"><caption>CRC Card</caption>
  * <tr><th> Responsibilities </th><th> Collaborations </th>
@@ -126,25 +126,41 @@ public class Example
     public void initAdditionalServices(AppConfiguration appConfiguration, Environment environment,
         SessionFactory sessionFactory, ValidatorFactory validatorFactory, ServiceFactory serviceFactory)
     {
+        // Set up a key pair for creating and checking access tokens.
+        KeyPairGenerator keyGenerator = null;
+
+        try
+        {
+            keyGenerator = KeyPairGenerator.getInstance("RSA");
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new IllegalStateException(e);
+        }
+
+        keyGenerator.initialize(1024);
+
+        KeyPair keyPair = keyGenerator.genKeyPair();
+
         // Add the CORS fitler to allow cross-origin browsing to this API - needed to support
         // javascript clients that are running on a different origin to the one this API is
-        // being served from. Disable this for secuirty, if a javascript client is not being used
+        // being served from. Disable this for security, if a javascript client is not being used
         // or is being served from the same origin.
         environment.servlets().addFilter("cors", new CORSFilter()).addMappingForUrlPatterns(EnumSet.allOf(
                 DispatcherType.class), false, "/*");
 
         // Attach a configurator for Shiro to the Servlet lifecycle.
-        UserSecurityDAO userSecurityDAO =
+        /*UserSecurityDAO userSecurityDAO =
             HibernateSessionAndDetachProxy.proxy(new UserSecurityDAOImpl(sessionFactory), UserSecurityDAO.class,
-                sessionFactory);
+                sessionFactory);*/
 
-        environment.servlets().addServletListeners(new ShiroDBRealmSetupListener(userSecurityDAO));
+        environment.servlets().addServletListeners(new ShiroJWTRealmSetupListener(keyPair.getPublic()));
 
         WebResource webResource = new WebResource(serviceFactory);
         environment.jersey().register(webResource);
 
         AccountDAO accountDAO = new AccountDAOImpl(sessionFactory, validatorFactory);
-        AuthResource authResource = new AuthResource(accountDAO);
+        AuthResource authResource = new AuthResource(accountDAO, keyPair);
         environment.jersey().register(authResource);
     }
 

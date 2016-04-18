@@ -2,10 +2,6 @@
 package com.thesett.auth.services.rest;
 
 import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -26,16 +22,10 @@ import com.thesett.auth.model.AuthRequest;
 import com.thesett.auth.model.Role;
 import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
+import com.thesett.util.security.jwt.JwtUtils;
 import com.thesett.util.string.StringUtils;
 
 import io.dropwizard.hibernate.UnitOfWork;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -53,41 +43,17 @@ import io.swagger.annotations.ApiResponses;
  *
  * @author Rupert Smith
  */
-@Path("/api/auth/")
-@Api(value = "/api/auth/", description = "API for handling authentication requests.")
+@Path("/auth/")
+@Api(value = "/auth/", description = "API for handling authentication requests.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(value = MediaType.APPLICATION_JSON)
 public class AuthResource
 {
-    /** The public key for signature verification. */
-    private static final PublicKey PUB_KEY;
-
-    /** The secret key for signing access tokens. */
-    private static final PrivateKey SECRET_KEY;
-
-    // Initialize the key pair.
-    static
-    {
-        KeyPairGenerator keyGenerator = null;
-
-        try
-        {
-            keyGenerator = KeyPairGenerator.getInstance("RSA");
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            throw new IllegalStateException(e);
-        }
-
-        keyGenerator.initialize(1024);
-
-        KeyPair kp = keyGenerator.genKeyPair();
-        PUB_KEY = kp.getPublic();
-        SECRET_KEY = kp.getPrivate();
-    }
-
     /** Status code to respond to failed logins with. */
     public static final Response UNAUTHORIZED = Response.status(401).build();
+
+    /** An asymmetric crypto kay pair for creating and checking tokens. */
+    private final KeyPair keyPair;
 
     /** The account DAO for verifying logins against. */
     private final AccountDAO accountDAO;
@@ -96,11 +62,13 @@ public class AuthResource
      * Creates a set of authentication end-points, against the accounts accessible through the specified accounts DAO.
      *
      * @param accountDAO The accounts DAO, to verify user accounts against.
+     * @param keyPair    An asymmetric crypto kay pair for creating and checking tokens.
      */
-    public AuthResource(AccountDAO accountDAO)
+    public AuthResource(AccountDAO accountDAO, KeyPair keyPair)
     {
         this.accountDAO = accountDAO;
 
+        this.keyPair = keyPair;
     }
 
     /**
@@ -159,7 +127,7 @@ public class AuthResource
         }
 
         // Create the JWT token with claims matching the account, as a cookie.
-        String token = createToken(account, permissions);
+        String token = JwtUtils.createToken(account.getUsername(), permissions, keyPair.getPrivate());
         NewCookie cookie = new NewCookie("jwt", token, "/", "localhost", "jwt", 600, false, true);
 
         Response response = Response.ok().cookie(cookie).entity("\"" + token + "\"").build();
@@ -190,7 +158,7 @@ public class AuthResource
         String token = cookie.getValue();
         System.out.println("token = " + token);
 
-        return !StringUtils.nullOrEmpty(token) && checkToken(token);
+        return !StringUtils.nullOrEmpty(token) && JwtUtils.checkToken(token, keyPair.getPublic());
     }
 
     /**
@@ -206,49 +174,5 @@ public class AuthResource
     {
         return Response.ok().header("Set-Cookie",
             "jwt=deleted;Domain=localhost;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT").build();
-    }
-
-    /**
-     * Builds a JWT token with claims matching the users account and permissions.
-     *
-     * @param  account     The user account to extract the subject from.
-     * @param  permissions The users permissions.
-     *
-     * @return A signed JWT token.
-     */
-    private String createToken(Account account, Set<String> permissions)
-    {
-        JwtBuilder builder = Jwts.builder();
-        builder.setSubject(account.getUsername());
-
-        for (String permission : permissions)
-        {
-            builder.claim(permission, true);
-        }
-
-        builder.signWith(SignatureAlgorithm.RS512, SECRET_KEY);
-
-        return builder.compact();
-    }
-
-    /**
-     * Parses a JWT token in order to confirm that it is valid.
-     *
-     * @param  token The JWT token to parse.
-     *
-     * @return <tt>true</tt> iff the token is valid.
-     */
-    private boolean checkToken(String token)
-    {
-        try
-        {
-            Jwts.parser().setSigningKey(PUB_KEY).parseClaimsJws(token);
-
-            return true;
-        }
-        catch (SignatureException | UnsupportedJwtException | ExpiredJwtException | MalformedJwtException e)
-        {
-            return false;
-        }
     }
 }

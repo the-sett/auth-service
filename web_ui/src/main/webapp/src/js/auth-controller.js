@@ -19,7 +19,7 @@ authService.controller('AuthController', ['$scope', '$http', '$filter', '$state'
         console.log("login");
         
         $http
-            .post('/api/auth/login', vm.user)
+            .post('/auth/login', vm.user)
             .success(function (data, status, headers, config) {
                 console.log(data);
 
@@ -49,7 +49,7 @@ authService.controller('AuthController', ['$scope', '$http', '$filter', '$state'
         delete $window.sessionStorage.userClaims;
 
         $http
-            .post('/api/auth/logout', vm.user)
+            .post('/auth/logout', vm.user)
             .success(function (data, status, headers, config) {
                 vm.message = 'Logged Out';
 
@@ -71,7 +71,7 @@ authService.controller('AuthController', ['$scope', '$http', '$filter', '$state'
 
     function isAuthedServerCheck() {
         $http
-            .get('/api/auth/refresh')
+            .get('/auth/refresh')
             .success(function (data, status, headers, config) {
                 console.log("Server authed check: " + data);
 
