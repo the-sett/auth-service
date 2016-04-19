@@ -4,16 +4,11 @@ authService.controller('AuthController', ['$scope', '$http', '$filter', '$state'
 
     var vm = $scope;
 
-    vm.register = register;
     vm.login = login;
     vm.logout = logout;
     vm.isAuthed = isAuthed;
 
     vm.user = {};
-
-    function register() {
-        console.log("register");
-    }
 
     function login() {
         console.log("login");
