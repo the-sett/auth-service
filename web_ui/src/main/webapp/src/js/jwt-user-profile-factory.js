@@ -2,7 +2,7 @@
  * JWTUserProfile maintains the current user profile, building it from a JWT token.
  */
 authService.factory('JWTUserProfile', ['$window', '$http', '$q', function($window, $http, $q) {
-    var user;
+    var user = { anonymous: true };
     
     var Profile = {
 
@@ -27,6 +27,7 @@ authService.factory('JWTUserProfile', ['$window', '$http', '$q', function($windo
                 if (!$window.sessionStorage.token) {
                     return { anonymous: true };
                 } else {
+                    //Profile.refresh();
                     Profile.setUserFromToken($window.sessionStorage.token);
                     return user;
                 }
@@ -37,7 +38,7 @@ authService.factory('JWTUserProfile', ['$window', '$http', '$q', function($windo
         
         clearUser : function() {
             delete $window.sessionStorage.token;
-            user = null;
+            user = { anonymous: true };
         },
         
         hasRole : function(role) {
@@ -103,7 +104,6 @@ authService.factory('JWTUserProfile', ['$window', '$http', '$q', function($windo
                     deferred.resolve(Profile.OK);
                 })
                 .error(function (data, status, headers, config) {
-                    Profile.clearUser();
                     deferred.reject(Profile.UNAUTHORIZED);
                 });
 
@@ -119,6 +119,7 @@ authService.factory('JWTUserProfile', ['$window', '$http', '$q', function($windo
             $http
                 .get('/auth/refresh')
                 .success(function (data, status, headers, config) {
+                    Profile.setUserFromToken(data);
                     deferred.resolve(Profile.OK);
                 })
                 .error(function (data, status, headers, config) {

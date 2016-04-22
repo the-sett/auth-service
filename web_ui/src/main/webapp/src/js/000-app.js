@@ -23,7 +23,7 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
             controller: 'AccountListController',
             data: {
                 requireLogin: true,
-                requirePermission: "test"
+                requirePermission: "admin"
             },
             resolve: {
                 dtaRefData: function(RefDataService) {
@@ -36,7 +36,8 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
             templateUrl: '/app/views/account-create.html',
             controller: 'AccountCreateController',
             data: {
-                requireLogin: true
+                requireLogin: true,
+                requirePermission: "admin"
             },
             resolve: {
                 dtaRefData: function(RefDataService) {
@@ -49,7 +50,8 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
             templateUrl: '/app/views/account-edit.html',
             controller: 'AccountEditController',
             data: {
-                requireLogin: true
+                requireLogin: true,
+                requirePermission: "admin"
             },
             resolve: {
                 dtaRefData: function(RefDataService) {
@@ -60,40 +62,4 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
                 }
             }
         });
-}]);
-
-authService.run(['$rootScope', '$state', 'LoginModal', 'JWTUserProfile', function ($rootScope, $state, LoginModal, JWTUserProfile) {
-
-    $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
-        console.log(toState);
-        
-        if (toState.data) {
-            var requireLogin = toState.data.requireLogin;
-
-            if (requireLogin && JWTUserProfile.isAnonymous()) {
-                event.preventDefault();
-
-                LoginModal()
-                    .then(function () {
-                        return $state.go(toState.name, toParams);
-                    })
-                    .catch(function () {
-                        return $state.go('welcome');
-                    });
-            }
-        }
-    });
-}]);
-
-authService.service('LoginModal', ['$modal', function ($modal) {
-
-    return function() {
-        var instance = $modal.open({
-            templateUrl: '/app/views/login.html',
-            controller: 'AuthController',
-            controllerAs: 'AuthController'
-        })
-
-        return instance.result;
-    };
 }]);

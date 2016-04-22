@@ -146,19 +146,26 @@ public class AuthResource
     @Path("/refresh")
     @UnitOfWorkWithDetach
     @ApiOperation(value = "Checks if a user token is authenticated.")
-    public boolean isAuthenticated(@CookieParam(value = "jwt") Cookie cookie)
+    public Response refresh(@CookieParam(value = "jwt") Cookie cookie)
     {
         System.out.println("cookie = " + cookie);
 
         if (cookie == null)
         {
-            return false;
+            return UNAUTHORIZED;
         }
 
         String token = cookie.getValue();
         System.out.println("token = " + token);
 
-        return !StringUtils.nullOrEmpty(token) && JwtUtils.checkToken(token, keyPair.getPublic());
+        if (!StringUtils.nullOrEmpty(token) && JwtUtils.checkToken(token, keyPair.getPublic()))
+        {
+            return Response.ok().entity("\"" + token + "\"").build();
+        }
+        else
+        {
+            return UNAUTHORIZED;
+        }
     }
 
     /**

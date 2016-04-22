@@ -1,6 +1,6 @@
 'use strict';
 
-authService.controller('AuthController', ['$scope', '$http', '$filter', '$state', '$stateParams', '$window', 'JWTUserProfile', function($scope, $http, $filter, $state, $stateParams, $window, JWTUserProfile) {
+authService.controller('LoginModalController', ['$scope', '$http', '$filter', '$state', '$stateParams', '$window', 'JWTUserProfile', function($scope, $http, $filter, $state, $stateParams, $window, JWTUserProfile) {
 
     var vm = $scope;
 
