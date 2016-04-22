@@ -19,9 +19,11 @@ authService.config(function ($httpProvider) {
 
                 var deferred = $q.defer();
 
+                console.log("login caused by 401");
+                
                 LoginModalService()
                     .then(function () {
-                        deferred.resolve( $http(rejection.config) );
+                        deferred.resolve($http(rejection.config));
                     })
                     .catch(function () {
                         $state.go('welcome');

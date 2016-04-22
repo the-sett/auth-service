@@ -11,6 +11,7 @@ authService.run(['$rootScope', '$state', 'LoginModalService', 'JWTUserProfile', 
             var requireLogin = toState.data.requireLogin;
             var requiredPermission = toState.data.requirePermission;
 
+            console.log("requiredLogin = " + requireLogin);
             console.log("requiredPermission = " + requiredPermission);
             
             function checkPermission() {

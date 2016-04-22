@@ -2,7 +2,8 @@
  * JWTUserProfile maintains the current user profile, building it from a JWT token.
  */
 authService.factory('JWTUserProfile', ['$window', '$http', '$q', function($window, $http, $q) {
-    var user = { anonymous: true };
+    var anonymous = { anonymous: true };
+    var user;
     
     var Profile = {
 
@@ -25,12 +26,13 @@ authService.factory('JWTUserProfile', ['$window', '$http', '$q', function($windo
         getUser : function() {
             if (!user) {
                 if (!$window.sessionStorage.token) {
-                    return { anonymous: true };
+                    user = anonymous;
                 } else {
                     //Profile.refresh();
                     Profile.setUserFromToken($window.sessionStorage.token);
-                    return user;
                 }
+                
+                return user;
             } else {
                 return user;
             }
@@ -38,7 +40,7 @@ authService.factory('JWTUserProfile', ['$window', '$http', '$q', function($windo
         
         clearUser : function() {
             delete $window.sessionStorage.token;
-            user = { anonymous: true };
+            user = null;
         },
         
         hasRole : function(role) {
