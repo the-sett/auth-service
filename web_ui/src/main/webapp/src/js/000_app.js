@@ -13,17 +13,17 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
     $urlRouterProvider.otherwise("/");
     
     $stateProvider.
-        state('login', {
-            url: '/login',
-            templateUrl: '/app/views/login.html',
-            controller: 'AuthController',
+        state('welcome', {
+            url: '/welcome',
+            templateUrl: '/app/views/welcome.html'
         }).
         state('listAccount', {
             url: '/account',
             templateUrl: '/app/views/account-list.html',
             controller: 'AccountListController',
             data: {
-                requireLogin: true
+                requireLogin: true,
+                requirePermission: "test"
             },
             resolve: {
                 dtaRefData: function(RefDataService) {
@@ -62,34 +62,30 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
         });
 }]);
 
-authService.run(['$rootScope', '$state', 'loginModal', function ($rootScope, $state, loginModal) {
+authService.run(['$rootScope', '$state', 'LoginModal', 'JWTUserProfile', function ($rootScope, $state, LoginModal, JWTUserProfile) {
 
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
+        console.log(toState);
+        
         if (toState.data) {
             var requireLogin = toState.data.requireLogin;
 
-            if (requireLogin && typeof $rootScope.currentUser === 'undefined') {
+            if (requireLogin && JWTUserProfile.isAnonymous()) {
                 event.preventDefault();
 
-                loginModal()
+                LoginModal()
                     .then(function () {
                         return $state.go(toState.name, toParams);
                     })
                     .catch(function () {
-                        return $state.go('login');
+                        return $state.go('welcome');
                     });
             }
         }
     });
 }]);
 
-
-authService.service('loginModal', ['$modal', '$rootScope', function ($modal, $rootScope) {
-
-    function assignCurrentUser (user) {
-        $rootScope.currentUser = user;
-        return user;
-    }
+authService.service('LoginModal', ['$modal', function ($modal) {
 
     return function() {
         var instance = $modal.open({
@@ -98,18 +94,6 @@ authService.service('loginModal', ['$modal', '$rootScope', function ($modal, $ro
             controllerAs: 'AuthController'
         })
 
-        return instance.result.then(assignCurrentUser);
+        return instance.result;
     };
-
 }]);
-
-/*
-authService.controller('LoginModalCtrl', ['$scope', function ($scope) {
-
-    this.cancel = $scope.$dismiss;
-
-    this.submit = function (email, password) {
-    };
-
-}]);
-*/
