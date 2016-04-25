@@ -2,11 +2,13 @@ authService.config(function ($httpProvider) {
 
     $httpProvider.interceptors.push(function ($timeout, $q, $injector) {
         var LoginModalService, $http, $state;
+        var JWTUserProfile;
 
         // this trick must be done so that we don't receive
         // `Uncaught Error: [$injector:cdep] Circular dependency found`
         $timeout(function () {
             LoginModalService = $injector.get('LoginModalService');
+            JWTUserProfile = $injector.get('JWTUserProfile');
             $http = $injector.get('$http');
             $state = $injector.get('$state');
         });
@@ -19,6 +21,8 @@ authService.config(function ($httpProvider) {
                 if (rejection.status !== 401) {
                     return rejection;
                 }
+
+                JWTUserProfile.clearUser();
 
                 var deferred = $q.defer();
 
