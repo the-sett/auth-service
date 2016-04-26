@@ -101,7 +101,7 @@ authService.factory('JWTUserProfile', ['$window', '$http', '$q', function($windo
             var deferred = $q.defer();
             
             $http
-                .post('/auth/logout', vm.user)
+                .post('/auth/logout')
                 .success(function (data, status, headers, config) {
                     deferred.resolve(Profile.OK);
                 })

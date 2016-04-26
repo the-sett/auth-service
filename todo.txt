@@ -1,0 +1,2 @@
+Add timeout to JWT tokens.
+Add auto-refresh when nearing timeout to the app login logic.
