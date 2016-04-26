@@ -37,15 +37,6 @@ module.exports = function (grunt) {
             }
         },
 
-        'compass': {
-			dist: {
-				options: {
-					sassDir: 'src/styles',
-					cssDir: 'app/styles'
-				}
-			}
-		},
-
         'copy': {
             'dist': {
                 files: [
@@ -146,6 +137,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('dev', [ 'bower', 'connect:server', 'watch:dev' ]);
     grunt.registerTask('minified', [ 'bower', 'connect:server', 'watch:min' ]);
-    grunt.registerTask('build', [ 'bower', 'html2js', 'compass', 'copy', 'concat', 'responsive_images' ]);
+    grunt.registerTask('build', [ 'bower', 'html2js', 'copy', 'concat', 'responsive_images' ]);
     grunt.registerTask('package', [ 'build', 'uglify', 'compress' ]);
 };
