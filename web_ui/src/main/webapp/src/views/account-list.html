@@ -1,11 +1,11 @@
-<div>
+<div class="container-fluid">
   <header class="publishing-header">
-    <h1 class="publishing-header__title">Users</h1>
+    <h3 class="publishing-header__title">Users</h3>
     <span class="publishing-header__state badge">{{itemCount}} <ng-pluralize count="itemCount" when="{'1': 'item', 'other': 'items'}"></ng-pluralize> shown</span>
   </header>
   
   <div ng-show="!itemCount > 0" class="col-xs-12 col-sm-12">
-    <h3>There are no user accounts in the database.</h3>
+    <h4>There are no user accounts in the database.</h4>
   </div>
   
   <table ng-show="$data" ng-table="tableParams" class="table table-striped panel panel-default" show-filter="true">
@@ -24,13 +24,13 @@
 </div>
 
 <nav class="button-bar clearfix">
-  <div class="container">
+    <div class="container-fluid">    
     <div class="row">
-      <div class="col-xs-11">
+      <div class="col-xs-12">
         <div class="btn-group dropup pull-right">
           <button type="button" class="btn btn-primary" ui-sref="newAccount">Create Account</button>
         </div>
       </div>
     </div>
-  </div>
+    </div>
 </nav>
