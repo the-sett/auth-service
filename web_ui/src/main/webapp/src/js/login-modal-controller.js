@@ -5,6 +5,7 @@ authService.controller('LoginModalController', ['$scope', '$http', '$filter', '$
     var vm = $scope;
 
     vm.login = login;
+    vm.dismiss = dismiss;
 
     vm.user = {};
 
@@ -15,5 +16,9 @@ authService.controller('LoginModalController', ['$scope', '$http', '$filter', '$
         }, function(reason) {
             vm.message = 'Invalid user or password';
         });
+    };
+
+    function dismiss() { 
+        $scope.$dismiss();
     }
 }]);
