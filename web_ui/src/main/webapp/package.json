@@ -1,5 +1,5 @@
 {
-  "version": "1.0-SNAPSHOT",
+  "version": "1.0.0-SNAPSHOT",
   "name": "auth_web_ui",
   "description": "UI for authentication server.",
   "devDependencies": {
