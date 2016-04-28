@@ -54,29 +54,36 @@ import org.hibernate.cfg.Configuration;
  * <tr><td> Create some example data. </td></tr>
  * </table></pre>
  */
-public class Example {
+public class Example
+{
     /** The Shiro configuration bundle. */
     private ShiroBundle<AppConfiguration> shiroBundle =
-        new ShiroBundle<AppConfiguration>() {
+        new ShiroBundle<AppConfiguration>()
+        {
             /** {@inheritDoc} */
-            public ShiroConfiguration getShiroConfiguration(AppConfiguration configuration) {
+            public ShiroConfiguration getShiroConfiguration(AppConfiguration configuration)
+            {
                 return configuration.getShiroConfiguration();
             }
         };
 
     /** The Swagger configuration bundle. */
     private SwaggerBundle<AppConfiguration> swaggerBundle =
-        new SwaggerBundle<AppConfiguration>() {
-            protected SwaggerBundleConfiguration getSwaggerBundleConfiguration(AppConfiguration configuration) {
+        new SwaggerBundle<AppConfiguration>()
+        {
+            protected SwaggerBundleConfiguration getSwaggerBundleConfiguration(AppConfiguration configuration)
+            {
                 return configuration.swaggerBundleConfiguration;
             }
         };
 
     /** Configure the locations of the handlebars templates. */
     private final HandlebarsBundle handlebarsBundle =
-        new HandlebarsBundle() {
+        new HandlebarsBundle()
+        {
             /** {@inheritDoc} */
-            protected void configureHandlebars(HandlebarsBundleConfig configuration) {
+            protected void configureHandlebars(HandlebarsBundleConfig configuration)
+            {
                 addTemplatePath("/META-INF/resources/webjars/thesett-laf/views/layouts");
                 addTemplatePath("/META-INF/resources/webjars/thesett-laf/views/partials");
                 addTemplatePath("/META-INF/resources/webjars/thesett-laf/views");
@@ -92,7 +99,8 @@ public class Example {
      *
      * @param bootstrap The DropWizard bootstrap configuration.
      */
-    public void bootstrap(Bootstrap<AppConfiguration> bootstrap) {
+    public void bootstrap(Bootstrap<AppConfiguration> bootstrap)
+    {
         bootstrap.addBundle(shiroBundle);
 
         bootstrap.addBundle(swaggerBundle);
@@ -109,7 +117,8 @@ public class Example {
      *
      * @param serviceFactory The service factory.
      */
-    public void example(ServiceFactory serviceFactory) {
+    public void example(ServiceFactory serviceFactory)
+    {
         createRootAccount(serviceFactory);
     }
 
@@ -123,13 +132,17 @@ public class Example {
      * @param serviceFactory   The service factory.
      */
     public void initAdditionalServices(AppConfiguration appConfiguration, Environment environment,
-        SessionFactory sessionFactory, ValidatorFactory validatorFactory, ServiceFactory serviceFactory) {
+        SessionFactory sessionFactory, ValidatorFactory validatorFactory, ServiceFactory serviceFactory)
+    {
         // Set up a key pair for creating and checking access tokens.
         KeyPairGenerator keyGenerator = null;
 
-        try {
+        try
+        {
             keyGenerator = KeyPairGenerator.getInstance("RSA");
-        }catch (NoSuchAlgorithmException e) {
+        }
+        catch (NoSuchAlgorithmException e)
+        {
             throw new IllegalStateException(e);
         }
 
@@ -164,7 +177,8 @@ public class Example {
      *
      * @param configuration The Hibernate configuration.
      */
-    public void addHibernateClasses(Configuration configuration) {
+    public void addHibernateClasses(Configuration configuration)
+    {
         configuration.addAnnotatedClass(UserSecurityDAOImpl.class);
     }
 
@@ -173,14 +187,18 @@ public class Example {
      *
      * @param serviceFactory The service factory.
      */
-    private void createRootAccount(ServiceFactory serviceFactory) {
+    private void createRootAccount(ServiceFactory serviceFactory)
+    {
         AccountService accountService = serviceFactory.getAccountService();
         RoleService roleService = serviceFactory.getRoleService();
 
-        if (accountService.findAll().isEmpty()) {
-            try {
+        if (accountService.findAll().isEmpty())
+        {
+            try
+            {
                 Set<String> permissions = new HashSet<>();
                 permissions.add("admin");
+
                 Role adminRole = new Role().withName("admin").withPermissions(permissions);
                 roleService.create(adminRole);
 
@@ -188,7 +206,9 @@ public class Example {
                 roles.add(adminRole);
 
                 accountService.create(new Account().withUsername("admin").withPassword("admin").withRoles(roles));
-            }catch (EntityException e) {
+            }
+            catch (EntityException e)
+            {
                 throw new IllegalStateException(e);
             }
         }
