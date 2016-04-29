@@ -4,7 +4,7 @@
             <a id="thesett-logo" href="http://"></a>
         </div>
         <div class="col-xs-8" ng-switch on="state.current.data.menu">
-            <ul menus="menuItems" tag="main" ng-switch-when="main">
+            <ul class="nav navbar-nav" menus="menuItems" tag="main" ng-switch-when="main">
                 <li ng-repeat="menu in menuItems"><a ui-sref="{{menu.state.name}}">{{menu.name}}</a></li>
             </ul>
         </div>
