@@ -20,7 +20,7 @@ authService.controller('AccountEditController', ['$scope', '$http', '$filter', '
         account.err = {};
         account.$update().then(function(res) {
             toastr.success('Saved successfully', 'Success');
-            $state.go('root');            
+            $state.go('listAccount');
         }, function(err) {
             account.err = err.statusText;
             toastr.error('Did not save', 'Failure');
@@ -33,7 +33,7 @@ authService.controller('AccountEditController', ['$scope', '$http', '$filter', '
         account.err = {};
         account.$del().then(function(res) {
             toastr.success('Deleted successfully', 'Success');
-            $state.go('root');            
+            $state.go('listAccount');
         }, function(err) {
             account.err = err.statusText;
             toastr.error('Did not delete', 'Failure');

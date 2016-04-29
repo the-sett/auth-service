@@ -24,7 +24,7 @@ authService.controller('AccountCreateController', ['$scope', '$http', '$filter',
 
         need.$save().then(function(res) {
             toastr.success('Saved successfully', 'Success');
-            $state.go('root');
+            $state.go('listAccount');
         }, function(err) {
             account.err = err.statusText;
             toastr.error('Did not save', 'Failure');
