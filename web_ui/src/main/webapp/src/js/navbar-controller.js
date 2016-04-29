@@ -6,7 +6,8 @@ authService.controller('NavBarController', ['$scope', '$http', '$filter', '$stat
 
     vm.logout = logout;
     vm.isAuthenticated = JWTUserProfile.isAuthenticated;
-
+    vm.state = $state;
+    
     vm.user = {};
 
     function logout() {

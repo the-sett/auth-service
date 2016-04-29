@@ -6,7 +6,8 @@ var authService = angular.module('authService', [
     'ui.router',
     'ui.bootstrap',
     'toastr',
-    'authService'
+    'authService',
+    'ui.router.menus'
 ]);
 
 authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
@@ -15,7 +16,10 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
     $stateProvider.
         state('welcome', {
             url: '/welcome',
-            templateUrl: '/app/views/welcome.html'
+            templateUrl: '/app/views/welcome.html',
+            data: {
+                menu: 'none'
+            }
         }).
         state('listAccount', {
             url: '/account',
@@ -23,7 +27,12 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
             controller: 'AccountListController',
             data: {
                 requireLogin: true,
-                requirePermission: "admin"
+                requirePermission: "admin",
+                menu: 'main'
+            },
+            menu: {
+                name: 'Accounts',
+                tag: 'main'
             },
             resolve: {
                 dtaRefData: function(RefDataService) {
@@ -37,7 +46,8 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
             controller: 'AccountCreateController',
             data: {
                 requireLogin: true,
-                requirePermission: "admin"
+                requirePermission: "admin",
+                menu: 'main'
             },
             resolve: {
                 dtaRefData: function(RefDataService) {
@@ -51,7 +61,8 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
             controller: 'AccountEditController',
             data: {
                 requireLogin: true,
-                requirePermission: "admin"
+                requirePermission: "admin",
+                menu: 'main'
             },
             resolve: {
                 dtaRefData: function(RefDataService) {
@@ -60,6 +71,34 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
                 dtaAccount: function(AccountService, $stateParams) {
                     return AccountService.get({ id: $stateParams.id }).$promise;
                 }
+            }
+        }).
+        state('listRole', {
+            url: '/role',
+            templateUrl: '/app/views/account-list.html',
+            controller: 'AccountListController',
+            data: {
+                requireLogin: true,
+                requirePermission: "admin",
+                menu: 'main'
+            },
+            menu: {
+                name: 'Roles',
+                tag: 'main'
+            }
+        }).
+        state('listPermission', {
+            url: '/permission',
+            templateUrl: '/app/views/account-list.html',
+            controller: 'AccountListController',
+            data: {
+                requireLogin: true,
+                requirePermission: "admin",
+                menu: 'main'
+            },
+            menu: {
+                name: 'Permissions',
+                tag: 'main'
             }
         });
 }]);
