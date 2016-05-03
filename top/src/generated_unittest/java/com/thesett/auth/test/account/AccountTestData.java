@@ -13,8 +13,8 @@ public class AccountTestData extends TestDataSupplierLongKey<Account>
 {
     public AccountTestData()
     {
-        initialValue = new Account();
-        updatedValue = new Account();
+        initialValue = new Account().withUsername("user1");
+        updatedValue = new Account().withUsername("user2");
     }
 
     /** {@inheritDoc} */

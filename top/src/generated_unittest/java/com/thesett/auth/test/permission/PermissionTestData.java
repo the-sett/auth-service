@@ -13,8 +13,8 @@ public class PermissionTestData extends TestDataSupplierLongKey<Permission>
 {
     public PermissionTestData()
     {
-        initialValue = new Permission();
-        updatedValue = new Permission();
+        initialValue = new Permission().withName("permission1");
+        updatedValue = new Permission().withName("permission2");
     }
 
     /** {@inheritDoc} */

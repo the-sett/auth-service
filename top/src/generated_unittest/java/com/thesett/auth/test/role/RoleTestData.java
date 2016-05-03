@@ -13,8 +13,8 @@ public class RoleTestData extends TestDataSupplierLongKey<Role>
 {
     public RoleTestData()
     {
-        initialValue = new Role();
-        updatedValue = new Role();
+        initialValue = new Role().withName("role1");
+        updatedValue = new Role().withName("role2");
     }
 
     /** {@inheritDoc} */
