@@ -126,3 +126,4 @@ function createRestService(name) {
 
 createRestService('Account');
 createRestService('Role');
+createRestService('Permission');

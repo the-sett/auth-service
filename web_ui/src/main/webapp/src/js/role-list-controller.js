@@ -1,6 +1,6 @@
 'use strict';
 
-authService.controller('AccountListController', ['$scope', 'ngTableParams', 'AccountService', function($scope, ngTableParams, AccountService) {
+authService.controller('RoleListController', ['$scope', 'ngTableParams', 'RoleService', function($scope, ngTableParams, RoleService) {
 
     var vm = $scope;
 
@@ -15,7 +15,7 @@ authService.controller('AccountListController', ['$scope', 'ngTableParams', 'Acc
         {
             total: 0,
             getData: function($defer, params) {
-                AccountService.findAllTable($defer, params, params.filter(), this);
+                RoleService.findAllTable($defer, params, params.filter(), this);
             },
             setCount: function(count) {
                 vm.itemCount = count;

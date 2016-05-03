@@ -75,8 +75,8 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
         }).
         state('listRole', {
             url: '/role',
-            templateUrl: '/app/views/account-list.html',
-            controller: 'AccountListController',
+            templateUrl: '/app/views/role-list.html',
+            controller: 'RoleListController',
             data: {
                 requireLogin: true,
                 requirePermission: "admin",
@@ -89,8 +89,8 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
         }).
         state('listPermission', {
             url: '/permission',
-            templateUrl: '/app/views/account-list.html',
-            controller: 'AccountListController',
+            templateUrl: '/app/views/permission-list.html',
+            controller: 'PermissionListController',
             data: {
                 requireLogin: true,
                 requirePermission: "admin",
