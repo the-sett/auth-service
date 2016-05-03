@@ -42,6 +42,10 @@ import com.thesett.auth.dao.RoleDAOImpl;
 import com.thesett.auth.dao.RoleDAO;
 import com.thesett.auth.services.RoleService;
 import com.thesett.auth.services.rest.RoleResource;
+import com.thesett.auth.dao.PermissionDAOImpl;
+import com.thesett.auth.dao.PermissionDAO;
+import com.thesett.auth.services.PermissionService;
+import com.thesett.auth.services.rest.PermissionResource;
 
 /**
  * AccountsTestSetupController defines some static helper methods for setting up tests. This allows these set up methods
@@ -104,6 +108,7 @@ public class AppTestSetupController implements TestSetupController<AppConfigurat
         config.addResource("auth-model.hbm.xml");    
         config.addAnnotatedClass(AccountDAOImpl.class);    
         config.addAnnotatedClass(RoleDAOImpl.class);    
+        config.addAnnotatedClass(PermissionDAOImpl.class);    
 
         ServiceRegistry serviceRegistry =
             new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
@@ -186,9 +191,11 @@ public class AppTestSetupController implements TestSetupController<AppConfigurat
 
         AccountDAO accountDAO = new AccountDAOImpl(sessionFactory, validatorFactory);
         RoleDAO roleDAO = new RoleDAOImpl(sessionFactory, validatorFactory);
+        PermissionDAO permissionDAO = new PermissionDAOImpl(sessionFactory, validatorFactory);
 
         daoFactory.addDAO(AccountDAO.class, accountDAO);
         daoFactory.addDAO(RoleDAO.class, roleDAO);
+        daoFactory.addDAO(PermissionDAO.class, permissionDAO);
 
         return daoFactory;
     }
@@ -202,12 +209,15 @@ public class AppTestSetupController implements TestSetupController<AppConfigurat
 
         AccountDAO accountDAO = new AccountDAOImpl(sessionFactory, validatorFactory);
         RoleDAO roleDAO = new RoleDAOImpl(sessionFactory, validatorFactory);
+        PermissionDAO permissionDAO = new PermissionDAOImpl(sessionFactory, validatorFactory);
     
         AccountResource accountResource = new AccountResource(accountDAO);
         RoleResource roleResource = new RoleResource(roleDAO);
+        PermissionResource permissionResource = new PermissionResource(permissionDAO);
 
         serviceFactory.addService(AccountService.class, accountResource);
         serviceFactory.addService(RoleService.class, roleResource);
+        serviceFactory.addService(PermissionService.class, permissionResource);
 
         return serviceFactory;
     }
@@ -218,14 +228,17 @@ public class AppTestSetupController implements TestSetupController<AppConfigurat
     {
         AccountDAO accountDAO = new AccountDAOImpl(sessionFactory, validatorFactory);
         RoleDAO roleDAO = new RoleDAOImpl(sessionFactory, validatorFactory);
+        PermissionDAO permissionDAO = new PermissionDAOImpl(sessionFactory, validatorFactory);
     
         AccountResource accountResource = new AccountResource(accountDAO);
         RoleResource roleResource = new RoleResource(roleDAO);
+        PermissionResource permissionResource = new PermissionResource(permissionDAO);
 
         ServiceFactory serviceFactory =
             new LocalServiceFactory(sessionFactory,
         accountResource, 
-        roleResource
+        roleResource, 
+        permissionResource
         );
 
         return serviceFactory;

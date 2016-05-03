@@ -36,12 +36,21 @@
 
 
 
-    <set name="permissions" table="role_permissions" lazy="false">
-      <key column="permissions_id"/>
-      <element column="permissions" type="java.lang.String"/> 
+    <!--REL: permissions -> Permission: Many-Many role_permission owner uni-->
+    <set name="permissions" table="role_permission" cascade="all" lazy="false">
+      <key column="role_id"/>
+      <many-to-many column="permission_id" class="Permission"/>
     </set>
 
 
+
+  </class>
+
+  <class name="Permission" table="permission"  lazy="true">
+    <id name="id" column="id" type="long">
+      <generator class="native"/>
+    </id>
+    <property name="name" column="name" type="text"/>
   </class>
 
   <class name="com.thesett.catalogue.model.ExternalId" table="external_id">

@@ -28,8 +28,14 @@
             <Component name="account" type="account"/>
         </Set>
         <Set name="permissions">
-            <String name="permission"/>
+            <Component name="permission" type="permission"/>
         </Set>
+    </EntityDef>
+
+    <EntityDef name="permission">
+        <Unique natural_key="true">
+            <String name="name"/>
+        </Unique>        
     </EntityDef>
 
     <ComponentDef name="authRequest">

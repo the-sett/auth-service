@@ -9,6 +9,8 @@ import com.thesett.auth.services.AccountService;
 
 import com.thesett.auth.services.RoleService;
 
+import com.thesett.auth.services.PermissionService;
+
 
 public class LocalServiceFactory implements ServiceFactory {
 
@@ -16,11 +18,15 @@ public class LocalServiceFactory implements ServiceFactory {
 
     private final RoleService roleService;
 
+    private final PermissionService permissionService;
 
-    public LocalServiceFactory(SessionFactory sessionFactory, AccountService accountService, RoleService roleService) {
+
+    public LocalServiceFactory(SessionFactory sessionFactory, AccountService accountService, RoleService roleService, PermissionService permissionService) {
         this.accountService = proxy(accountService, AccountService.class, sessionFactory);
 
         this.roleService = proxy(roleService, RoleService.class, sessionFactory);
+
+        this.permissionService = proxy(permissionService, PermissionService.class, sessionFactory);
 
     }
 
@@ -32,6 +38,11 @@ public class LocalServiceFactory implements ServiceFactory {
     /** {@inheritDoc} */
     public RoleService getRoleService() {
         return roleService;
+    }
+
+    /** {@inheritDoc} */
+    public PermissionService getPermissionService() {
+        return permissionService;
     }
 
 }

@@ -3,8 +3,6 @@ package com.thesett.auth.model;
 
 import java.io.Serializable;
 
-import java.util.Set;
-
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -33,7 +31,7 @@ import com.thesett.util.equality.EqualityHelper;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
-public class Role  implements Entity<Long>, Serializable {
+public class Permission  implements Entity<Long>, Serializable {
 
     /** Holds the database surrogate id. */
     private Long id;
@@ -41,14 +39,8 @@ public class Role  implements Entity<Long>, Serializable {
     /** Holds the name property. */    
     protected String name;
 
-    /** Holds the accounts property. */    
-    protected Set<Account> accounts;
-
-    /** Holds the permissions property. */    
-    protected Set<Permission> permissions;
-
     /** No-arg constructor for serialization. */
-    public Role() {
+    public Permission() {
         // No-arg constructor for serialization.
     }
 
@@ -80,32 +72,8 @@ public class Role  implements Entity<Long>, Serializable {
      *
      * @return 'this' (so that fluents can be chained methods).
      */
-    public Role withName(String name) {
+    public Permission withName(String name) {
         this.name = name;
-        return this;
-    }
-
-    /**
-     * Accepts a new value for the accounts property.
-     *
-     * @param accounts The accounts property.
-     *
-     * @return 'this' (so that fluents can be chained methods).
-     */
-    public Role withAccounts(Set<Account> accounts) {
-        this.accounts = accounts;
-        return this;
-    }
-
-    /**
-     * Accepts a new value for the permissions property.
-     *
-     * @param permissions The permissions property.
-     *
-     * @return 'this' (so that fluents can be chained methods).
-     */
-    public Role withPermissions(Set<Permission> permissions) {
-        this.permissions = permissions;
         return this;
     }
     /**
@@ -116,24 +84,6 @@ public class Role  implements Entity<Long>, Serializable {
     public String getName() {
         return name;
     }
-
-    /**
-     * Provides the accounts property.
-     *
-     * @return The accounts property.
-     */
-    public Set<Account> getAccounts() {
-        return accounts;
-    }
-
-    /**
-     * Provides the permissions property.
-     *
-     * @return The permissions property.
-     */
-    public Set<Permission> getPermissions() {
-        return permissions;
-    }
     /**
      * Accepts a new value for the name property.
      *
@@ -141,24 +91,6 @@ public class Role  implements Entity<Long>, Serializable {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Accepts a new value for the accounts property.
-     *
-     * @param accounts The accounts property.
-     */
-    public void setAccounts(Set<Account> accounts) {
-        this.accounts = accounts;
-    }
-
-    /**
-     * Accepts a new value for the permissions property.
-     *
-     * @param permissions The permissions property.
-     */
-    public void setPermissions(Set<Permission> permissions) {
-        this.permissions = permissions;
     }
 
     /**
@@ -179,8 +111,8 @@ public class Role  implements Entity<Long>, Serializable {
             return false;
         }
 
-        if (o instanceof Role) {
-            Role comp = (Role)o;
+        if (o instanceof Permission) {
+            Permission comp = (Permission)o;
 
             return EqualityHelper.nullSafeEquals(name, comp.name);
         } else {

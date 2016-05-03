@@ -42,4 +42,11 @@
     </bean>
 
 
+    <bean class="Permission" ignore-annotations="true">
+        <field name="name">
+            <valid/>
+        </field>
+    </bean>
+
+
 </constraint-mappings>

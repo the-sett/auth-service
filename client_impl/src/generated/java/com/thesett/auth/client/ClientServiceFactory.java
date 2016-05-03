@@ -22,6 +22,8 @@ import com.thesett.auth.services.AccountClient;
 import com.thesett.auth.services.AccountService;
 import com.thesett.auth.services.RoleClient;
 import com.thesett.auth.services.RoleService;
+import com.thesett.auth.services.PermissionClient;
+import com.thesett.auth.services.PermissionService;
 
 /**
  * RestJSONClientFactory implements a factory that can supply instances of the service interfaces, as web
@@ -84,6 +86,13 @@ public class ClientServiceFactory implements ServiceFactory {
     /** {@inheritDoc} */
     public RoleService getRoleService() {
         Class<RoleClient> resourceInterface = RoleClient.class;
+
+        return createClientProxy(resourceInterface);
+    }    
+
+    /** {@inheritDoc} */
+    public PermissionService getPermissionService() {
+        Class<PermissionClient> resourceInterface = PermissionClient.class;
 
         return createClientProxy(resourceInterface);
     }    

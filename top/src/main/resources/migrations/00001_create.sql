@@ -18,15 +18,22 @@
         primary key (id)
     );
 
+    create table permission (
+        id int8 not null,
+        name text,
+        primary key (id)
+    );
+
     create table role (
         id int8 not null,
         name text,
         primary key (id)
     );
 
-    create table role_permissions (
-        permissions_id int8 not null,
-        permissions varchar(255)
+    create table role_permission (
+        role_id int8 not null,
+        permission_id int8 not null,
+        primary key (role_id, permission_id)
     );
 
     alter table account_role 
@@ -39,9 +46,14 @@
         foreign key (account_id) 
         references account;
 
-    alter table role_permissions 
-        add constraint FK_a4fq53k4nkqxrx269khks3764 
-        foreign key (permissions_id) 
+    alter table role_permission 
+        add constraint FK_fn4pldu982p9u158rpk6nho5k 
+        foreign key (permission_id) 
+        references permission;
+
+    alter table role_permission 
+        add constraint FK_j89g87bvih4d6jbxjcssrybks 
+        foreign key (role_id) 
         references role;
 
     create sequence hibernate_sequence;

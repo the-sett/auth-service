@@ -43,6 +43,9 @@ import com.thesett.auth.services.rest.AccountResource;
 import com.thesett.auth.dao.RoleDAO;
 import com.thesett.auth.dao.RoleDAOImpl;
 import com.thesett.auth.services.rest.RoleResource;    
+import com.thesett.auth.dao.PermissionDAO;
+import com.thesett.auth.dao.PermissionDAOImpl;
+import com.thesett.auth.services.rest.PermissionResource;    
 
 public class Main extends Application<AppConfiguration> {
     /** Latch used to ensure hyper express is only initialized once. */
@@ -83,6 +86,7 @@ public class Main extends Application<AppConfiguration> {
             protected void configure(Configuration configuration) {
                 configuration.addAnnotatedClass(AccountDAOImpl.class);
                 configuration.addAnnotatedClass(RoleDAOImpl.class);
+                configuration.addAnnotatedClass(PermissionDAOImpl.class);
                 extensionPoint.addHibernateClasses(configuration);
             }
         };
@@ -180,23 +184,27 @@ public class Main extends Application<AppConfiguration> {
         // Set up the DAOs on top of Hibernate and the validator.
         AccountDAO accountDAO = new AccountDAOImpl(sessionFactory, validatorFactory);
         RoleDAO roleDAO = new RoleDAOImpl(sessionFactory, validatorFactory);
+        PermissionDAO permissionDAO = new PermissionDAOImpl(sessionFactory, validatorFactory);
 
         // Build all of the services on top of the DAOs.
         ReferenceDataResource referenceDataResource = new ReferenceDataResource(refDataSetupBundle.getRefdataTypes());
 
         AccountResource accountResource = new AccountResource(accountDAO);
         RoleResource roleResource = new RoleResource(roleDAO);
+        PermissionResource permissionResource = new PermissionResource(permissionDAO);
 
         ServiceFactory serviceFactory =
             new LocalServiceFactory(sessionFactory,
             accountResource, 
-            roleResource
+            roleResource, 
+            permissionResource
         );
 
         // Register the REST APIs.
         environment.jersey().register(referenceDataResource);
         environment.jersey().register(accountResource);
         environment.jersey().register(roleResource);
+        environment.jersey().register(permissionResource);
 
         environment.jersey().setUrlPattern("/*");
 

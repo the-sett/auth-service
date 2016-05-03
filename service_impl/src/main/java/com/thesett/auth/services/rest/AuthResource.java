@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 import com.thesett.auth.dao.AccountDAO;
 import com.thesett.auth.model.Account;
 import com.thesett.auth.model.AuthRequest;
+import com.thesett.auth.model.Permission;
 import com.thesett.auth.model.Role;
 import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
@@ -118,9 +119,9 @@ public class AuthResource
             {
                 if (role.getPermissions() != null)
                 {
-                    for (String permission : role.getPermissions())
+                    for (Permission permission : role.getPermissions())
                     {
-                        permissions.add(permission);
+                        permissions.add(permission.getName());
                     }
                 }
             }

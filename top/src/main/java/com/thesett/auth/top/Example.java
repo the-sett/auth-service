@@ -17,6 +17,7 @@ import com.thesett.auth.dao.AccountDAO;
 import com.thesett.auth.dao.AccountDAOImpl;
 import com.thesett.auth.dao.UserSecurityDAOImpl;
 import com.thesett.auth.model.Account;
+import com.thesett.auth.model.Permission;
 import com.thesett.auth.model.Role;
 import com.thesett.auth.services.AccountService;
 import com.thesett.auth.services.RoleService;
@@ -196,8 +197,8 @@ public class Example
         {
             try
             {
-                Set<String> permissions = new HashSet<>();
-                permissions.add("admin");
+                Set<Permission> permissions = new HashSet<>();
+                permissions.add(new Permission().withName("admin"));
 
                 Role adminRole = new Role().withName("admin").withPermissions(permissions);
                 roleService.create(adminRole);
