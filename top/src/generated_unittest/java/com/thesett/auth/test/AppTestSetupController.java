@@ -64,8 +64,7 @@ public class AppTestSetupController implements TestSetupController<AppConfigurat
 {
     /** Clears the whole database apart from reference data tables. */
     public static final Operation DELETE_ALL =
-        deleteAllFrom(
-        );
+        deleteAllFrom("role_permission", "permission", "account_role", "role", "account");
 
     /** An equality checker for the model. */
     public static final ModelEqualityByValue MODEL_EQUALITY_BY_VALUE =
