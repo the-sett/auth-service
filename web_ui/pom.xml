@@ -45,14 +45,9 @@
     <build>
         <resources>
             <resource>
-                <targetPath>webapp/js</targetPath>
-                <directory>src/main/js</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <targetPath>webapp</targetPath>
+                <targetPath>webapp/app</targetPath>
                 <filtering>false</filtering>
-                <directory>src/main/webapp</directory>
+                <directory>src/main/webapp/app</directory>
             </resource>
         </resources>
 
