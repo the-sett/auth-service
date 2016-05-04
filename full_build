@@ -1,0 +1,8 @@
+#!/bin/bash
+
+mvn clean install -Pskip
+mvn clean install -pl top -Pschemagen,skip 
+cp top/target/schema-create.ddl top/src/main/resources/migrations/00001_create.sql 
+mvn clean install 
+./refresh_db 
+
