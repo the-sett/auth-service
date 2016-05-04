@@ -102,7 +102,7 @@ public class AppTestSetupController implements TestSetupController<AppConfigurat
         config.setProperty("hibernate.connection.driver_class", dataSourceFactory.getDriverClass());
         config.setProperty("hibernate.current_session_context_class", "thread");
         config.setProperty("hibernate.show_sql", "false");
-        config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+        config.setProperty("hibernate.hbm2ddl.auto", "create");
 
         config.addResource("auth-model.hbm.xml");    
         config.addAnnotatedClass(AccountDAOImpl.class);    
