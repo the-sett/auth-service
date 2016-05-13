@@ -1,5 +1,10 @@
 package com.thesett.auth.test.permission;
 
+import com.thesett.util.security.shiro.LocalSubject;
+import com.thesett.util.security.shiro.ShiroUtils;
+import org.apache.shiro.subject.Subject;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import com.thesett.auth.test.AppTestSetupController;
 import com.thesett.auth.top.Main;
@@ -29,6 +34,19 @@ public class PermissionFullStackCRUDTest extends FullStackCRUDTestBase<Permissio
         PermissionResource permissionResource = new PermissionResource(permissionDAO);
 
         return HibernateSessionAndDetachProxy.proxy(permissionResource, PermissionService.class, sessionFactory);
+    }
+
+    @Before
+    public void setupSecurity()
+    {
+        Subject subject = new LocalSubject().withPermission("admin");
+        ShiroUtils.setSubject(subject);
+    }
+
+    @After
+    public void teardownSecurity()
+    {
+        ShiroUtils.tearDownShiro();
     }
 
     @Test

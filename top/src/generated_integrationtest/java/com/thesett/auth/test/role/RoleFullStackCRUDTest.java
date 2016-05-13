@@ -1,5 +1,10 @@
 package com.thesett.auth.test.role;
 
+import com.thesett.util.security.shiro.LocalSubject;
+import com.thesett.util.security.shiro.ShiroUtils;
+import org.apache.shiro.subject.Subject;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import com.thesett.auth.test.AppTestSetupController;
 import com.thesett.auth.top.Main;
@@ -29,6 +34,19 @@ public class RoleFullStackCRUDTest extends FullStackCRUDTestBase<Role, Long>
         RoleResource roleResource = new RoleResource(roleDAO);
 
         return HibernateSessionAndDetachProxy.proxy(roleResource, RoleService.class, sessionFactory);
+    }
+
+    @Before
+    public void setupSecurity()
+    {
+        Subject subject = new LocalSubject().withPermission("admin");
+        ShiroUtils.setSubject(subject);
+    }
+
+    @After
+    public void teardownSecurity()
+    {
+        ShiroUtils.tearDownShiro();
     }
 
     @Test

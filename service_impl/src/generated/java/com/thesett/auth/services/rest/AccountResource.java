@@ -1,4 +1,7 @@
+/* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 package com.thesett.auth.services.rest;
+
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -9,26 +12,24 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 import com.codahale.metrics.annotation.Timed;
-
+import com.thesett.auth.dao.AccountDAO;
+import com.thesett.auth.model.Account;
+import com.thesett.auth.services.AccountService;
 import com.thesett.util.entity.EntityException;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
 import com.thesett.util.validation.core.JsonSchemaUtil;
 import com.thesett.util.validation.model.JsonSchema;
-
-import com.thesett.auth.model.Account;
-import com.thesett.auth.dao.AccountDAO;
-import com.thesett.auth.services.AccountService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 
@@ -41,7 +42,8 @@ import org.apache.shiro.subject.Subject;
 @Api(value = "/api/account/", description = "API implementation for working with Account")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(value = MediaType.APPLICATION_JSON)
-public class AccountResource implements AccountService {
+public class AccountResource implements AccountService
+{
     /** The DAO to use for persisting account. */
     private final AccountDAO accountDAO;
 
@@ -50,7 +52,8 @@ public class AccountResource implements AccountService {
      *
      * @param accountDAO The DAO to use for persisting account.
      */
-    public AccountResource(AccountDAO accountDAO) {
+    public AccountResource(AccountDAO accountDAO)
+    {
         this.accountDAO = accountDAO;
     }
 
@@ -59,7 +62,8 @@ public class AccountResource implements AccountService {
     @Path("/schema")
     @Produces("application/schema+json")
     @ApiOperation(value = "Provides a json-schema describing Account.")
-    public JsonSchema schema() {
+    public JsonSchema schema()
+    {
         return JsonSchemaUtil.getJsonSchema(Account.class);
     }
 
@@ -67,7 +71,12 @@ public class AccountResource implements AccountService {
     @GET
     @UnitOfWorkWithDetach
     @ApiOperation(value = "Provides a list of all Account items.")
-    public List<Account> findAll() {
+    public List<Account> findAll()
+    {
+        // Check that the caller has permission to do this.
+        Subject subject = SecurityUtils.getSubject();
+        subject.checkPermission("admin");
+
         return accountDAO.browse();
     }
 
@@ -75,8 +84,13 @@ public class AccountResource implements AccountService {
     @POST
     @Path("/example")
     @UnitOfWorkWithDetach
-    @ApiOperation(value = "Provides a list of all Account items that match the fields in the posted example.")        
-    public List<Account> findByExample(Account example) {
+    @ApiOperation(value = "Provides a list of all Account items that match the fields in the posted example.")
+    public List<Account> findByExample(Account example)
+    {
+        // Check that the caller has permission to do this.
+        Subject subject = SecurityUtils.getSubject();
+        subject.checkPermission("admin");
+
         return accountDAO.findByExample(example);
     }
 
@@ -84,14 +98,23 @@ public class AccountResource implements AccountService {
     @POST
     @UnitOfWorkWithDetach
     @ApiOperation(value = "Creates a new Account.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success.", response = Account.class),        
-        @ApiResponse(code = 422, message = "Invalid data supplied.")
-    })
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "body", value = "The item to create.", required = true, dataType = "com.thesett.auth.model.Account", paramType = "body")
-    })
-    public Account create(Account account) throws EntityException {
+    @ApiResponses(
+        value =
+            {
+                @ApiResponse(code = 200, message = "Success.", response = Account.class),
+                @ApiResponse(code = 422, message = "Invalid data supplied.")
+            }
+    )
+    @ApiImplicitParams(
+        {
+            @ApiImplicitParam(
+                name = "body", value = "The item to create.", required = true,
+                dataType = "com.thesett.auth.model.Account", paramType = "body"
+            )
+        }
+    )
+    public Account create(Account account) throws EntityException
+    {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
         subject.checkPermission("admin");
@@ -105,11 +128,22 @@ public class AccountResource implements AccountService {
     @Timed
     @UnitOfWorkWithDetach
     @ApiOperation(value = "Retreives a Account by its id.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success.", response = Account.class),        
-        @ApiResponse(code = 400, message = "No item found matching the supplied id.")
-    })        
-    public Account retrieve(@ApiParam(value = "The id of the item to retrieve.", required = true) @PathParam("accountId") Long id) {
+    @ApiResponses(
+        value =
+            {
+                @ApiResponse(code = 200, message = "Success.", response = Account.class),
+                @ApiResponse(code = 400, message = "No item found matching the supplied id.")
+            }
+    )
+    public Account retrieve(
+        @ApiParam(value = "The id of the item to retrieve.", required = true)
+        @PathParam("accountId")
+        Long id)
+    {
+        // Check that the caller has permission to do this.
+        Subject subject = SecurityUtils.getSubject();
+        subject.checkPermission("admin");
+
         return accountDAO.retrieve(id);
     }
 
@@ -118,11 +152,22 @@ public class AccountResource implements AccountService {
     @UnitOfWorkWithDetach
     @Path("/{accountId}")
     @ApiOperation(value = "Replaces a Account with an updated version, match by its id.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 422, message = "Invalid data supplied."),
-        @ApiResponse(code = 400, message = "No item found matching the supplied id.")
-    })        
-    public Account update(@ApiParam(value = "The id of the item to update.", required = true) @PathParam("accountId") Long id, Account account) throws EntityException {
+    @ApiResponses(
+        value =
+            {
+                @ApiResponse(code = 422, message = "Invalid data supplied."),
+                @ApiResponse(code = 400, message = "No item found matching the supplied id.")
+            }
+    )
+    public Account update(
+        @ApiParam(value = "The id of the item to update.", required = true)
+        @PathParam("accountId")
+        Long id, Account account) throws EntityException
+    {
+        // Check that the caller has permission to do this.
+        Subject subject = SecurityUtils.getSubject();
+        subject.checkPermission("admin");
+
         return accountDAO.update(id, account);
     }
 
@@ -131,10 +176,16 @@ public class AccountResource implements AccountService {
     @UnitOfWorkWithDetach
     @Path("/{accountId}")
     @ApiOperation(value = "Deletes a Account by its id.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 400, message = "No item found matching the supplied id.")
-    })
-    public void delete(@ApiParam(value = "The id of the item to delete.", required = true) @PathParam("accountId") Long id) throws EntityException {
+    @ApiResponses(value = { @ApiResponse(code = 400, message = "No item found matching the supplied id.") })
+    public void delete(
+        @ApiParam(value = "The id of the item to delete.", required = true)
+        @PathParam("accountId")
+        Long id) throws EntityException
+    {
+        // Check that the caller has permission to do this.
+        Subject subject = SecurityUtils.getSubject();
+        subject.checkPermission("admin");
+
         accountDAO.delete(id);
     }
 }

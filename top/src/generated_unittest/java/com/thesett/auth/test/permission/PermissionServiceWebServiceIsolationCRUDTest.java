@@ -9,6 +9,11 @@ import com.thesett.util.proxies.DefaultProxy;
 import com.thesett.auth.dao.PermissionDAO;
 import com.thesett.auth.model.Permission;
 import com.thesett.auth.services.rest.PermissionResource;
+import com.thesett.util.security.shiro.LocalSubject;
+import com.thesett.util.security.shiro.ShiroUtils;
+import org.apache.shiro.subject.Subject;
+import org.junit.After;
+import org.junit.Before;
 
 public class PermissionServiceWebServiceIsolationCRUDTest extends WebServiceIsolationCRUDTestBase<Permission, Long>
 {
@@ -24,5 +29,18 @@ public class PermissionServiceWebServiceIsolationCRUDTest extends WebServiceIsol
                 new DefaultProxy(dao));
 
         return new PermissionResource(permissionDAO);
+    }
+
+    @Before
+    public void setupSecurity()
+    {
+        Subject subject = new LocalSubject().withPermission("admin");
+        ShiroUtils.setSubject(subject);
+    }
+
+    @After
+    public void teardownSecurity()
+    {
+        ShiroUtils.tearDownShiro();
     }
 }
