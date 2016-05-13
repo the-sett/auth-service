@@ -14,6 +14,8 @@ server:
     port: 9070
   requestLog:
     appenders: []    
+  gzip:
+    bufferSize: 8KiB
 
 assets:
  overrides:
