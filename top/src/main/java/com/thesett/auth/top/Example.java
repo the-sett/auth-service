@@ -4,9 +4,12 @@ package com.thesett.auth.top;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import javax.servlet.DispatcherType;
 import javax.validation.ValidatorFactory;
@@ -27,6 +30,8 @@ import com.thesett.jtrial.web.WebResource;
 import com.thesett.util.config.shiro.ShiroBundle;
 import com.thesett.util.config.shiro.ShiroConfiguration;
 import com.thesett.util.entity.EntityException;
+import com.thesett.util.security.shiro.LocalSubject;
+import com.thesett.util.security.shiro.ShiroUtils;
 import com.thesett.util.security.web.ShiroJWTRealmSetupListener;
 import com.thesett.util.servlet.filter.CORSFilter;
 import com.thesett.util.swagger.EnumTypeModelConverter;
@@ -40,6 +45,13 @@ import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 import io.swagger.converter.ModelConverters;
 
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.ExecutionException;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.Subject;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -95,6 +107,8 @@ public class Example
             }
         };
 
+    private Subject subject;
+
     /**
      * Sets up some additional DropWizard modules.
      *
@@ -120,6 +134,9 @@ public class Example
      */
     public void example(ServiceFactory serviceFactory)
     {
+        subject = new LocalSubject().withPermission("admin");
+        ShiroUtils.setSubject(subject);
+
         createRootAccount(serviceFactory);
     }
 

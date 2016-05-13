@@ -29,6 +29,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ApiResponse;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 
 /**
  * REST API implementation for working with Account
@@ -90,6 +92,10 @@ public class AccountResource implements AccountService {
         @ApiImplicitParam(name = "body", value = "The item to create.", required = true, dataType = "com.thesett.auth.model.Account", paramType = "body")
     })
     public Account create(Account account) throws EntityException {
+        // Check that the caller has permission to do this.
+        Subject subject = SecurityUtils.getSubject();
+        subject.checkPermission("admin");
+
         return accountDAO.create(account);
     }
 
