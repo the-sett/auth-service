@@ -1,6 +1,9 @@
 package com.thesett.auth.test.account;
 
-import org.junit.Test;
+import com.thesett.util.security.shiro.LocalSubject;
+import com.thesett.util.security.shiro.ShiroUtils;
+import org.apache.shiro.subject.Subject;
+import org.junit.*;
 import com.thesett.auth.test.AppTestSetupController;
 import com.thesett.auth.top.Main;
 import com.thesett.test.base.FullStackCRUDTestBase;
@@ -29,6 +32,19 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
         AccountResource accountResource = new AccountResource(accountDAO);
 
         return HibernateSessionAndDetachProxy.proxy(accountResource, AccountService.class, sessionFactory);
+    }
+
+    @Before
+    public void setupSecurity()
+    {
+        Subject subject = new LocalSubject().withPermission("admin");
+        ShiroUtils.setSubject(subject);
+    }
+
+    @After
+    public void teardownSecurity()
+    {
+        ShiroUtils.tearDownShiro();
     }
 
     @Test

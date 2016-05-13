@@ -12,8 +12,8 @@ import com.thesett.auth.services.rest.AccountResource;
 import com.thesett.util.security.shiro.LocalSubject;
 import com.thesett.util.security.shiro.ShiroUtils;
 import org.apache.shiro.subject.Subject;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 
 public class AccountServiceWebServiceIsolationCRUDTest extends WebServiceIsolationCRUDTestBase<Account, Long>
 {
@@ -31,15 +31,15 @@ public class AccountServiceWebServiceIsolationCRUDTest extends WebServiceIsolati
         return new AccountResource(accountDAO);
     }
 
-    @BeforeClass
-    public static void setupSecurity()
+    @Before
+    public void setupSecurity()
     {
         Subject subject = new LocalSubject().withPermission("admin");
         ShiroUtils.setSubject(subject);
     }
 
-    @AfterClass
-    public static void teardownSecurity()
+    @After
+    public void teardownSecurity()
     {
         ShiroUtils.tearDownShiro();
     }

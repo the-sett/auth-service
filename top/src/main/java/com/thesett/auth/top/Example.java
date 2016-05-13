@@ -138,6 +138,8 @@ public class Example
         ShiroUtils.setSubject(subject);
 
         createRootAccount(serviceFactory);
+
+        ShiroUtils.tearDownShiro();
     }
 
     /**
