@@ -82,10 +82,5 @@ public class <name; format="ccu">FullStackCRUDTest extends FullStackCRUDTestBase
     public void testJsonSchema() throws Exception {
         testJsonSchema("schema");
     }
-
-    @Test
-    public void testRootHal() throws Exception {
-        testRootHal("root");
-    }
 }
 >>

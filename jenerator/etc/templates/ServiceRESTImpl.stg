@@ -52,9 +52,6 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 import com.codahale.metrics.annotation.Timed;
-import com.strategicgains.hyperexpress.HyperExpress;
-import static com.strategicgains.hyperexpress.RelTypes.SELF;
-import com.strategicgains.hyperexpress.domain.Resource;
 
 import com.thesett.util.entity.EntityException;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
@@ -93,39 +90,7 @@ public class <name; format="ccu">Resource implements <name; format="ccu">Service
      */
     public <name; format="ccu">Resource(<name; format="ccu">DAO <name; format="cc">DAO) {
         this.<name; format="cc">DAO = <name; format="cc">DAO;
-
-        initHal();
     }
-
-    /**
-     * Configures HyperExpress to produce HAL for this service (experimental and not complete).
-     */
-    private void initHal() {
-        HyperExpress.relationships()
-            .forClass(<name; format="ccu">Resource.class)
-            .rel(SELF, "http://localhost:9070/api/<name; format="cc">/hal");
-
-        HyperExpress.relationships()
-            .forClass(<name; format="ccu">Resource.class)
-            .rels("curies", "http://localhost:9070/api/<name; format="cc">/{rel}")
-            .name("<name; format="cc">")
-            .type("application/schema+json")
-            .templated(true);
-
-        HyperExpress.relationships()
-            .forClass(<name; format="ccu">Resource.class)
-            .rel("<name; format="cc">:schema", "http://localhost:9070/api/<name; format="cc">/")
-            .type("application/json");
-    }
-
-    /** {@inheritDoc} */    
-    @GET
-    @Path("/hal")
-    @Produces("application/hal+json")
-    @ApiOperation(value = "Provides a HAL description of the <name; format="ccu"> services.")
-    public Resource root() {
-        return HyperExpress.createResource(this, "application/hal+json");
-    }        
 
     /** {@inheritDoc} */
     @GET

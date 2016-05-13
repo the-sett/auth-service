@@ -45,9 +45,4 @@ public class RoleFullStackCRUDTest extends FullStackCRUDTestBase<Role, Long>
     public void testJsonSchema() throws Exception {
         testJsonSchema("schema");
     }
-
-    @Test
-    public void testRootHal() throws Exception {
-        testRootHal("root");
-    }
 }

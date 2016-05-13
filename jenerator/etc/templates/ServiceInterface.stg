@@ -42,7 +42,6 @@ package <package>;
 
 import java.util.List;        
 
-import com.strategicgains.hyperexpress.domain.Resource;    
 import com.thesett.util.entity.EntityException;
 import com.thesett.util.entity.CRUD;
 import com.thesett.util.validation.model.JsonSchema;
@@ -54,14 +53,7 @@ import <catalogue.modelPackage>.<name; format="ccu">;
  *
  * @author Generated Code
  */
-public interface <name; format="ccu">Service extends CRUD\<<name; format="ccu">, Long> {
-    /**
-     * Provides a root HAL for the service, describing its capabilities.
-     *
-     * @return The root HAL for the service.
-     */
-    Resource root();
-    
+public interface <name; format="ccu">Service extends CRUD\<<name; format="ccu">, Long> {    
     /**
      * Provides a json-schema describing the <name; format="ccu"> data model.
      *

@@ -45,9 +45,4 @@ public class PermissionFullStackCRUDTest extends FullStackCRUDTestBase<Permissio
     public void testJsonSchema() throws Exception {
         testJsonSchema("schema");
     }
-
-    @Test
-    public void testRootHal() throws Exception {
-        testRootHal("root");
-    }
 }

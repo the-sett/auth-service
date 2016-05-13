@@ -2,7 +2,6 @@ package com.thesett.auth.services;
 
 import java.util.List;        
 
-import com.strategicgains.hyperexpress.domain.Resource;    
 import com.thesett.util.entity.EntityException;
 import com.thesett.util.entity.CRUD;
 import com.thesett.util.validation.model.JsonSchema;
@@ -14,14 +13,7 @@ import com.thesett.auth.model.Permission;
  *
  * @author Generated Code
  */
-public interface PermissionService extends CRUD<Permission, Long> {
-    /**
-     * Provides a root HAL for the service, describing its capabilities.
-     *
-     * @return The root HAL for the service.
-     */
-    Resource root();
-
+public interface PermissionService extends CRUD<Permission, Long> {    
     /**
      * Provides a json-schema describing the Permission data model.
      *

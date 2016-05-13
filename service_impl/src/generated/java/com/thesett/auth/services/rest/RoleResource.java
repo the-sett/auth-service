@@ -12,9 +12,6 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 import com.codahale.metrics.annotation.Timed;
-import com.strategicgains.hyperexpress.HyperExpress;
-import static com.strategicgains.hyperexpress.RelTypes.SELF;
-import com.strategicgains.hyperexpress.domain.Resource;
 
 import com.thesett.util.entity.EntityException;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
@@ -53,39 +50,7 @@ public class RoleResource implements RoleService {
      */
     public RoleResource(RoleDAO roleDAO) {
         this.roleDAO = roleDAO;
-
-        initHal();
     }
-
-    /**
-     * Configures HyperExpress to produce HAL for this service (experimental and not complete).
-     */
-    private void initHal() {
-        HyperExpress.relationships()
-            .forClass(RoleResource.class)
-            .rel(SELF, "http://localhost:9070/api/role/hal");
-
-        HyperExpress.relationships()
-            .forClass(RoleResource.class)
-            .rels("curies", "http://localhost:9070/api/role/{rel}")
-            .name("role")
-            .type("application/schema+json")
-            .templated(true);
-
-        HyperExpress.relationships()
-            .forClass(RoleResource.class)
-            .rel("role:schema", "http://localhost:9070/api/role/")
-            .type("application/json");
-    }
-
-    /** {@inheritDoc} */    
-    @GET
-    @Path("/hal")
-    @Produces("application/hal+json")
-    @ApiOperation(value = "Provides a HAL description of the Role services.")
-    public Resource root() {
-        return HyperExpress.createResource(this, "application/hal+json");
-    }        
 
     /** {@inheritDoc} */
     @GET

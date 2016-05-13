@@ -12,9 +12,6 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 import com.codahale.metrics.annotation.Timed;
-import com.strategicgains.hyperexpress.HyperExpress;
-import static com.strategicgains.hyperexpress.RelTypes.SELF;
-import com.strategicgains.hyperexpress.domain.Resource;
 
 import com.thesett.util.entity.EntityException;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
@@ -53,39 +50,7 @@ public class PermissionResource implements PermissionService {
      */
     public PermissionResource(PermissionDAO permissionDAO) {
         this.permissionDAO = permissionDAO;
-
-        initHal();
     }
-
-    /**
-     * Configures HyperExpress to produce HAL for this service (experimental and not complete).
-     */
-    private void initHal() {
-        HyperExpress.relationships()
-            .forClass(PermissionResource.class)
-            .rel(SELF, "http://localhost:9070/api/permission/hal");
-
-        HyperExpress.relationships()
-            .forClass(PermissionResource.class)
-            .rels("curies", "http://localhost:9070/api/permission/{rel}")
-            .name("permission")
-            .type("application/schema+json")
-            .templated(true);
-
-        HyperExpress.relationships()
-            .forClass(PermissionResource.class)
-            .rel("permission:schema", "http://localhost:9070/api/permission/")
-            .type("application/json");
-    }
-
-    /** {@inheritDoc} */    
-    @GET
-    @Path("/hal")
-    @Produces("application/hal+json")
-    @ApiOperation(value = "Provides a HAL description of the Permission services.")
-    public Resource root() {
-        return HyperExpress.createResource(this, "application/hal+json");
-    }        
 
     /** {@inheritDoc} */
     @GET

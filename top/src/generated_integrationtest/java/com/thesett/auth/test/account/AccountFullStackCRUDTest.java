@@ -45,9 +45,4 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
     public void testJsonSchema() throws Exception {
         testJsonSchema("schema");
     }
-
-    @Test
-    public void testRootHal() throws Exception {
-        testRootHal("root");
-    }
 }

@@ -260,13 +260,15 @@ enumeration_property_online(fieldName, decorator, fieldDecorator, qualifier) ::=
 <many-to-one name="«fieldName; format="cc"»" column="«fieldName»_id" not-null="false" lazy="false"/>
 >>
 
+append(a, b) ::= <<«if(a)»«a»«b»«else»«b»«endif»>>
+
 /*
  * Creates a property configuration for component reference fields of entities in online tables.
  */
 component_ref_property_online(fieldName, decorator, fieldDecorator, qualifier) ::= <<
 «if(fieldDecorator.component)»
 <component name="«fieldName; format="cc"»">
-  «fieldDecorator.allPropertyTypes.keys:{compFieldName|«(templateMap.(fieldDecorator.allPropertyTypes.(compFieldName).kind))(compFieldName, decorator, fieldDecorator.allPropertyTypes.(compFieldName), fieldName)»}; separator="\n"»
+  «fieldDecorator.allPropertyTypes.keys:{compFieldName|«(templateMap.(fieldDecorator.allPropertyTypes.(compFieldName).kind))(compFieldName, decorator, fieldDecorator.allPropertyTypes.(compFieldName), append(qualifier, fieldName))»}; separator="\n"»
 </component>
 «else»
 «if(fieldDecorator.entitySubType)»
