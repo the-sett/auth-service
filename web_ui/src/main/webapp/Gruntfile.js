@@ -41,8 +41,6 @@ module.exports = function (grunt) {
         'copy': {
             'dist': {
                 files: [
-                    //{expand: true, cwd: 'src/styles', src: ['**'], dest: 'app/styles'},
-                    //{expand: true, cwd: 'src/js', src: ['**'], dest: 'app/js'},
                     {expand: true, cwd: 'src/views', src: ['**'], dest: 'app/views'},
                     {expand: true, cwd: 'src', src: ['index.html'], dest: 'app'}
                 ],
@@ -51,11 +49,28 @@ module.exports = function (grunt) {
 
         'concat': {
             options: {
-                separator: ';'
+                separator: ';\n'
             },
-            'dist': {
-                //'src': ['tmp/*.js', 'src/js/**/*.js'],
-                'src': ['src/js/**/*.js'],
+            'sources': {
+                'src': [
+                    'src/js/**/*.js'
+                ],
+                'dest': 'app/<%= pkg.name %>.js'
+            },
+            'libs': {
+                'src': [
+                    'app/libs/jquery/dist/jquery.min.js',
+                    'app/libs/angular/angular.min.js',
+                    'app/libs/bootstrap/dist/js/bootstrap.min.js',
+                    'app/libs/angular-bootstrap/ui-bootstrap-tpls.min.js',
+                    'app/libs/ng-table/dist/ng-table.min.js',
+                    'app/libs/angular-resource/angular-resource.min.js',
+                    'app/libs/angular-ui-router/release/angular-ui-router.min.js',
+                    'app/libs/angular-toastr/dist/angular-toastr.tpls.min.js',
+                    'app/libs/angular-ui-router-menus/dist/angular-ui-router-menus.min.js',
+
+                    'app/<%= pkg.name %>.js'
+                ],
                 'dest': 'app/<%= pkg.name %>.js'
             }
         },
@@ -82,7 +97,7 @@ module.exports = function (grunt) {
             },  
             'dist': {
                 'files': {
-                    'app/<%= pkg.name %>.min.js': ['app/<%= pkg.name %>.js']
+                    'app/<%= pkg.name %>.min.js': ['app/<%= pkg.name %>.annotated.js']
                 }
             }
         },
@@ -154,6 +169,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('dev', [ 'bower', 'connect:server', 'watch:dev' ]);
     grunt.registerTask('minified', [ 'bower', 'connect:server', 'watch:min' ]);
-    grunt.registerTask('build', [ 'bower', 'html2js', 'copy', 'concat', 'ngAnnotate', 'responsive_images' ]);
+    grunt.registerTask('build', [ 'bower', 'html2js', 'copy', 'concat:sources', 'ngAnnotate', 'concat:libs', 'responsive_images' ]);
     grunt.registerTask('package', [ 'build', 'uglify', 'compress' ]);
 };
