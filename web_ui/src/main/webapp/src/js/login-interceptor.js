@@ -2,7 +2,7 @@
  * The login interceptor. Routes requiring authentication are intercepted, and the user
  * directed to login prior to the route being followed.
  */
-authService.run(['$rootScope', '$state', 'LoginModalService', 'JWTUserProfile', function ($rootScope, $state, LoginModalService, JWTUserProfile) {
+authService.run(function ($rootScope, $state, LoginModalService, JWTUserProfile) {
 
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
         console.log(toState);
@@ -38,4 +38,4 @@ authService.run(['$rootScope', '$state', 'LoginModalService', 'JWTUserProfile', 
             checkPermission();
         }
     });
-}]);
+});

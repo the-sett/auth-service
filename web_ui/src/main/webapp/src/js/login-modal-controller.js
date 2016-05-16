@@ -1,6 +1,6 @@
 'use strict';
 
-authService.controller('LoginModalController', ['$scope', '$http', '$filter', '$state', '$stateParams', '$window', 'JWTUserProfile', function($scope, $http, $filter, $state, $stateParams, $window, JWTUserProfile) {
+authService.controller('LoginModalController', function($scope, $http, $filter, $state, $stateParams, $window, JWTUserProfile) {
 
     var vm = $scope;
 
@@ -21,4 +21,4 @@ authService.controller('LoginModalController', ['$scope', '$http', '$filter', '$
     function dismiss() { 
         $scope.$dismiss();
     }
-}]);
+});

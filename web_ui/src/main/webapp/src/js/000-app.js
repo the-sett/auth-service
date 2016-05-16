@@ -10,7 +10,7 @@ var authService = angular.module('authService', [
     'ui.router.menus'
 ]);
 
-authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+authService.config(function($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise("/");
     
     $stateProvider.
@@ -101,4 +101,4 @@ authService.config(['$stateProvider', '$urlRouterProvider', function($stateProvi
                 tag: 'main'
             }
         });
-}]);
+});

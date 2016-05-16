@@ -11,6 +11,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-responsive-images');
     grunt.loadNpmTasks('grunt-contrib-compass');
+    grunt.loadNpmTasks('grunt-ng-annotate');
     
     grunt.initConfig({
         'pkg': grunt.file.readJSON('package.json'),
@@ -47,7 +48,7 @@ module.exports = function (grunt) {
                 ],
             }
         },
-        
+
         'concat': {
             options: {
                 separator: ';'
@@ -56,6 +57,22 @@ module.exports = function (grunt) {
                 //'src': ['tmp/*.js', 'src/js/**/*.js'],
                 'src': ['src/js/**/*.js'],
                 'dest': 'app/<%= pkg.name %>.js'
+            }
+        },
+
+        'ngAnnotate': {
+            options: {
+                singleQuotes: true
+            },
+            dist: {
+                files: [
+                    {
+                        expand: true,
+                        src: ['app/<%= pkg.name %>.js'],
+                        ext: '.annotated.js',
+                        extDot: 'last'
+                    },
+                ]
             }
         },
 
@@ -137,6 +154,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('dev', [ 'bower', 'connect:server', 'watch:dev' ]);
     grunt.registerTask('minified', [ 'bower', 'connect:server', 'watch:min' ]);
-    grunt.registerTask('build', [ 'bower', 'html2js', 'copy', 'concat', 'responsive_images' ]);
+    grunt.registerTask('build', [ 'bower', 'html2js', 'copy', 'concat', 'ngAnnotate', 'responsive_images' ]);
     grunt.registerTask('package', [ 'build', 'uglify', 'compress' ]);
 };

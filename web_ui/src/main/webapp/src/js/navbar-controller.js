@@ -1,6 +1,6 @@
 'use strict';
 
-authService.controller('NavBarController', ['$scope', '$http', '$filter', '$state', '$stateParams', '$window', 'JWTUserProfile', function($scope, $http, $filter, $state, $stateParams, $window, JWTUserProfile) {
+authService.controller('NavBarController', function($scope, $http, $filter, $state, $stateParams, $window, JWTUserProfile) {
 
     var vm = $scope;
 
@@ -14,4 +14,4 @@ authService.controller('NavBarController', ['$scope', '$http', '$filter', '$stat
         JWTUserProfile.logout();
         $state.go('welcome');
     }
-}]);
+});

@@ -25,7 +25,8 @@
     "grunt-contrib-watch": "~0.6.1",
     "grunt-bower-task": "~0.3.4",
     "grunt-responsive-images": "~0.1.7",
-    "grunt-contrib-compass": "~1.0.4"
+    "grunt-contrib-compass": "~1.0.4",
+    "grunt-ng-annotate": "~2.0.2"
   },
   "scripts": {
     "postinstall": "bower install",

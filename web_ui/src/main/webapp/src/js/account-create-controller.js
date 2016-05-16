@@ -1,6 +1,6 @@
 'use strict';
 
-authService.controller('AccountCreateController', ['$scope', '$http', '$filter', '$state', 'toastr', 'RefDataService', 'ViewsService', 'AccountService', 'dtaRefData', function($scope, $http, $filter, $state, toastr, RefDataService, ViewsService, AccountService, dtaRefData) {
+authService.controller('AccountCreateController', function($scope, $http, $filter, $state, toastr, RefDataService, ViewsService, AccountService, dtaRefData) {
 
     var vm = $scope;
 
@@ -30,4 +30,4 @@ authService.controller('AccountCreateController', ['$scope', '$http', '$filter',
             toastr.error('Did not save', 'Failure');
         });
     }    
-}]);
+});

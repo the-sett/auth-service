@@ -1,6 +1,6 @@
 'use strict';
 
-authService.controller('AccountEditController', ['$scope', '$http', '$filter', '$state', '$stateParams', 'toastr', 'RefDataService', 'ViewsService', 'AccountService', 'dtaRefData', 'dtaAccount', function($scope, $http, $filter, $state, $stateParams, toastr, RefDataService, ViewsService, AccountService, dtaRefData, dtaAccount) {
+authService.controller('AccountEditController', function($scope, $http, $filter, $state, $stateParams, toastr, RefDataService, ViewsService, AccountService, dtaRefData, dtaAccount) {
 
     var vm = $scope;
 
@@ -39,4 +39,4 @@ authService.controller('AccountEditController', ['$scope', '$http', '$filter', '
             toastr.error('Did not delete', 'Failure');
         });
     }
-}]);
+});

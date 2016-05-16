@@ -1,6 +1,6 @@
 'use strict';
 
-authService.controller('RoleListController', ['$scope', 'ngTableParams', 'RoleService', function($scope, ngTableParams, RoleService) {
+authService.controller('RoleListController', function($scope, ngTableParams, RoleService) {
 
     var vm = $scope;
 
@@ -22,4 +22,4 @@ authService.controller('RoleListController', ['$scope', 'ngTableParams', 'RoleSe
             }
         });
 
-}]);
+});

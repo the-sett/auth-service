@@ -1,7 +1,7 @@
 /*
  * JWTUserProfile maintains the current user profile, building it from a JWT token.
  */
-authService.factory('JWTUserProfile', ['$window', '$http', '$q', function($window, $http, $q) {
+authService.factory('JWTUserProfile', function($window, $http, $q) {
     var anonymous = { anonymous: true };
     var user;
     
@@ -134,4 +134,4 @@ authService.factory('JWTUserProfile', ['$window', '$http', '$q', function($windo
     };
 
     return Profile;
-}]);
+});

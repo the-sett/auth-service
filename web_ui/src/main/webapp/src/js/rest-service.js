@@ -5,7 +5,7 @@ function lowerFirstLetter(string) {
 }
 
 function createRestService(name) {
-    authService.service(name + 'Service', ['$http', '$filter', '$resource', 'config', function($http, $filter, $resource, config) {        
+    authService.service(name + 'Service', function($http, $filter, $resource, config) {        
         function filterData(data, filter) {
             // Re-arrange nested filters so that they work. This only supports one level of nesting, but more
             // could be added by making the function recursive.
@@ -121,7 +121,7 @@ function createRestService(name) {
         };
 
         return resource;
-    }]);
+    });
 }
 
 createRestService('Account');

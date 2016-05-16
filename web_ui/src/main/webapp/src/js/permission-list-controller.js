@@ -1,6 +1,6 @@
 'use strict';
 
-authService.controller('PermissionListController', ['$scope', 'ngTableParams', 'PermissionService', function($scope, ngTableParams, PermissionService) {
+authService.controller('PermissionListController', function($scope, ngTableParams, PermissionService) {
 
     var vm = $scope;
 
@@ -22,4 +22,4 @@ authService.controller('PermissionListController', ['$scope', 'ngTableParams', '
             }
         });
 
-}]);
+});

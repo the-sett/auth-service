@@ -1,4 +1,4 @@
-authService.service('LoginModalService', ['$modal', function ($modal) {
+authService.service('LoginModalService', function ($modal) {
 
     return function() {
         var instance = $modal.open({
@@ -9,4 +9,4 @@ authService.service('LoginModalService', ['$modal', function ($modal) {
 
         return instance.result;
     };
-}]);
+});
