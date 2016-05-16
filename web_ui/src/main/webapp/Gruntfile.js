@@ -106,6 +106,7 @@ module.exports = function (grunt) {
             'dist': {
                 options: {
                     engine: 'im',
+                    quality: '25',
                     sizes: [
                         { width: '100%', name: 'large', suffix: '.x2' },
                         { width: '66%', name: 'medium', suffix: '.x2' },
@@ -120,7 +121,7 @@ module.exports = function (grunt) {
                 ]
             }
         },
-
+        
         'compress': {
             dist: {
                 options: {
