@@ -12,6 +12,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-responsive-images');
     grunt.loadNpmTasks('grunt-contrib-compass');
     grunt.loadNpmTasks('grunt-ng-annotate');
+    grunt.loadNpmTasks('grunt-angular-templates');
     
     grunt.initConfig({
         'pkg': grunt.file.readJSON('package.json'),
@@ -47,6 +48,26 @@ module.exports = function (grunt) {
             }
         },
 
+        ngtemplates: {
+            authService: {
+                options: {
+                    prefix: '/',
+                    htmlmin: {
+                        collapseBooleanAttributes:      true,
+                        collapseWhitespace:             true,
+                        removeAttributeQuotes:          true,
+                        removeComments:                 true,
+                        removeEmptyAttributes:          true,
+                        removeRedundantAttributes:      true,
+                        removeScriptTypeAttributes:     true,
+                        removeStyleLinkTypeAttributes:  true
+                    }
+                },
+                src: 'app/views/**.html',
+                dest: 'app/template.js'
+            }
+        },
+            
         'concat': {
             options: {
                 separator: ';\n'
@@ -69,7 +90,8 @@ module.exports = function (grunt) {
                     'app/libs/angular-toastr/dist/angular-toastr.tpls.min.js',
                     'app/libs/angular-ui-router-menus/dist/angular-ui-router-menus.min.js',
 
-                    'app/<%= pkg.name %>.js'
+                    'app/<%= pkg.name %>.js',
+                    'app/template.js'
                 ],
                 'dest': 'app/<%= pkg.name %>.js'
             }
@@ -170,6 +192,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('dev', [ 'bower', 'connect:server', 'watch:dev' ]);
     grunt.registerTask('minified', [ 'bower', 'connect:server', 'watch:min' ]);
-    grunt.registerTask('build', [ 'bower', 'html2js', 'copy', 'concat:sources', 'ngAnnotate', 'concat:libs', 'responsive_images' ]);
+    grunt.registerTask('build', [ 'bower', 'html2js', 'ngtemplates', 'copy', 'concat:sources', 'ngAnnotate', 'concat:libs', 'responsive_images' ]);
     grunt.registerTask('package', [ 'build', 'uglify', 'compress' ]);
 };
