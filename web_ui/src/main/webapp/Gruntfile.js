@@ -192,6 +192,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('dev', [ 'bower', 'connect:server', 'watch:dev' ]);
     grunt.registerTask('minified', [ 'bower', 'connect:server', 'watch:min' ]);
-    grunt.registerTask('build', [ 'bower', 'html2js', 'ngtemplates', 'copy', 'concat:sources', 'ngAnnotate', 'concat:libs', 'responsive_images' ]);
+    grunt.registerTask('build', [ 'bower', 'html2js', 'copy', 'ngtemplates', 'concat:sources', 'ngAnnotate', 'concat:libs', 'responsive_images' ]);
     grunt.registerTask('package', [ 'build', 'uglify', 'compress' ]);
 };
