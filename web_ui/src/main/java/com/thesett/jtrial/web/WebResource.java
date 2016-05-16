@@ -41,7 +41,7 @@ public class WebResource
 
     /**
      * Provides the auth service application.
-l    *
+     *
      * @return The auth service application.
      */
     @GET

@@ -4,12 +4,9 @@ package com.thesett.auth.top;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import javax.servlet.DispatcherType;
 import javax.validation.ValidatorFactory;
@@ -45,12 +42,6 @@ import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 import io.swagger.converter.ModelConverters;
 
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authz.AuthorizationException;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.subject.ExecutionException;
-import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;

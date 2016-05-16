@@ -8,9 +8,9 @@ import com.bazaarvoice.dropwizard.assets.AssetsBundleConfiguration;
 import com.bazaarvoice.dropwizard.assets.AssetsConfiguration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thesett.util.config.shiro.ShiroConfiguration;
-
 import com.thesett.util.views.handlebars.HandlebarsBundleConfig;
 import com.thesett.util.views.handlebars.HandlebarsConfig;
+
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
@@ -50,7 +50,8 @@ public class AppConfiguration extends Configuration implements AssetsBundleConfi
     private HandlebarsConfig handlebars = new HandlebarsConfig();
 
     /** {@inheritDoc} */
-    public HandlebarsConfig getHandlebars() {
+    public HandlebarsConfig getHandlebars()
+    {
         return handlebars;
     }
 
