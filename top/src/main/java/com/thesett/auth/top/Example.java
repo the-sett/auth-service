@@ -24,6 +24,7 @@ import com.thesett.auth.services.RoleService;
 import com.thesett.auth.services.ServiceFactory;
 import com.thesett.auth.services.rest.AuthResource;
 import com.thesett.jtrial.web.WebResource;
+import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.config.shiro.ShiroBundle;
 import com.thesett.util.config.shiro.ShiroConfiguration;
 import com.thesett.util.entity.EntityException;
@@ -128,6 +129,7 @@ public class Example
         subject = new LocalSubject().withPermission("admin");
         ShiroUtils.setSubject(subject);
 
+        createDefaultRolesAccount(serviceFactory);
         createRootAccount(serviceFactory);
 
         ShiroUtils.tearDownShiro();
@@ -194,6 +196,43 @@ public class Example
     }
 
     /**
+     * Creates the default role set, if no roles exist.
+     *
+     * @param serviceFactory The service factory.
+     */
+    private void createDefaultRolesAccount(ServiceFactory serviceFactory)
+    {
+        RoleService roleService = serviceFactory.getRoleService();
+
+        if (roleService.findAll().isEmpty())
+        {
+            try
+            {
+                Set<Permission> permissions;
+                Role role;
+
+                // Create the admin role.
+                permissions = new HashSet<>();
+                permissions.add(new Permission().withName("admin"));
+
+                role = new Role().withName("admin").withPermissions(permissions);
+                roleService.create(role);
+
+                // Create the user role.
+                permissions = new HashSet<>();
+                permissions.add(new Permission().withName("user"));
+
+                role = new Role().withName("user").withPermissions(permissions);
+                roleService.create(role);
+            }
+            catch (EntityException e)
+            {
+                throw new IllegalStateException(e);
+            }
+        }
+    }
+
+    /**
      * If no accounts exist, creates the root account 'admin/admin'.
      *
      * @param serviceFactory The service factory.
@@ -207,11 +246,7 @@ public class Example
         {
             try
             {
-                Set<Permission> permissions = new HashSet<>();
-                permissions.add(new Permission().withName("admin"));
-
-                Role adminRole = new Role().withName("admin").withPermissions(permissions);
-                roleService.create(adminRole);
+                Role adminRole = CollectionUtil.first(roleService.findByExample(new Role().withName("admin")));
 
                 Set<Role> roles = new HashSet<>();
                 roles.add(adminRole);
