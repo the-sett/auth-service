@@ -10,6 +10,7 @@
         "angular-resource": "~1.4.0-rc.1",
         "angular-ui-router": "~0.2.14",
         "angular-toastr": "~1.3.0",
-        "angular-ui-router-menus": "~0.2.1"
+        "angular-ui-router-menus": "~0.2.1",
+        "satellizer": "~0.14.0"
     }
 }

@@ -89,6 +89,7 @@ module.exports = function (grunt) {
                     'app/libs/angular-ui-router/release/angular-ui-router.min.js',
                     'app/libs/angular-toastr/dist/angular-toastr.tpls.min.js',
                     'app/libs/angular-ui-router-menus/dist/angular-ui-router-menus.min.js',
+                    'app/libs/satellizer/satellizer.min.js',
 
                     'app/<%= pkg.name %>.js',
                     'app/template.js'
