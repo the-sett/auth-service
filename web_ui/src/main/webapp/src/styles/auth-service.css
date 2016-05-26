@@ -26,20 +26,20 @@
     border: 1px solid #3b3b3b;
 }
 
-.signup-or-separator {
+.text-on-separator {
   position: relative;
   height: 34px;
   text-align: center;
   background: none;
 }
 
-.signup-or-separator hr {
+.text-on-separator hr {
   width: 90%;
   margin: -16px auto 10px auto;
   border-top: 1px solid #dce0e0;
 }
 
-.signup-or-separator .text {
+.text-on-separator .text {
   display: inline-block;
   padding: 8px;
   margin: 0;

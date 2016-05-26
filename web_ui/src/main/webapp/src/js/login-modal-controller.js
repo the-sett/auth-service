@@ -1,6 +1,6 @@
 'use strict';
 
-authService.controller('LoginModalController', function($scope, $http, $filter, $state, $stateParams, $window, JWTUserProfile) {
+authService.controller('LoginModalController', function($scope, $http, $filter, $state, $stateParams, $window, $auth, JWTUserProfile) {
 
     var vm = $scope;
 
@@ -16,6 +16,10 @@ authService.controller('LoginModalController', function($scope, $http, $filter, 
         }, function(reason) {
             vm.message = 'Invalid user or password';
         });
+    };
+
+    $scope.authenticate = function(provider) {
+      $auth.authenticate(provider);
     };
 
     function dismiss() { 
