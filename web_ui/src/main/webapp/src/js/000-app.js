@@ -7,10 +7,11 @@ var authService = angular.module('authService', [
     'ui.bootstrap',
     'toastr',
     'authService',
-    'ui.router.menus'
+    'ui.router.menus',
+    'satellizer'    
 ]);
 
-authService.config(function($stateProvider, $urlRouterProvider) {
+authService.config(function($stateProvider, $urlRouterProvider) {    
     $urlRouterProvider.otherwise("/");
     
     $stateProvider.
