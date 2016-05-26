@@ -10,12 +10,17 @@
   
   <table ng-show="$data" ng-table="tableParams" class="table table-striped panel panel-default" show-filter="true">
     <tbody>
-      <tr ng-repeat="item in $data">
-        <td width="200" data-title="'Permission'" filter="{name: 'text'}" sortable="'name'">
-            {{item.name}}
+      <tr ng-repeat="item in $data" ng-form="rowForm" demo-tracked-table-row="row" ng-switch="row.isEditing" ng-class="permission.$dirty ? 'bg-warning' : ''" ng-form="permission" demo-tracked-table-cell>
+          <td width="200" data-title="'Permission'" filter="{name: 'text'}" sortable="'name'" ng-switch="row.isEditing" ng-class="permission.$dirty ? 'bg-warning' : ''" ng-form="permission" demo-tracked-table-cell>
+              <span ng-switch-default class="editable-text">{{item.name}}</span>
+              <div class="controls" ng-class="permission.$invalid && permission.$dirty ? 'has-error' : ''" ng-switch-when="true">
+				  <input  type="number" name="permission" ng-model="row.INRRate" class="editable-input form-control input-sm" required />
+			  </div>
         </td>
         <td width="60" data-title="'Actions'">
-            <a class="btn btn-primary btn-xs" ui-sref="editPermission({id:item.id})">Edit</a>
+			<button class="btn btn-primary btn-xs" ng-click="save(row, rowForm)" ng-if="row.isEditing" ng-disabled="rowForm.$pristine || rowForm.$invalid"><span class="glyphicon glyphicon-ok"></span></button>
+			<button class="btn btn-default btn-xs" ng-click="cancel(row, rowForm)" ng-if="row.isEditing"><span class="glyphicon glyphicon-remove"></span></button>
+			<button class="btn btn-default btn-xs" ng-click="row.isEditing = true" ng-if="!row.isEditing"><span class="glyphicon glyphicon-pencil"></span></button>            
         </td>
       </tr>
     </tbody>
