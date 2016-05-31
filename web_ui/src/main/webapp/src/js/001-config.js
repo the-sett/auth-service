@@ -7,11 +7,12 @@ authService.constant('config', {
 authService.config(function($authProvider) {
     $authProvider.facebook({
         clientId: '138414813234505',
-        redirectUri: window.location.origin + '/auth-service'        
+        redirectUri: window.location.origin + '/auth-service'
     });
 
     $authProvider.google({
-      clientId: 'Google Client ID'
+        clientId: '964932371492-5jlqis26ofd8osgupk5sk35vmu1958nm.apps.googleusercontent.com',
+        redirectUri: window.location.origin + '/auth-service'
     });
 
     $authProvider.github({

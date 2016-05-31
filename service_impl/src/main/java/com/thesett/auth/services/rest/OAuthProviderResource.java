@@ -28,6 +28,7 @@ public abstract class OAuthProviderResource
     public static final String CODE_KEY = "code";
     public static final String GRANT_TYPE_KEY = "grant_type";
     public static final String AUTH_CODE = "authorization_code";
+    public static final String AUTH_HEADER_KEY = "Authorization";
     public static final String CONFLICT_MSG = "There is already a %s account that belongs to you";
     public static final String NOT_FOUND_MSG = "User not found";
     public static final String LOGING_ERROR_MSG = "Wrong email and/or password";

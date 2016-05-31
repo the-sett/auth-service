@@ -23,9 +23,11 @@ import com.thesett.auth.model.Role;
 import com.thesett.auth.services.AccountService;
 import com.thesett.auth.services.RoleService;
 import com.thesett.auth.services.ServiceFactory;
+import com.thesett.auth.services.config.ClientSecretsConfiguration;
 import com.thesett.auth.services.rest.AuthResource;
 import com.thesett.auth.services.rest.FacebookAuthResource;
 import com.thesett.auth.services.rest.GithubAuthResource;
+import com.thesett.auth.services.rest.GoogleAuthResource;
 import com.thesett.jtrial.web.WebResource;
 import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.config.shiro.ShiroBundle;
@@ -186,14 +188,16 @@ public class Example
 
         // Attach resources for handling OAuth providers.
         Client client = new JerseyClientBuilder(environment).using(appConfiguration.getHttpClient()).build("client");
+        ClientSecretsConfiguration clientSecrets = appConfiguration.getClientSecretsConfiguration();
 
-        GithubAuthResource githubAuthResource =
-            new GithubAuthResource(appConfiguration.getClientSecretsConfiguration(), client);
+        GithubAuthResource githubAuthResource = new GithubAuthResource(clientSecrets, client);
         environment.jersey().register(githubAuthResource);
 
-        FacebookAuthResource facebookAuthResource =
-            new FacebookAuthResource(appConfiguration.getClientSecretsConfiguration(), client);
+        FacebookAuthResource facebookAuthResource = new FacebookAuthResource(clientSecrets, client);
         environment.jersey().register(facebookAuthResource);
+
+        GoogleAuthResource googleAuthResource = new GoogleAuthResource(clientSecrets, client);
+        environment.jersey().register(googleAuthResource);
     }
 
     /**
