@@ -44,6 +44,7 @@ public class GithubAuthResource extends OAuthProviderResource
     public Response login(Payload payload, @Context HttpServletRequest request)
     {
         String accessTokenUrl = "https://github.com/login/oauth/access_token";
+        String userApiUrl = "https://api.github.com/user";
 
         Response response;
 
@@ -56,8 +57,14 @@ public class GithubAuthResource extends OAuthProviderResource
         Map<String, Object> responseEntity = getResponseEntity(response);
 
         // Extract information about the user.
+        String accessToken = (String) responseEntity.get("access_token");
+        response =
+            client.target(userApiUrl).request("text/plain").accept(MediaType.APPLICATION_JSON).header(AUTH_HEADER_KEY,
+                String.format("Bearer %s", accessToken)).get();
 
-        // Process the authenticated user.
-        return Response.ok().build();
+        Map<String, Object> userInfo = getResponseEntity(response);
+
+        // Process the authenticated the user.
+        return processUser(request, Provider.GITHUB, userInfo.get("id").toString(), userInfo.get("name").toString());
     }
 }

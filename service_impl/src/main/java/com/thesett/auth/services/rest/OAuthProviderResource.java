@@ -38,6 +38,11 @@ public abstract class OAuthProviderResource
 
     protected Response processUser(HttpServletRequest request, Provider provider, String id, String displayName)
     {
+        System.out.println("=========================");
+        System.out.println("provider = " + provider);
+        System.out.println("id = " + id);
+        System.out.println("displayName = " + displayName);
+
         String token = "";
 
         return Response.ok().entity(token).build();
