@@ -24,45 +24,40 @@ import io.dropwizard.hibernate.UnitOfWork;
  *
  * @author Rupert Smith
  */
-public class FacebookAuthResource extends OAuthProviderResource
+@Path("/auth/")
+public class GithubAuthResource extends OAuthProviderResource
 {
     private final ClientSecretsConfiguration secrets;
 
     private final Client client;
 
-    public FacebookAuthResource(ClientSecretsConfiguration secrets, Client client)
+    public GithubAuthResource(ClientSecretsConfiguration secrets, Client client)
     {
         this.secrets = secrets;
         this.client = client;
     }
 
     @POST
-    @Path("facebook")
+    @Path("github")
     @UnitOfWork
     @Consumes(MediaType.APPLICATION_JSON)
     public Response login(Payload payload, @Context HttpServletRequest request)
     {
-        String accessTokenUrl = "https://graph.facebook.com/v2.3/oauth/access_token";
-        String graphApiUrl = "https://graph.facebook.com/v2.3/me";
+        String accessTokenUrl = "https://github.com/login/oauth/access_token";
 
         Response response;
 
         // Exchange authorization code for access token.
         response =
             client.target(accessTokenUrl).queryParam(CLIENT_ID_KEY, payload.getClientId()).queryParam(REDIRECT_URI_KEY,
-                payload.getRedirectUri()).queryParam(CLIENT_SECRET, secrets.getFacebook()).queryParam(CODE_KEY,
-                payload.getCode()).request("text/plain").accept(MediaType.TEXT_PLAIN).get();
+                payload.getRedirectUri()).queryParam(CLIENT_SECRET, secrets.getGithub()).queryParam(CODE_KEY,
+                payload.getCode()).request("text/plain").accept(MediaType.APPLICATION_JSON).get();
 
         Map<String, Object> responseEntity = getResponseEntity(response);
 
         // Extract information about the user.
-        response =
-            client.target(graphApiUrl).queryParam("access_token", responseEntity.get("access_token")).queryParam(
-                "expires_in", responseEntity.get("expires_in")).request("text/plain").get();
-
-        Map<String, Object> userInfo = getResponseEntity(response);
 
         // Process the authenticated user.
-        return processUser(request, Provider.FACEBOOK, userInfo.get("id").toString(), userInfo.get("name").toString());
+        return Response.ok().build();
     }
 }

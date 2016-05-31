@@ -7,11 +7,13 @@ import javax.validation.constraints.NotNull;
 import com.bazaarvoice.dropwizard.assets.AssetsBundleConfiguration;
 import com.bazaarvoice.dropwizard.assets.AssetsConfiguration;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.thesett.auth.services.config.ClientSecretsConfiguration;
 import com.thesett.util.config.shiro.ShiroConfiguration;
 import com.thesett.util.views.handlebars.HandlebarsBundleConfig;
 import com.thesett.util.views.handlebars.HandlebarsConfig;
 
 import io.dropwizard.Configuration;
+import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.db.DataSourceFactory;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 
@@ -48,6 +50,12 @@ public class AppConfiguration extends Configuration implements AssetsBundleConfi
 
     /** Holds the configuration settings to locate the handlebars templates. */
     private HandlebarsConfig handlebars = new HandlebarsConfig();
+
+    /** Holds the client secrets for OAuth providers. */
+    private ClientSecretsConfiguration clientSecretsConfiguration = new ClientSecretsConfiguration();
+
+    @JsonProperty
+    private JerseyClientConfiguration httpClient = new JerseyClientConfiguration();
 
     /** {@inheritDoc} */
     public HandlebarsConfig getHandlebars()
@@ -163,5 +171,23 @@ public class AppConfiguration extends Configuration implements AssetsBundleConfi
     public void setShiroConfiguration(ShiroConfiguration shiroConfiguration)
     {
         this.shiroConfiguration = shiroConfiguration;
+    }
+
+    @JsonProperty("clientSecrets")
+    public ClientSecretsConfiguration getClientSecretsConfiguration() {
+        return clientSecretsConfiguration;
+    }
+
+    @JsonProperty("clientSecrets")
+    public void setClientSecretsConfiguration(ClientSecretsConfiguration clientSecretsConfiguration) {
+        this.clientSecretsConfiguration = clientSecretsConfiguration;
+    }
+
+    public JerseyClientConfiguration getHttpClient() {
+        return httpClient;
+    }
+
+    public void setHttpClient(JerseyClientConfiguration httpClient) {
+        this.httpClient = httpClient;
     }
 }

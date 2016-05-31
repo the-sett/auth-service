@@ -7,7 +7,6 @@ authService.constant('config', {
 authService.config(function($authProvider) {
     $authProvider.facebook({
       clientId: 'Facebook App ID',
-      responseType: 'token'
     });
 
     $authProvider.google({
@@ -15,6 +14,7 @@ authService.config(function($authProvider) {
     });
 
     $authProvider.github({
-      clientId: 'GitHub Client ID'
+        clientId: 'd15f8aa4afc840428214',
+        redirectUri: window.location.origin + '/auth-service'
     });
 });

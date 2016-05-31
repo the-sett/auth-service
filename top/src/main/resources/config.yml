@@ -50,3 +50,8 @@ handlebars:
     - /webapp/app/views/layouts: web_ui/src/main/webapp/app/views/layouts
     - /webapp/app/views/partials: web_ui/src/main/webapp/app/views/partials
     - /webapp/app/views: web_ui/src/main/webapp/app/views
+
+clientSecrets:
+  github: 65581bc5b464b75fcca0e236e9831b5a1ad6eb3d
+  google: sdfkljsdkfjhsdfiouh
+  facebook: asdkjhasdiuhsiduh

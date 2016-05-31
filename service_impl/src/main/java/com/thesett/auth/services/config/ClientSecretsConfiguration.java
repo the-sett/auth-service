@@ -3,29 +3,41 @@ package com.thesett.auth.services.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * <pre><p/><table id="crc"><caption>CRC Card</caption>
- * <tr><th> Responsibilities <th> Collaborations
- * <tr><td>
- * </table></pre>
- *
- * @author Rupert Smith
- */
 public class ClientSecretsConfiguration
 {
-    @JsonProperty
-    String facebook;
+    @JsonProperty String facebook;
 
-    @JsonProperty
-    String google;
+    @JsonProperty String google;
+
+    @JsonProperty String github;
 
     public String getFacebook()
     {
         return facebook;
     }
 
+    public void setFacebook(String facebook)
+    {
+        this.facebook = facebook;
+    }
+
     public String getGoogle()
     {
         return google;
+    }
+
+    public void setGoogle(String google)
+    {
+        this.google = google;
+    }
+
+    public String getGithub()
+    {
+        return github;
+    }
+
+    public void setGithub(String github)
+    {
+        this.github = github;
     }
 }

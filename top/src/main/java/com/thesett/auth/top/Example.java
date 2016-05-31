@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.servlet.DispatcherType;
 import javax.validation.ValidatorFactory;
+import javax.ws.rs.client.Client;
 
 import com.bazaarvoice.dropwizard.assets.ConfiguredAssetsBundle;
 import com.thesett.auth.config.AppConfiguration;
@@ -23,6 +24,7 @@ import com.thesett.auth.services.AccountService;
 import com.thesett.auth.services.RoleService;
 import com.thesett.auth.services.ServiceFactory;
 import com.thesett.auth.services.rest.AuthResource;
+import com.thesett.auth.services.rest.GithubAuthResource;
 import com.thesett.jtrial.web.WebResource;
 import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.config.shiro.ShiroBundle;
@@ -37,6 +39,7 @@ import com.thesett.util.views.handlebars.HandlebarsBundle;
 import com.thesett.util.views.handlebars.HandlebarsBundleConfig;
 
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
@@ -163,7 +166,7 @@ public class Example
 
         KeyPair keyPair = keyGenerator.genKeyPair();
 
-        // Add the CORS fitler to allow cross-origin browsing to this API - needed to support
+        // Add the CORS filter to allow cross-origin browsing to this API - needed to support
         // javascript clients that are running on a different origin to the one this API is
         // being served from. Disable this for security, if a javascript client is not being used
         // or is being served from the same origin.
@@ -171,10 +174,6 @@ public class Example
                 DispatcherType.class), false, "/*");
 
         // Attach a configurator for Shiro to the Servlet lifecycle.
-        /*UserSecurityDAO userSecurityDAO =
-            HibernateSessionAndDetachProxy.proxy(new UserSecurityDAOImpl(sessionFactory), UserSecurityDAO.class,
-                sessionFactory);*/
-
         environment.servlets().addServletListeners(new ShiroJWTRealmSetupListener(keyPair.getPublic()));
 
         WebResource webResource = new WebResource(serviceFactory);
@@ -183,6 +182,13 @@ public class Example
         AccountDAO accountDAO = new AccountDAOImpl(sessionFactory, validatorFactory);
         AuthResource authResource = new AuthResource(accountDAO, keyPair);
         environment.jersey().register(authResource);
+
+        // Attach resources for handling OAuth providers.
+        Client client = new JerseyClientBuilder(environment).using(appConfiguration.getHttpClient()).build("client");
+
+        GithubAuthResource githubAuthResource =
+            new GithubAuthResource(appConfiguration.getClientSecretsConfiguration(), client);
+        environment.jersey().register(githubAuthResource);
     }
 
     /**
