@@ -17,7 +17,7 @@ import com.thesett.auth.services.config.ClientSecretsConfiguration;
  *
  * <pre><p/><table id="crc"><caption>CRC Card</caption>
  * <tr><th> Responsibilities <th> Collaborations
- * <tr><td>
+ * <tr><td> Associate a user account with an OAuth provider with a local account.
  * </table></pre>
  *
  * @author Rupert Smith
@@ -31,21 +31,39 @@ public abstract class OAuthProviderResource
     public static final String GRANT_TYPE_KEY = "grant_type";
     public static final String AUTH_CODE = "authorization_code";
     public static final String AUTH_HEADER_KEY = "Authorization";
-    public static final String CONFLICT_MSG = "There is already a %s account that belongs to you";
-    public static final String NOT_FOUND_MSG = "User not found";
-    public static final String LOGING_ERROR_MSG = "Wrong email and/or password";
-    public static final String UNLINK_ERROR_MSG = "Could not unlink %s account because it is your only sign-in method";
 
     public static final ObjectMapper MAPPER = new ObjectMapper();
 
+    /** Provides client secrets for interacting with OAuth providers. */
     protected final ClientSecretsConfiguration secrets;
 
+    /** Provides an HTTP client for interacting with OAuth providers. */
     protected final Client client;
 
+    /**
+     * Builds the base resource for interacting with an OAuth provider.
+     *
+     * @param secrets The client secrets for interacting with OAuth providers.
+     * @param client  An HTTP client for interacting with OAuth providers.
+     */
     public OAuthProviderResource(ClientSecretsConfiguration secrets, Client client)
     {
         this.secrets = secrets;
         this.client = client;
+    }
+
+    public static Map<String, Object> getResponseEntity(Response response)
+    {
+        try
+        {
+            return MAPPER.readValue(response.readEntity(String.class), new TypeReference<Map<String, Object>>()
+                {
+                });
+        }
+        catch (IOException e)
+        {
+            throw new IllegalStateException(e);
+        }
     }
 
     protected Response processUser(HttpServletRequest request, Provider provider, String id, String displayName)
@@ -58,19 +76,5 @@ public abstract class OAuthProviderResource
         String token = "";
 
         return Response.ok().entity(token).build();
-    }
-
-    protected Map<String, Object> getResponseEntity(Response response)
-    {
-        try
-        {
-            return MAPPER.readValue(response.readEntity(String.class), new TypeReference<Map<String, Object>>()
-                {
-                });
-        }
-        catch (IOException e)
-        {
-            throw new IllegalStateException(e);
-        }
     }
 }
