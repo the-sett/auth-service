@@ -27,14 +27,9 @@ import io.dropwizard.hibernate.UnitOfWork;
 @Path("/auth/")
 public class GithubAuthResource extends OAuthProviderResource
 {
-    private final ClientSecretsConfiguration secrets;
-
-    private final Client client;
-
     public GithubAuthResource(ClientSecretsConfiguration secrets, Client client)
     {
-        this.secrets = secrets;
-        this.client = client;
+        super(secrets, client);
     }
 
     @POST

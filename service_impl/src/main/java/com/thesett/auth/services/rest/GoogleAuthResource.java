@@ -30,14 +30,9 @@ import io.dropwizard.hibernate.UnitOfWork;
 @Path("/auth/")
 public class GoogleAuthResource extends OAuthProviderResource
 {
-    private ClientSecretsConfiguration secrets;
-
-    private Client client;
-
     public GoogleAuthResource(ClientSecretsConfiguration secrets, Client client)
     {
-        this.secrets = secrets;
-        this.client = client;
+        super(secrets, client);
     }
 
     @POST

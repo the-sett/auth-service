@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thesett.auth.services.config.ClientSecretsConfiguration;
 
 /**
  * OAuthProviderResource provides a base class for implementing the interactions with OAuth providers.
@@ -35,6 +37,16 @@ public abstract class OAuthProviderResource
     public static final String UNLINK_ERROR_MSG = "Could not unlink %s account because it is your only sign-in method";
 
     public static final ObjectMapper MAPPER = new ObjectMapper();
+
+    protected final ClientSecretsConfiguration secrets;
+
+    protected final Client client;
+
+    public OAuthProviderResource(ClientSecretsConfiguration secrets, Client client)
+    {
+        this.secrets = secrets;
+        this.client = client;
+    }
 
     protected Response processUser(HttpServletRequest request, Provider provider, String id, String displayName)
     {
