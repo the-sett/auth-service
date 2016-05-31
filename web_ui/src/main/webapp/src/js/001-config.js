@@ -6,7 +6,8 @@ authService.constant('config', {
 
 authService.config(function($authProvider) {
     $authProvider.facebook({
-      clientId: 'Facebook App ID',
+        clientId: '138414813234505',
+        redirectUri: window.location.origin + '/auth-service'        
     });
 
     $authProvider.google({

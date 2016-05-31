@@ -24,6 +24,7 @@ import com.thesett.auth.services.AccountService;
 import com.thesett.auth.services.RoleService;
 import com.thesett.auth.services.ServiceFactory;
 import com.thesett.auth.services.rest.AuthResource;
+import com.thesett.auth.services.rest.FacebookAuthResource;
 import com.thesett.auth.services.rest.GithubAuthResource;
 import com.thesett.jtrial.web.WebResource;
 import com.thesett.util.collections.CollectionUtil;
@@ -189,6 +190,10 @@ public class Example
         GithubAuthResource githubAuthResource =
             new GithubAuthResource(appConfiguration.getClientSecretsConfiguration(), client);
         environment.jersey().register(githubAuthResource);
+
+        FacebookAuthResource facebookAuthResource =
+            new FacebookAuthResource(appConfiguration.getClientSecretsConfiguration(), client);
+        environment.jersey().register(facebookAuthResource);
     }
 
     /**

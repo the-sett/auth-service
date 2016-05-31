@@ -24,6 +24,7 @@ import io.dropwizard.hibernate.UnitOfWork;
  *
  * @author Rupert Smith
  */
+@Path("/auth/")
 public class FacebookAuthResource extends OAuthProviderResource
 {
     private final ClientSecretsConfiguration secrets;
