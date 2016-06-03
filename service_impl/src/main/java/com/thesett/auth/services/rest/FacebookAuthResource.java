@@ -13,6 +13,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.thesett.auth.services.config.ClientSecretsConfiguration;
+import com.thesett.util.jackson.JacksonUtils;
+import com.thesett.util.security.shiro.ShiroUtils;
 
 import io.dropwizard.hibernate.UnitOfWork;
 
@@ -49,16 +51,27 @@ public class FacebookAuthResource extends OAuthProviderResource
                 payload.getRedirectUri()).queryParam(CLIENT_SECRET, secrets.getFacebook()).queryParam(CODE_KEY,
                 payload.getCode()).request("text/plain").accept(MediaType.TEXT_PLAIN).get();
 
-        Map<String, Object> responseEntity = getResponseEntity(response);
+        Map<String, Object> responseEntity = JacksonUtils.getResponseEntity(response);
 
         // Extract information about the user.
         response =
             client.target(graphApiUrl).queryParam("access_token", responseEntity.get("access_token")).queryParam(
                 "expires_in", responseEntity.get("expires_in")).request("text/plain").get();
 
-        Map<String, Object> userInfo = getResponseEntity(response);
+        Map<String, Object> userInfo = JacksonUtils.getResponseEntity(response);
 
-        // Process the authenticated user.
-        return processUser(request, Provider.FACEBOOK, userInfo.get("id").toString(), userInfo.get("name").toString());
+        try
+        {
+            setupShiroSubjectByJWTToken(request, null);
+
+            // Process the authenticated user.
+            processUser(Provider.FACEBOOK, userInfo.get("id").toString(), userInfo.get("name").toString());
+        }
+        finally
+        {
+            ShiroUtils.clearSubject();
+        }
+
+        return Response.status(Response.Status.OK).build();
     }
 }

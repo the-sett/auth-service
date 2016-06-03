@@ -50,6 +50,11 @@
             <groupId>com.thesett.jenerator.utils</groupId>
             <artifactId>jenerator_util_swagger</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>com.thesett.jenerator.utils</groupId>
+            <artifactId>jenerator_util_shiro</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.dropwizard</groupId>

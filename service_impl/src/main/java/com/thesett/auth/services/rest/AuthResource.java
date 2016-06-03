@@ -157,7 +157,6 @@ public class AuthResource
         }
 
         String token = cookie.getValue();
-        System.out.println("token = " + token);
 
         if (!StringUtils.nullOrEmpty(token) && JwtUtils.checkToken(token, keyPair.getPublic()))
         {

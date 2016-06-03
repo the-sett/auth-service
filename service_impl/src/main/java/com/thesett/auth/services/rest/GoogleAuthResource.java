@@ -16,6 +16,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import com.thesett.auth.services.config.ClientSecretsConfiguration;
+import com.thesett.util.jackson.JacksonUtils;
+import com.thesett.util.security.shiro.ShiroUtils;
 
 import io.dropwizard.hibernate.UnitOfWork;
 
@@ -56,14 +58,25 @@ public class GoogleAuthResource extends OAuthProviderResource
         accessData.clear();
 
         // Retrieve profile information about the current user.
-        String accessToken = (String) getResponseEntity(response).get("access_token");
+        String accessToken = (String) JacksonUtils.getResponseEntity(response).get("access_token");
         response =
             client.target(peopleApiUrl).request("text/plain").header(AUTH_HEADER_KEY,
                 String.format("Bearer %s", accessToken)).get();
 
-        Map<String, Object> userInfo = getResponseEntity(response);
+        Map<String, Object> userInfo = JacksonUtils.getResponseEntity(response);
 
-        // Process the authenticated the user.
-        return processUser(request, Provider.GOOGLE, userInfo.get("sub").toString(), userInfo.get("name").toString());
+        try
+        {
+            setupShiroSubjectByJWTToken(request, null);
+
+            // Process the authenticated the user.
+            processUser(Provider.GOOGLE, userInfo.get("sub").toString(), userInfo.get("name").toString());
+        }
+        finally
+        {
+            ShiroUtils.clearSubject();
+        }
+
+        return Response.status(Response.Status.OK).build();
     }
 }

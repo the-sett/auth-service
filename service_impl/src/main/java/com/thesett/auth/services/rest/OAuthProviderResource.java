@@ -1,16 +1,18 @@
 /* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 package com.thesett.auth.services.rest;
 
-import java.io.IOException;
-import java.util.Map;
+import java.security.PublicKey;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.core.Response;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thesett.auth.services.config.ClientSecretsConfiguration;
+import com.thesett.util.security.jwt.JwtUtils;
+import com.thesett.util.security.model.JWTAuthenticationToken;
+import com.thesett.util.security.shiro.ShiroUtils;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 
 /**
  * OAuthProviderResource provides a base class for implementing the interactions with OAuth providers.
@@ -32,8 +34,6 @@ public abstract class OAuthProviderResource
     public static final String AUTH_CODE = "authorization_code";
     public static final String AUTH_HEADER_KEY = "Authorization";
 
-    public static final ObjectMapper MAPPER = new ObjectMapper();
-
     /** Provides client secrets for interacting with OAuth providers. */
     protected final ClientSecretsConfiguration secrets;
 
@@ -52,29 +52,49 @@ public abstract class OAuthProviderResource
         this.client = client;
     }
 
-    public static Map<String, Object> getResponseEntity(Response response)
-    {
-        try
-        {
-            return MAPPER.readValue(response.readEntity(String.class), new TypeReference<Map<String, Object>>()
-                {
-                });
-        }
-        catch (IOException e)
-        {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    protected Response processUser(HttpServletRequest request, Provider provider, String id, String displayName)
+    protected void processUser(Provider provider, String id, String displayName)
     {
         System.out.println("=========================");
         System.out.println("provider = " + provider);
         System.out.println("id = " + id);
         System.out.println("displayName = " + displayName);
 
-        String token = "";
+        // If user is already signed in then link accounts.
+        Subject subject = SecurityUtils.getSubject();
+        boolean authenticated = subject.isAuthenticated();
 
-        return Response.ok().entity(token).build();
+        if (authenticated)
+        {
+            System.out.println("Authenticated, primary principal = " + subject.getPrincipal());
+
+            System.out.println("Linking accounts...");
+        }
+
+        // Create a new user account or return an existing one.
+        if (!authenticated) {
+            System.out.println("Not already authenticated.");
+        }
+    }
+
+    protected void setupShiroSubjectByJWTToken(HttpServletRequest request, PublicKey publicKey)
+    {
+        boolean tokenExtracted = JwtUtils.extractJWTtoRequestAttribute(request, "jwt", "jwt");
+
+        if (tokenExtracted)
+        {
+            JWTAuthenticationToken jwt = JwtUtils.getAuthenticationToken(request, "jwt");
+
+            jwt.setPublicKey(publicKey);
+
+            boolean tokenIsValid = jwt.checkValid();
+
+            if (tokenIsValid)
+            {
+                jwt.extractClaims();
+
+                Subject subject = jwt.asLocalSubject();
+                ShiroUtils.setSubject(subject);
+            }
+        }
     }
 }

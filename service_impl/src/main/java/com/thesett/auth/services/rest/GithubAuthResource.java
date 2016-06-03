@@ -13,6 +13,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.thesett.auth.services.config.ClientSecretsConfiguration;
+import com.thesett.util.jackson.JacksonUtils;
+import com.thesett.util.security.shiro.ShiroUtils;
 
 import io.dropwizard.hibernate.UnitOfWork;
 
@@ -49,7 +51,7 @@ public class GithubAuthResource extends OAuthProviderResource
                 payload.getRedirectUri()).queryParam(CLIENT_SECRET, secrets.getGithub()).queryParam(CODE_KEY,
                 payload.getCode()).request("text/plain").accept(MediaType.APPLICATION_JSON).get();
 
-        Map<String, Object> responseEntity = getResponseEntity(response);
+        Map<String, Object> responseEntity = JacksonUtils.getResponseEntity(response);
 
         // Extract information about the user.
         String accessToken = (String) responseEntity.get("access_token");
@@ -57,9 +59,20 @@ public class GithubAuthResource extends OAuthProviderResource
             client.target(userApiUrl).request("text/plain").accept(MediaType.APPLICATION_JSON).header(AUTH_HEADER_KEY,
                 String.format("Bearer %s", accessToken)).get();
 
-        Map<String, Object> userInfo = getResponseEntity(response);
+        Map<String, Object> userInfo = JacksonUtils.getResponseEntity(response);
 
-        // Process the authenticated the user.
-        return processUser(request, Provider.GITHUB, userInfo.get("id").toString(), userInfo.get("name").toString());
+        try
+        {
+            setupShiroSubjectByJWTToken(request, null);
+
+            // Process the authenticated the user.
+            processUser(Provider.GITHUB, userInfo.get("id").toString(), userInfo.get("name").toString());
+        }
+        finally
+        {
+            ShiroUtils.clearSubject();
+        }
+
+        return Response.status(Response.Status.OK).build();
     }
 }
