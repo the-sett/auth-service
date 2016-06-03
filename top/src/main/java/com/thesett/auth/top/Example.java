@@ -105,8 +105,6 @@ public class Example
             }
         };
 
-    private Subject subject;
-
     /**
      * Sets up some additional DropWizard modules.
      *
@@ -132,7 +130,7 @@ public class Example
      */
     public void example(ServiceFactory serviceFactory)
     {
-        subject = new LocalSubject().withPermission("admin");
+        Subject subject = new LocalSubject().withPermission("admin");
         ShiroUtils.setSubject(subject);
 
         createDefaultRolesAccount(serviceFactory);
