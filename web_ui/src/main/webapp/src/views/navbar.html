@@ -1,17 +1,9 @@
-<div class="container-fluid header-bar no-search">
-    <div class="row">
-        <div class="col-xs-2">
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <div class="thesett-header mdl-layout__header mdl-layout__header--waterfall">
+        <div class="mdl-layout__header-row">
             <a id="thesett-logo" href="http://"></a>
         </div>
-        <div class="col-xs-8" ng-switch on="state.current.data.menu">
-            <ul class="nav navbar-nav" menus="menuItems" tag="main" ng-switch-when="main">
-                <li ng-repeat="menu in menuItems"><a ui-sref="{{menu.state.name}}">{{menu.name}}</a></li>
-            </ul>
-        </div>
-        <div class="col-xs-2">
-            <div class="btn-group dropup pull-right">            
-                <button class="btn btn-primary btn-xs" ng-click="logout()"" ng-show="isAuthenticated()">Logout</button>
-            </div>
-        </div>
+
+        <button class="btn btn-primary btn-xs" ng-click="logout()"" ng-show="isAuthenticated()">Logout</button>
+
     </div>
-</div>
