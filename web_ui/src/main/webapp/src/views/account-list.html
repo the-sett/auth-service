@@ -3,28 +3,28 @@
     <h3 class="publishing-header__title">Users</h3>
     <span class="publishing-header__state badge">{{itemCount}} <ng-pluralize count="itemCount" when="{'1': 'item', 'other': 'items'}"></ng-pluralize> shown</span>
   </header>
-  
+
   <div ng-show="!itemCount > 0" class="col-xs-12 col-sm-12">
     <h4>There are no user accounts in the database.</h4>
   </div>
-  
-  <table ng-show="$data" ng-table="tableParams" class="table table-striped panel panel-default" show-filter="true">
+
+  <table ng-show="$data" ng-table="tableParams" class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp" show-filter="true">
     <tbody>
       <tr ng-repeat="item in $data">
         <td width="200" data-title="'Username'" filter="{username: 'text'}" sortable="'username'">
             {{item.username}}
         </td>
         <td width="60" data-title="'Actions'">
-            <a class="btn btn-primary btn-xs" ui-sref="editAccount({id:item.id})">Edit</a>
+            <a class="mdl-button mdl-js-button mdl-button--accent" ui-sref="editAccount({id:item.id})">Edit</a>
         </td>
       </tr>
     </tbody>
   </table>
-  
+
 </div>
 
 <nav class="button-bar clearfix">
-    <div class="container-fluid">    
+    <div class="container-fluid">
     <div class="row">
       <div class="col-xs-12">
         <div class="btn-group dropup pull-right">
