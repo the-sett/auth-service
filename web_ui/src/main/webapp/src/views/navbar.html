@@ -2,11 +2,10 @@
     <div class="thesett-header mdl-layout__header mdl-layout__header--waterfall">
         <div class="mdl-layout__header-row">
             <a id="thesett-logo" href="http://"></a>
+
+            <button class="mdl-button mdl-js-button mdl-button--accent" ng-click="logout()" ng-show="isAuthenticated()">
+              Logout
+            </button>
         </div>
-
-        <button class="mdl-button mdl-js-button mdl-button--accent" ng-click="logout()" ng-show="isAuthenticated()">
-          Logout
-        </button>
-
     </div>
-  </div>
+</div>
