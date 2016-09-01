@@ -35,3 +35,8 @@
   margin: 0;
   background-color: #fff;
 }
+
+.edge-button {
+  position: relative;
+  bottom: -20px;
+}
