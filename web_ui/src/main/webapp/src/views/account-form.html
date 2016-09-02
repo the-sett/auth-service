@@ -1,17 +1,14 @@
-<div class="row">  
-  <div class="col-xs-12 col-md-8">    
-    <div class="card">
-      
-      <div class="field">
-        <label for="exit">Username</label>
-        <input type="text" class="form-control" id="username" ng-model="account.username" placeholder="The users log in name.">
-      </div>
-      
-      <div class="field">
-        <label for="exit">Password</label>
-        <input type="text" class="form-control" id="password" ng-model="account.password" placeholder="The users password.">
-      </div>
-      
-    </div>    
-  </div>
+<div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--12-col">
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" id="username" ng-model="account.username" placeholder="The users log in name.">
+            <label class="mdl-textfield__label" for="sample1">Username</label>
+        </div>
+    </div>
+    <div class="mdl-cell mdl-cell--12-col">
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" id="password" ng-model="account.password" placeholder="The users password.">
+            <label class="mdl-textfield__label" for="sample2">Password</label>
+        </div>
+    </div>
 </div>
