@@ -8,24 +8,22 @@
         <h4>There are no user accounts in the database.</h4>
     </div>
 
-    <table ng-show="$data" ng-table="tableParams" class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp" show-filter="true">
-        <tbody>
-            <tr ng-repeat="item in $data">
-                <td width="200" data-title="'Username'" filter="{username: 'text'}" sortable="'username'">
-                    {{item.username}}
-                </td>
-                <td width="60" data-title="'Actions'">
-                    <a class="mdl-button mdl-js-button mdl-button--accent" ui-sref="editAccount({id:item.id})">Edit</a>
+    <div class="data-table__apron mdl-shadow--2dp">
+        <table ng-show="$data" ng-table="tableParams" class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp" show-filter="true">
+            <tbody>
+                <tr ng-repeat="item in $data">
+                    <td width="200" data-title="'Username'" filter="{username: 'text'}" sortable="'username'">
+                        {{item.username}}
+                    </td>
+                    <td width="60" data-title="'Actions'">
+                        <a class="mdl-button mdl-js-button mdl-button--accent" ui-sref="editAccount({id:item.id})">Edit</a>
 
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored edge-button" ui-sref="newAccount">
-                            <i class="material-icons">add</i>
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored data-table__fab-button" ui-sref="newAccount">
+		  <i class="material-icons">add</i>
+	  </button>
+    </div>
 </div>

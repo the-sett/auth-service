@@ -1,31 +1,29 @@
 <div class="container-fluid">
-  <header class="publishing-header">
-    <h3 class="publishing-header__title">Users</h3>
-    <span class="publishing-header__state badge">{{itemCount}} <ng-pluralize count="itemCount" when="{'1': 'item', 'other': 'items'}"></ng-pluralize> shown</span>
-  </header>
+    <header class="publishing-header">
+        <h3 class="publishing-header__title">Users</h3>
+        <span class="publishing-header__state badge">{{itemCount}} <ng-pluralize count="itemCount" when="{'1': 'item', 'other': 'items'}"></ng-pluralize> shown</span>
+    </header>
 
-  <div ng-show="!itemCount > 0" class="col-xs-12 col-sm-12">
-    <h4>There are no user roles in the database.</h4>
-  </div>
+    <div ng-show="!itemCount > 0" class="col-xs-12 col-sm-12">
+        <h4>There are no user roles in the database.</h4>
+    </div>
 
-  <table ng-show="$data" ng-table="tableParams" class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp" show-filter="true">
-    <tbody>
-      <tr ng-repeat="item in $data">
-        <td width="200" data-title="'Role'" filter="{name: 'text'}" sortable="'name'">
-            {{item.name}}
-        </td>
-        <td width="60" data-title="'Actions'">
-            <a class="mdl-button mdl-js-button mdl-button--accent" ui-sref="editRole({id:item.id})">Edit</a>
-        </td>
-      </tr>
-      <tr>
-          <td colspan="2">
-              <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored edge-button" ui-sref="newRole">
-                      <i class="material-icons">add</i>
-              </button>
-          </td>
-      </tr>
-    </tbody>
-  </table>
+    <div class="data-table__apron mdl-shadow--2dp">
+        <table ng-show="$data" ng-table="tableParams" class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp" show-filter="true">
+            <tbody>
+                <tr ng-repeat="item in $data">
+                    <td width="200" data-title="'Role'" filter="{name: 'text'}" sortable="'name'">
+                        {{item.name}}
+                    </td>
+                    <td width="60" data-title="'Actions'">
+                        <a class="mdl-button mdl-js-button mdl-button--accent" ui-sref="editRole({id:item.id})">Edit</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored data-table__fab-button" ui-sref="newRole">
+          <i class="material-icons">add</i>
+        </button>
+    </div>
 
 </div>
