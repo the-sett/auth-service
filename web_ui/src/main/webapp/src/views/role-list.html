@@ -1,12 +1,11 @@
-<div class="container-fluid">
-    <header class="publishing-header">
-        <h3 class="publishing-header__title">Users</h3>
-        <span class="publishing-header__state badge">{{itemCount}} <ng-pluralize count="itemCount" when="{'1': 'item', 'other': 'items'}"></ng-pluralize> shown</span>
-    </header>
+<div class="mdl-layout layout-fixed-width">
+    <h4>Roles</h4>
 
-    <div ng-show="!itemCount > 0" class="col-xs-12 col-sm-12">
-        <h4>There are no user roles in the database.</h4>
-    </div>
+    <span class="mdl-chip">
+      <span class="mdl-chip__text">
+        {{itemCount}} <ng-pluralize count="itemCount" when="{'1': 'item', 'other': 'items'}"></ng-pluralize> shown
+      </span>
+    </span>
 
     <div class="data-table__apron mdl-shadow--2dp">
         <table ng-show="$data" ng-table="tableParams" class="mdl-data-table mdl-js-data-table mdl-data-table--selectable" show-filter="true">
