@@ -1,45 +1,37 @@
 <div class="modal-content">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" ng-click="dismiss()">&times;</button>
-        <h4>Login</h4>
-    </div>
     <div class="modal-body">
-        <form role="form">
-            <div class="form-group">
-                <label for="usrname">Username</label>
-                <input type="text" class="form-control" id="usrname" ng-model="user.username" placeholder="Enter email">
-            </div>
-            <div class="form-group">
-                <label for="psw">Password</label>
-                <input type="password" class="form-control" id="psw" ng-model="user.password" placeholder="Enter password">
-            </div>
-            <div class="checkbox">
-                <label><input type="checkbox" value="" checked>Remember me</label>
-            </div>
-            <button type="submit" class="btn btn-success btn-block" ng-click="login()">Login</button>
-        </form>
-    </div>
-    <div class="text-on-separator">
-        <h6 class="text">or</h6>
-        <hr>
-    </div>
-    <div class="modal-body">
-        <button class="btn btn-github btn-block" ng-click="authenticate('github')">
-            <span class="ion-social-github"></span>
-            Sign in with GitHub
-        </button>
-        <button class="btn btn-google-plus btn-block" ng-click="authenticate('google')">
-            <span class="ion-social-googleplus"></span>
-            Sign in with Google
-        </button>
-        <button class="btn btn-facebook btn-block" ng-click="authenticate('facebook')">
-            <span class="ion-social-facebook"></span>
-            Sign in with Facebook
-        </button>
-    </div>
-    <div class="modal-footer">
-        <button type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal" ng-click="dismiss()">Cancel</button>
-        <p>Don't have an account? <a href="#">Sign Up</a></p>
-        <p>Forgot <a href="#">Password?</a></p>
+        <div class="mdl-card">
+            <form role="form">
+                <div class="mdl-card__title">
+                    <h4 class="mdl-card__title-text">Log In</h4>
+                </div>
+                <div class="mdl-card__supporting-text">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" id="username" ng-model="user.username" />
+                        <label class="mdl-textfield__label" for="sample1">Username</label>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="password" id="password" ng-model="user.password" />
+                        <label class="mdl-textfield__label" for="sample2">Password</label>
+                    </div>
+                </div>
+                <div class="mdl-card__actions">
+                    <button class="mdl-button mdl-js-button mdl-button--primary close" ng-click="login()">
+						Login
+						<i class="material-icons">chevron_right</i>
+					</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+<!-- <button class="btn btn-github btn-block" ng-click="authenticate('github')">
+  <span class="ion-social-github"></span>Sign in with GitHub
+</button>
+<button class="btn btn-google-plus btn-block" ng-click="authenticate('google')">
+  <span class="ion-social-googleplus"></span> Sign in with Google
+</button>
+<button class="btn btn-facebook btn-block" ng-click="authenticate('facebook')">
+  <span class="ion-social-facebook"></span> Sign in with Facebook
+</button> -->
