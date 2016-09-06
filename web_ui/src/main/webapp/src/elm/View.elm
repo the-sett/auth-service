@@ -17,6 +17,69 @@ import DataModeller.View
 import Main.Types exposing (..)
 
 
+view : Model -> Html Msg
+view =
+    Html.Lazy.lazy view'
+
+
+view' : Model -> Html Msg
+view' model =
+    let
+        top =
+            (Array.get model.selectedTab tabViews |> Maybe.withDefault e404) model
+    in
+        Layout.render Mdl
+            model.mdl
+            [ Layout.selectedTab model.selectedTab
+            , Layout.onSelectTab SelectTab
+            , Layout.fixedHeader `when` model.layout.fixedHeader
+            , Layout.fixedDrawer `when` model.layout.fixedDrawer
+            , Layout.fixedTabs `when` model.layout.fixedTabs
+            , (case model.layout.header of
+                Layout.Types.Waterfall x ->
+                    Layout.waterfall x
+
+                Layout.Types.Seamed ->
+                    Layout.seamed
+
+                Layout.Types.Standard ->
+                    Options.nop
+
+                Layout.Types.Scrolling ->
+                    Layout.scrolling
+              )
+                `when` model.layout.withHeader
+            , if model.transparentHeader then
+                Layout.transparentHeader
+              else
+                Options.nop
+            ]
+            { header = header model
+            , drawer = []
+            , tabs = ( [], [] )
+            , main = []
+            }
+
+
+header : Model -> List (Html Msg)
+header model =
+    if model.layout.withHeader then
+        [ Layout.row
+            []
+            [ Layout.link
+                [ Layout.href "http://" ]
+                [ text "thesett" ]
+            , Layout.spacer
+            ]
+        ]
+    else
+        []
+
+
+
+-- Old stuff
+
+
 tabs : List ( String, String, Model -> Html Msg )
 tabs =
     [ ( "Data Modeller", "data-model", .datamodeller >> DataModeller.View.root >> App.map DataModellerMsg )
@@ -73,87 +136,6 @@ drawer =
             [ text "Card component" ]
         ]
     ]
-
-
-header : Model -> List (Html Msg)
-header model =
-    if model.layout.withHeader then
-        [ Layout.row
-            [ if model.transparentHeader then
-                css "height" "192px"
-              else
-                Options.nop
-            , css "transition" "height 333ms ease-in-out 0s"
-            ]
-            [ Layout.title [] [ text "stack-whack" ]
-            , Layout.spacer
-            , Layout.navigation []
-                [ Layout.link
-                    [ Layout.onClick ToggleHeader ]
-                    [ Icon.i "photo" ]
-                , Layout.link
-                    [ Layout.href "https://github.com/debois/elm-mdl" ]
-                    [ span [] [ text "github" ] ]
-                , Layout.link
-                    [ Layout.href "http://package.elm-lang.org/packages/debois/elm-mdl/latest/" ]
-                    [ text "elm-package" ]
-                ]
-            ]
-        ]
-    else
-        []
-
-
-view : Model -> Html Msg
-view =
-    Html.Lazy.lazy view'
-
-
-view' : Model -> Html Msg
-view' model =
-    let
-        top =
-            (Array.get model.selectedTab tabViews |> Maybe.withDefault e404) model
-    in
-        Layout.render Mdl
-            model.mdl
-            [ Layout.selectedTab model.selectedTab
-            , Layout.onSelectTab SelectTab
-            , Layout.fixedHeader `when` model.layout.fixedHeader
-            , Layout.fixedDrawer `when` model.layout.fixedDrawer
-            , Layout.fixedTabs `when` model.layout.fixedTabs
-            , (case model.layout.header of
-                Layout.Types.Waterfall x ->
-                    Layout.waterfall x
-
-                Layout.Types.Seamed ->
-                    Layout.seamed
-
-                Layout.Types.Standard ->
-                    Options.nop
-
-                Layout.Types.Scrolling ->
-                    Layout.scrolling
-              )
-                `when` model.layout.withHeader
-            , if model.transparentHeader then
-                Layout.transparentHeader
-              else
-                Options.nop
-            ]
-            { header = header model
-            , drawer =
-                if model.layout.withDrawer then
-                    drawer
-                else
-                    []
-            , tabs =
-                if model.layout.withTabs then
-                    ( tabTitles, [ Color.background (Color.color model.layout.primary Color.S400) ] )
-                else
-                    ( [], [] )
-            , main = [ stylesheet, top ]
-            }
 
 
 stylesheet : Html a
