@@ -1,4 +1,4 @@
-module.exports = function (grunt) {
+module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
@@ -13,7 +13,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-compass');
     grunt.loadNpmTasks('grunt-ng-annotate');
     grunt.loadNpmTasks('grunt-angular-templates');
-    
+    grunt.loadNpmTasks('grunt-elm');
+
     grunt.initConfig({
         'pkg': grunt.file.readJSON('package.json'),
 
@@ -27,25 +28,44 @@ module.exports = function (grunt) {
                 }
             }
         },
-        
+
         'jshint': {
             'beforeconcat': ['src/js/**/*.js'],
         },
 
+        'elm': {
+            compile: {
+                files: {
+                    'app/auth_web_ui.js': ['src/elm/**/*.elm']
+                }
+            }
+        },
+
         'html2js': {
             dist: {
-                src: [ 'src/views/*.html' ],
+                src: ['src/views/*.html'],
                 dest: 'tmp/templates.js'
             }
         },
 
         'copy': {
             'dist': {
-                files: [
-                    {expand: true, cwd: 'src/views', src: ['**'], dest: 'app/views'},
-                    {expand: true, cwd: 'src/styles', src: ['**'], dest: 'app/styles'},
-                    {expand: true, cwd: 'src', src: ['index.html'], dest: 'app'}
-                ],
+                files: [{
+                    expand: true,
+                    cwd: 'src/views',
+                    src: ['**'],
+                    dest: 'app/views'
+                }, {
+                    expand: true,
+                    cwd: 'src/styles',
+                    src: ['**'],
+                    dest: 'app/styles'
+                }, {
+                    expand: true,
+                    cwd: 'src',
+                    src: ['index.html'],
+                    dest: 'app'
+                }],
             }
         },
 
@@ -54,21 +74,21 @@ module.exports = function (grunt) {
                 options: {
                     prefix: '/',
                     htmlmin: {
-                        collapseBooleanAttributes:      true,
-                        collapseWhitespace:             true,
-                        removeAttributeQuotes:          true,
-                        removeComments:                 true,
-                        removeEmptyAttributes:          true,
-                        removeRedundantAttributes:      true,
-                        removeScriptTypeAttributes:     true,
-                        removeStyleLinkTypeAttributes:  true
+                        collapseBooleanAttributes: true,
+                        collapseWhitespace: true,
+                        removeAttributeQuotes: true,
+                        removeComments: true,
+                        removeEmptyAttributes: true,
+                        removeRedundantAttributes: true,
+                        removeScriptTypeAttributes: true,
+                        removeStyleLinkTypeAttributes: true
                     }
                 },
                 src: 'app/views/**.html',
                 dest: 'app/template.js'
             }
         },
-            
+
         'concat': {
             options: {
                 separator: ';\n'
@@ -104,21 +124,19 @@ module.exports = function (grunt) {
                 singleQuotes: true
             },
             dist: {
-                files: [
-                    {
-                        expand: true,
-                        src: ['app/<%= pkg.name %>.js'],
-                        ext: '.annotated.js',
-                        extDot: 'last'
-                    },
-                ]
+                files: [{
+                    expand: true,
+                    src: ['app/<%= pkg.name %>.js'],
+                    ext: '.annotated.js',
+                    extDot: 'last'
+                }, ]
             }
         },
 
         'uglify': {
             'options': {
                 'mangle': false
-            },  
+            },
             'dist': {
                 'files': {
                     'app/<%= pkg.name %>.min.js': ['app/<%= pkg.name %>.annotated.js']
@@ -131,28 +149,45 @@ module.exports = function (grunt) {
                 options: {
                     engine: 'im',
                     quality: '25',
-                    sizes: [
-                        { width: '100%', name: 'large', suffix: '.x2' },
-                        { width: '66%', name: 'medium', suffix: '.x2' },
-                        { width: '44%', name: 'small', suffix: '.x2' },
-                        { width: '50%', name: 'large' },
-                        { width: '33%', name: 'medium' },
-                        { width: '22%', name: 'small' }
-                    ]
+                    sizes: [{
+                        width: '100%',
+                        name: 'large',
+                        suffix: '.x2'
+                    }, {
+                        width: '66%',
+                        name: 'medium',
+                        suffix: '.x2'
+                    }, {
+                        width: '44%',
+                        name: 'small',
+                        suffix: '.x2'
+                    }, {
+                        width: '50%',
+                        name: 'large'
+                    }, {
+                        width: '33%',
+                        name: 'medium'
+                    }, {
+                        width: '22%',
+                        name: 'small'
+                    }]
                 },
-                files: [
-                    {expand: true, cwd: 'src/images', src: ['**/*.{jpg,gif,png}'], dest: 'app/images'}
-                ]
+                files: [{
+                    expand: true,
+                    cwd: 'src/images',
+                    src: ['**/*.{jpg,gif,png}'],
+                    dest: 'app/images'
+                }]
             }
         },
-        
+
         'compress': {
             dist: {
                 options: {
                     archive: 'dist/<%= pkg.name %>-<%= pkg.version %>.zip'
                 },
                 files: [{
-                    src: [ 'app/**', 'server.js' ],
+                    src: ['app/**', 'server.js'],
                     dest: '/'
                 }]
             }
@@ -167,18 +202,18 @@ module.exports = function (grunt) {
                 }
             }
         },
-        
+
         'watch': {
             'dev': {
-                files: [ 'Gruntfile.js', 'src/**' ],
-                tasks: [ 'build' ],
+                files: ['Gruntfile.js', 'bower.json', 'elm-package.json', 'server.js', 'config.rb', 'src/**'],
+                tasks: ['build'],
                 options: {
                     atBegin: true
                 }
             },
             'min': {
-                files: [ 'Gruntfile.js', 'src/**' ],
-                tasks: [ 'package' ],
+                files: ['Gruntfile.js', 'src/**'],
+                tasks: ['package'],
                 options: {
                     atBegin: true
                 }
@@ -187,13 +222,13 @@ module.exports = function (grunt) {
 
         'clean': {
             temp: {
-                src: [ 'tmp', 'app', 'dist' ]
+                src: ['tmp', 'app', 'dist']
             }
         },
     });
 
-    grunt.registerTask('dev', [ 'bower', 'connect:server', 'watch:dev' ]);
-    grunt.registerTask('minified', [ 'bower', 'connect:server', 'watch:min' ]);
-    grunt.registerTask('build', [ 'bower', 'html2js', 'copy', 'ngtemplates', 'concat:sources', 'ngAnnotate', 'concat:libs', 'responsive_images' ]);
-    grunt.registerTask('package', [ 'build', 'uglify', 'compress' ]);
+    grunt.registerTask('dev', ['bower', 'connect:server', 'watch:dev']);
+    grunt.registerTask('minified', ['bower', 'connect:server', 'watch:min']);
+    grunt.registerTask('build', ['bower', 'html2js', 'copy', 'elm', 'concat:libs', 'responsive_images']);
+    grunt.registerTask('package', ['build', 'uglify', 'compress']);
 };

@@ -27,7 +27,8 @@
         "grunt-responsive-images": "~0.1.7",
         "grunt-contrib-compass": "~1.0.4",
         "grunt-ng-annotate": "~2.0.2",
-        "grunt-angular-templates": "~1.0.3"
+        "grunt-angular-templates": "~1.0.3",
+        "grunt-elm": "~1.4.0"
     },
     "scripts": {
         "postinstall": "bower install",
