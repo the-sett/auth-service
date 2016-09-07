@@ -66,9 +66,11 @@ header model =
     if model.layout.withHeader then
         [ Layout.row
             []
-            [ Layout.link
-                [ Layout.href "http://" ]
-                [ text "thesett" ]
+            [ a
+                [ Html.Attributes.id "thesett-logo"
+                , href "http://"
+                ]
+                []
             , Layout.spacer
             ]
         ]
