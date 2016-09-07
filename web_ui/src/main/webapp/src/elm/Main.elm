@@ -11,7 +11,9 @@ import Menu.Types
 import Main.Types exposing (..)
 import Main.State exposing (..)
 import Main.View exposing (..)
-import DataModeller.State
+import Accounts.State
+import Roles.State
+import Permissions.State
 
 
 main : Program Never

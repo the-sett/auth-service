@@ -1,4 +1,4 @@
-module DataModeller.View exposing (root)
+module Accounts.View exposing (root)
 
 import Html exposing (..)
 import Html.Attributes exposing (title)
@@ -7,7 +7,7 @@ import Platform.Cmd exposing (Cmd)
 import String
 import Material.Options as Options exposing (Style, css)
 import Material.Color as Color
-import DataModeller.Types exposing (..)
+import Accounts.Types exposing (..)
 
 
 boxed : List (Options.Property a b)

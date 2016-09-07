@@ -3,12 +3,16 @@ module Main.Types exposing (..)
 import Material
 import Layout.Types
 import Menu.Types
-import DataModeller.Types
+import Accounts.Types
+import Roles.Types
+import Permissions.Types
 
 
 type alias Model =
     { mdl : Material.Model
-    , datamodeller : DataModeller.Types.Model
+    , accounts : Accounts.Types.Model
+    , roles : Roles.Types.Model
+    , permissions : Permissions.Types.Model
     , layout : Layout.Types.Model
     , menus : Menu.Types.Model
     , selectedTab : Int
@@ -19,7 +23,9 @@ type alias Model =
 type Msg
     = SelectTab Int
     | Mdl (Material.Msg Msg)
-    | DataModellerMsg DataModeller.Types.Msg
+    | AccountsMsg Accounts.Types.Msg
+    | RolesMsg Roles.Types.Msg
+    | PermissionsMsg Permissions.Types.Msg
     | LayoutMsg Layout.Types.Msg
     | MenusMsg Menu.Types.Msg
     | ToggleHeader

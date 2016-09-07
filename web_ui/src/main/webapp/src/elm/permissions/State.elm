@@ -1,9 +1,9 @@
-module DataModeller.State exposing (init, update)
+module Permissions.State exposing (init, update)
 
 import Platform.Cmd exposing (Cmd)
 import Material
 import Material.Helpers exposing (lift)
-import DataModeller.Types exposing (..)
+import Permissions.Types exposing (..)
 
 
 init : Model

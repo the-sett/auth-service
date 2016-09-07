@@ -1,4 +1,4 @@
-module DataModeller.Types exposing (..)
+module Accounts.Types exposing (..)
 
 import Material
 

@@ -13,7 +13,9 @@ import Material.Scheme as Scheme
 import Material.Icon as Icon
 import Material.Typography as Typography
 import Layout.Types
-import DataModeller.View
+import Accounts.View
+import Roles.View
+import Permissions.View
 import Main.Types exposing (..)
 
 
@@ -56,7 +58,10 @@ view' model =
             ]
             { header = header model
             , drawer = []
-            , tabs = ( [], [] )
+            , tabs =
+                ( tabTitles
+                , []
+                )
             , main = []
             }
 
@@ -78,13 +83,11 @@ header model =
         []
 
 
-
--- Old stuff
-
-
 tabs : List ( String, String, Model -> Html Msg )
 tabs =
-    [ ( "Data Modeller", "data-model", .datamodeller >> DataModeller.View.root >> App.map DataModellerMsg )
+    [ ( "Accounts", "accounts", .accounts >> Accounts.View.root >> App.map AccountsMsg )
+    , ( "Roles", "roles", .roles >> Roles.View.root >> App.map RolesMsg )
+    , ( "Permissions", "permissions", .permissions >> Permissions.View.root >> App.map PermissionsMsg )
     ]
 
 
@@ -106,6 +109,10 @@ tabUrls =
 urlTabs : Dict String Int
 urlTabs =
     List.indexedMap (\idx ( _, x, _ ) -> ( x, idx )) tabs |> Dict.fromList
+
+
+
+-- Old stuff
 
 
 e404 : Model -> Html Msg
