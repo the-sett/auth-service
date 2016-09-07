@@ -15,11 +15,11 @@ init =
     , header = Standard
     , rippleTabs = True
     , transparentHeader = False
-    , withDrawer = True
+    , withDrawer = False
     , withHeader = True
     , withTabs = True
-    , primary = Color.Teal
-    , accent = Color.Red
+    , primary = Color.Green
+    , accent = Color.Indigo
     }
 
 
