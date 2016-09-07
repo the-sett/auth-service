@@ -62,7 +62,7 @@ view' model =
                 ( tabTitles
                 , []
                 )
-            , main = []
+            , main = [ top ]
             }
 
 
@@ -111,10 +111,6 @@ urlTabs =
     List.indexedMap (\idx ( _, x, _ ) -> ( x, idx )) tabs |> Dict.fromList
 
 
-
--- Old stuff
-
-
 e404 : Model -> Html Msg
 e404 _ =
     div
@@ -125,6 +121,10 @@ e404 _ =
             ]
             [ text "404" ]
         ]
+
+
+
+-- Old stuff
 
 
 drawer : List (Html Msg)

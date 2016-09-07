@@ -10,33 +10,6 @@ import Material.Color as Color
 import Roles.Types exposing (..)
 
 
-boxed : List (Options.Property a b)
-boxed =
-    [ css "margin" "auto"
-    , css "padding-left" "8%"
-    , css "padding-right" "8%"
-    ]
-
-
-title : String -> Html a
-title t =
-    Options.styled Html.h1
-        [ Color.text Color.primary ]
-        [ text t ]
-
-
-body1 : List (Html a) -> Html a
-body1 demo =
-    Options.div
-        boxed
-        [ Options.div
-            [ css "margin-bottom" "48px"
-            ]
-            demo
-        ]
-
-
 root : Model -> Html Msg
 root model =
-    body1
-        []
+    text "roles"
