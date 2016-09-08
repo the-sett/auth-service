@@ -1,4 +1,4 @@
-module Accounts.View exposing (root)
+module Accounts.View exposing (root, dialog)
 
 import Set as Set
 import Debug as Debug
@@ -80,7 +80,6 @@ table model =
                 )
             ]
         , controlBar model
-        , element model
         ]
 
 
@@ -121,8 +120,8 @@ controlBar model =
         ]
 
 
-element : Model -> Html Msg
-element model =
+dialog : Model -> Html Msg
+dialog model =
     Dialog.view
         []
         [ Dialog.title [] [ text "Greetings" ]

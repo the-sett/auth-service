@@ -19,6 +19,11 @@ import Permissions.View
 import Main.Types exposing (..)
 
 
+nth : Int -> List a -> Maybe a
+nth k xs =
+    List.drop k xs |> List.head
+
+
 view : Model -> Html Msg
 view =
     Html.Lazy.lazy view'
@@ -64,6 +69,21 @@ view' model =
                 )
             , main = [ top ]
             }
+            |> (\contents ->
+                    div []
+                        [ contents
+                          {-
+                             Dialogs need to be pulled up here to make the dialog
+                             polyfill work on some browsers.
+                          -}
+                        , case nth model.selectedTab tabs of
+                            Just ( "Accounts", _, _ ) ->
+                                App.map AccountsMsg (Accounts.View.dialog model.accounts)
+
+                            _ ->
+                                div [] []
+                        ]
+               )
 
 
 header : Model -> List (Html Msg)
