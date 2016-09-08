@@ -9,6 +9,7 @@ import Platform.Cmd exposing (Cmd)
 import String
 import Material.Options as Options exposing (Style, cs, when, nop, disabled)
 import Material.Color as Color
+import Material.Dialog as Dialog
 import Material.Table as Table
 import Material.Button as Button
 import Material.Icon as Icon
@@ -79,6 +80,7 @@ table model =
                 )
             ]
         , controlBar model
+        , element model
         ]
 
 
@@ -97,6 +99,7 @@ controlBar model =
                     [ Button.fab
                     , Button.colored
                     , Button.ripple
+                    , Dialog.openOn "click"
                     , Button.onClick Add
                     ]
                     [ Icon.i "add" ]
@@ -114,5 +117,29 @@ controlBar model =
                     ]
                     [ text "Delete" ]
                 ]
+            ]
+        ]
+
+
+element : Model -> Html Msg
+element model =
+    Dialog.view
+        []
+        [ Dialog.title [] [ text "Greetings" ]
+        , Dialog.content []
+            [ p [] [ text "A strange game—the only winning move is not to play." ]
+            , p [] [ text "How about a nice game of chess?" ]
+            ]
+        , Dialog.actions []
+            [ Button.render Mdl
+                [ 0 ]
+                model.mdl
+                [ Dialog.closeOn "click" ]
+                [ text "Chess" ]
+            , Button.render Mdl
+                [ 1 ]
+                model.mdl
+                [ Button.disabled ]
+                [ text "GTNW" ]
             ]
         ]
