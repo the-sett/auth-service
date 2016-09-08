@@ -1,4 +1,4 @@
-module Accounts.State exposing (init, update, allSelected, key)
+module Accounts.State exposing (init, update, allSelected, someSelected, key)
 
 import Platform.Cmd exposing (Cmd)
 import Material
@@ -27,6 +27,11 @@ key =
 allSelected : Model -> Bool
 allSelected model =
     Set.size model.selected == List.length model.data
+
+
+someSelected : Model -> Bool
+someSelected model =
+    Set.size model.selected > 0
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

@@ -6,7 +6,7 @@ import Html.Attributes exposing (title, class)
 import Html.App as App
 import Platform.Cmd exposing (Cmd)
 import String
-import Material.Options as Options exposing (Style, cs, when)
+import Material.Options as Options exposing (Style, cs, when, nop, disabled)
 import Material.Color as Color
 import Material.Table as Table
 import Material.Button as Button
@@ -106,8 +106,11 @@ controlBar model =
                 [ Button.render Mdl
                     [ 1, 1 ]
                     model.mdl
-                    [ Button.ripple
-                    , cs "mdl-button--warn"
+                    [ cs "mdl-button--warn"
+                    , if someSelected model then
+                        Button.ripple
+                      else
+                        Button.disabled
                       -- , Button.onClick MyClickMsg
                     ]
                     [ text "Delete" ]
