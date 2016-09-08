@@ -22,3 +22,6 @@ type Msg
     = Mdl (Material.Msg Msg)
     | Toggle (String)
     | ToggleAll
+    | Add
+    | Delete
+    | Edit

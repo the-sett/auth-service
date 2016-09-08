@@ -1,6 +1,7 @@
 module Accounts.View exposing (root)
 
 import Set as Set
+import Debug as Debug
 import Html exposing (..)
 import Html.Attributes exposing (title, class)
 import Html.App as App
@@ -69,7 +70,7 @@ table model =
                                         model.mdl
                                         [ Button.accent
                                         , Button.ripple
-                                          -- , Button.onClick MyClickMsg
+                                        , Button.onClick Edit
                                         ]
                                         [ text "Edit" ]
                                     ]
@@ -100,7 +101,7 @@ controlBar model =
                     [ Button.fab
                     , Button.colored
                     , Button.ripple
-                      -- , Button.onClick MyClickMsg
+                    , Button.onClick Add
                     ]
                     [ Icon.i "add" ]
                 ]
@@ -113,7 +114,7 @@ controlBar model =
                         Button.ripple
                       else
                         Button.disabled
-                      -- , Button.onClick MyClickMsg
+                    , Button.onClick Delete
                     ]
                     [ text "Delete" ]
                 ]

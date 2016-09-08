@@ -7,6 +7,10 @@ import Accounts.Types exposing (..)
 import Set as Set
 
 
+log =
+    Debug.log "accounts"
+
+
 init : Model
 init =
     { mdl = Material.model
@@ -59,3 +63,24 @@ update action model =
                         Set.insert k model.selected
             }
                 ! []
+
+        Add ->
+            let
+                d =
+                    log "add"
+            in
+                ( model, Cmd.none )
+
+        Delete ->
+            let
+                d =
+                    log "delete"
+            in
+                ( model, Cmd.none )
+
+        Edit ->
+            let
+                d =
+                    log "edit"
+            in
+                ( model, Cmd.none )
