@@ -90,10 +90,6 @@ controlBar model =
                 [ span [ class "mdl-chip mdl-chip__text" ]
                     [ text (toString (List.length model.data) ++ " items") ]
                 ]
-            , div [ class "control-bar__left-3" ]
-                [ p []
-                    [ text "Some text" ]
-                ]
             , div [ class "control-bar__right-0" ]
                 [ Button.render Mdl
                     [ 1, 0 ]
