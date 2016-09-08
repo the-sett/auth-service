@@ -1,14 +1,16 @@
 module Accounts.View exposing (root)
 
 import Html exposing (..)
-import Html.Attributes exposing (title)
+import Html.Attributes exposing (title, class)
 import Html.App as App
 import Platform.Cmd exposing (Cmd)
 import String
-import Material.Options as Options exposing (Style, css)
+import Material.Options as Options exposing (Style, cs)
 import Material.Color as Color
 import Accounts.Types exposing (..)
 import Material.Table as Table
+import Material.Button as Button
+import Material.Icon as Icon
 
 
 type alias Data =
@@ -28,23 +30,74 @@ data =
 
 root : Model -> Html Msg
 root model =
-    Table.table []
-        [ Table.thead []
-            [ Table.tr []
-                [ Table.th [] [ text "Material" ]
-                , Table.th [] [ text "Quantity" ]
-                , Table.th [] [ text "Unit Price" ]
+    div [ class "layout-fixed-width" ]
+        [ table model ]
+
+
+table : Model -> Html Msg
+table model =
+    div [ class "data-table__apron mdl-shadow--2dp" ]
+        [ Table.table [ cs "mdl-data-table mdl-js-data-table mdl-data-table--selectable" ]
+            [ Table.thead []
+                [ Table.tr []
+                    [ Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Material" ]
+                    , Table.th [] [ text "Quantity" ]
+                    , Table.th [] [ text "Unit Price" ]
+                    , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Actions" ]
+                    ]
+                ]
+            , Table.tbody []
+                (data
+                    |> List.indexedMap
+                        (\idx item ->
+                            Table.tr []
+                                [ Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text item.material ]
+                                , Table.td [ Table.numeric ] [ text item.quantity ]
+                                , Table.td [ Table.numeric ] [ text item.unitPrice ]
+                                , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
+                                    [ Button.render Mdl
+                                        [ 0, idx ]
+                                        model.mdl
+                                        [ Button.accent
+                                        , Button.ripple
+                                          -- , Button.onClick MyClickMsg
+                                        ]
+                                        [ text "Edit" ]
+                                    ]
+                                ]
+                        )
+                )
+            ]
+        , controlBar model
+        ]
+
+
+controlBar : Model -> Html Msg
+controlBar model =
+    div [ class "control-bar" ]
+        [ div [ class "control-bar__row" ]
+            [ div [ class "control-bar__left-0" ]
+                [ span [ class "mdl-chip mdl-chip__text" ]
+                    [ text "3 items" ]
+                ]
+            , div [ class "control-bar__left-3" ]
+                [ p []
+                    [ text "Some text" ]
+                ]
+            , div [ class "control-bar__right-0" ]
+                [ Button.render Mdl
+                    [ 1 ]
+                    model.mdl
+                    [ Button.fab
+                    , Button.colored
+                    , Button.ripple
+                      -- , Button.onClick MyClickMsg
+                    ]
+                    [ Icon.i "add" ]
+                ]
+            , div [ class "control-bar__right-0" ]
+                [ button [ class "mdl-button mdl-js-button mdl-button--primary" ]
+                    [ text "Button" ]
                 ]
             ]
-        , Table.tbody []
-            (data
-                |> List.map
-                    (\item ->
-                        Table.tr []
-                            [ Table.td [] [ text item.material ]
-                            , Table.td [ Table.numeric ] [ text item.quantity ]
-                            , Table.td [ Table.numeric ] [ text item.unitPrice ]
-                            ]
-                    )
-            )
         ]
