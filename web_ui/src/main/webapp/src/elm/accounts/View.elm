@@ -1,31 +1,19 @@
 module Accounts.View exposing (root)
 
+import Set as Set
 import Html exposing (..)
 import Html.Attributes exposing (title, class)
 import Html.App as App
 import Platform.Cmd exposing (Cmd)
 import String
-import Material.Options as Options exposing (Style, cs)
+import Material.Options as Options exposing (Style, cs, when)
 import Material.Color as Color
-import Accounts.Types exposing (..)
 import Material.Table as Table
 import Material.Button as Button
 import Material.Icon as Icon
-
-
-type alias Data =
-    { material : String
-    , quantity : String
-    , unitPrice : String
-    }
-
-
-data : List Data
-data =
-    [ { material = "Acrylic (Transparent)", quantity = "25", unitPrice = "$2.90" }
-    , { material = "Plywood (Birch)", quantity = "50", unitPrice = "$1.25" }
-    , { material = "Laminate (Gold on Blue)", quantity = "10", unitPrice = "$2.35" }
-    ]
+import Material.Toggles as Toggles
+import Accounts.Types exposing (..)
+import Accounts.State exposing (..)
 
 
 root : Model -> Html Msg
@@ -40,18 +28,37 @@ table model =
         [ Table.table [ cs "mdl-data-table mdl-js-data-table mdl-data-table--selectable" ]
             [ Table.thead []
                 [ Table.tr []
-                    [ Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Material" ]
+                    [ Table.th []
+                        [ Toggles.checkbox Mdl
+                            [ -1 ]
+                            model.mdl
+                            [ Toggles.onClick ToggleAll
+                            , Toggles.value (allSelected model)
+                            ]
+                            []
+                        ]
+                    , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Material" ]
                     , Table.th [] [ text "Quantity" ]
                     , Table.th [] [ text "Unit Price" ]
                     , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Actions" ]
                     ]
                 ]
             , Table.tbody []
-                (data
+                (model.data
                     |> List.indexedMap
                         (\idx item ->
-                            Table.tr []
-                                [ Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text item.material ]
+                            Table.tr
+                                [ Table.selected `when` Set.member (key item) model.selected ]
+                                [ Table.td []
+                                    [ Toggles.checkbox Mdl
+                                        [ idx ]
+                                        model.mdl
+                                        [ Toggles.onClick (Toggle <| key item)
+                                        , Toggles.value <| Set.member (key item) model.selected
+                                        ]
+                                        []
+                                    ]
+                                , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text item.material ]
                                 , Table.td [ Table.numeric ] [ text item.quantity ]
                                 , Table.td [ Table.numeric ] [ text item.unitPrice ]
                                 , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
@@ -78,7 +85,7 @@ controlBar model =
         [ div [ class "control-bar__row" ]
             [ div [ class "control-bar__left-0" ]
                 [ span [ class "mdl-chip mdl-chip__text" ]
-                    [ text "3 items" ]
+                    [ text (toString (List.length model.data) ++ " items") ]
                 ]
             , div [ class "control-bar__left-3" ]
                 [ p []
@@ -86,7 +93,7 @@ controlBar model =
                 ]
             , div [ class "control-bar__right-0" ]
                 [ Button.render Mdl
-                    [ 1 ]
+                    [ 1, 0 ]
                     model.mdl
                     [ Button.fab
                     , Button.colored
@@ -96,8 +103,14 @@ controlBar model =
                     [ Icon.i "add" ]
                 ]
             , div [ class "control-bar__right-0" ]
-                [ button [ class "mdl-button mdl-js-button mdl-button--primary" ]
-                    [ text "Button" ]
+                [ Button.render Mdl
+                    [ 1, 1 ]
+                    model.mdl
+                    [ Button.ripple
+                    , cs "mdl-button--warn"
+                      -- , Button.onClick MyClickMsg
+                    ]
+                    [ text "Delete" ]
                 ]
             ]
         ]

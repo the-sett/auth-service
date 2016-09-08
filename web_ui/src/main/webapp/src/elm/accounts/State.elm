@@ -1,15 +1,32 @@
-module Accounts.State exposing (init, update)
+module Accounts.State exposing (init, update, allSelected, key)
 
 import Platform.Cmd exposing (Cmd)
 import Material
 import Material.Helpers exposing (lift)
 import Accounts.Types exposing (..)
+import Set as Set
 
 
 init : Model
 init =
     { mdl = Material.model
+    , selected = Set.empty
+    , data =
+        [ { material = "Acrylic (Transparent)", quantity = "25", unitPrice = "$2.90" }
+        , { material = "Plywood (Birch)", quantity = "50", unitPrice = "$1.25" }
+        , { material = "Laminate (Gold on Blue)", quantity = "10", unitPrice = "$2.35" }
+        ]
     }
+
+
+key : Data -> String
+key =
+    .material
+
+
+allSelected : Model -> Bool
+allSelected model =
+    Set.size model.selected == List.length model.data
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -17,3 +34,23 @@ update action model =
     case action of
         Mdl action' ->
             Material.update action' model
+
+        ToggleAll ->
+            { model
+                | selected =
+                    if allSelected model then
+                        Set.empty
+                    else
+                        List.map key model.data |> Set.fromList
+            }
+                ! []
+
+        Toggle k ->
+            { model
+                | selected =
+                    if Set.member k model.selected then
+                        Set.remove k model.selected
+                    else
+                        Set.insert k model.selected
+            }
+                ! []
