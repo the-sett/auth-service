@@ -98,7 +98,6 @@ controlBar model =
                     [ Button.fab
                     , Button.colored
                     , Button.ripple
-                    , Dialog.openOn "click"
                     , Button.onClick Add
                     ]
                     [ Icon.i "add" ]
@@ -113,6 +112,7 @@ controlBar model =
                       else
                         Button.disabled
                     , Button.onClick Delete
+                    , Dialog.openOn "click"
                     ]
                     [ text "Delete" ]
                 ]
@@ -124,21 +124,32 @@ dialog : Model -> Html Msg
 dialog model =
     Dialog.view
         []
-        [ Dialog.title [] [ h4 [ class "mdl-dialog__title-text" ] [ text "Greetings" ] ]
+        [ Dialog.title [] [ h4 [ class "mdl-dialog__title-text" ] [ text "Delete" ] ]
         , Dialog.content []
-            [ p [] [ text "A strange game—the only winning move is not to play." ]
-            , p [] [ text "How about a nice game of chess?" ]
+            [ p [] [ text "Are you sure?" ]
             ]
         , Dialog.actions []
-            [ Button.render Mdl
-                [ 0 ]
-                model.mdl
-                [ Dialog.closeOn "click" ]
-                [ text "Chess" ]
-            , Button.render Mdl
-                [ 1 ]
-                model.mdl
-                [ Button.disabled ]
-                [ text "GTNW" ]
+            [ div [ class "control-bar" ]
+                [ div [ class "control-bar__row" ]
+                    [ div [ class "control-bar__left-0" ]
+                        [ Button.render Mdl
+                            [ 1 ]
+                            model.mdl
+                            [ Dialog.closeOn "click"
+                            , Button.accent
+                            ]
+                            [ text "Cancel" ]
+                        ]
+                    , div [ class "control-bar__right-0" ]
+                        [ Button.render Mdl
+                            [ 0 ]
+                            model.mdl
+                            [ Dialog.closeOn "click"
+                            , Button.colored
+                            ]
+                            [ text "Confirm" ]
+                        ]
+                    ]
+                ]
             ]
         ]
