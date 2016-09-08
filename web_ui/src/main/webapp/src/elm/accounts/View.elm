@@ -124,7 +124,7 @@ dialog : Model -> Html Msg
 dialog model =
     Dialog.view
         []
-        [ Dialog.title [] [ text "Greetings" ]
+        [ Dialog.title [] [ h4 [ class "mdl-dialog__title-text" ] [ text "Greetings" ] ]
         , Dialog.content []
             [ p [] [ text "A strange game—the only winning move is not to play." ]
             , p [] [ text "How about a nice game of chess?" ]
