@@ -19,7 +19,9 @@ import Accounts.State exposing (..)
 root : Model -> Html Msg
 root model =
     div [ class "layout-fixed-width" ]
-        [ table model ]
+        [ h4 [] [ text "User Accounts" ]
+        , table model
+        ]
 
 
 table : Model -> Html Msg
