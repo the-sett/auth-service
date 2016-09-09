@@ -24,4 +24,5 @@ type Msg
     | ToggleAll
     | Add
     | Delete
+    | ConfirmDelete
     | Edit

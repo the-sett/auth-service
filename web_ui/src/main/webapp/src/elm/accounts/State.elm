@@ -78,6 +78,13 @@ update action model =
             in
                 ( model, Cmd.none )
 
+        ConfirmDelete ->
+            let
+                d =
+                    log "confirm delete"
+            in
+                ( model, Cmd.none )
+
         Edit ->
             let
                 d =

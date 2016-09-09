@@ -146,6 +146,7 @@ dialog model =
                             model.mdl
                             [ Dialog.closeOn "click"
                             , Button.colored
+                            , Button.onClick ConfirmDelete
                             ]
                             [ text "Confirm" ]
                         ]
