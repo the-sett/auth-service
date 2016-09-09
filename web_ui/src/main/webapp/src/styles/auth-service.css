@@ -1,3 +1,5 @@
+
+
 .btn-facebook {
     color: #fff;
     background-color: #3b5998;
@@ -34,4 +36,8 @@
   padding: 8px;
   margin: 0;
   background-color: #fff;
+}
+
+#debug-box {
+  min-width: 160px;
 }

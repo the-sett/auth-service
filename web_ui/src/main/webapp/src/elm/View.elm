@@ -3,7 +3,7 @@ module Main.View exposing (..)
 import Array exposing (Array)
 import Dict exposing (Dict)
 import Html exposing (..)
-import Html.Attributes exposing (href, class, style)
+import Html.Attributes exposing (href, class, style, id)
 import Html.Lazy
 import Html.App as App
 import Material.Color as Color
@@ -106,14 +106,16 @@ header model =
                 ]
                 []
             , Layout.spacer
-            , Toggles.switch Mdl
-                [ 0 ]
-                model.mdl
-                [ Toggles.ripple
-                , Toggles.value model.debugStylesheet
-                , Toggles.onClick ToggleDebug
+            , div [ id "debug-box" ]
+                [ Toggles.switch Mdl
+                    [ 0 ]
+                    model.mdl
+                    [ Toggles.ripple
+                    , Toggles.value model.debugStylesheet
+                    , Toggles.onClick ToggleDebug
+                    ]
+                    [ text "Debug Style" ]
                 ]
-                [ text "Debug" ]
             ]
         ]
     else
@@ -164,23 +166,17 @@ e404 _ =
 -- Old stuff
 
 
-drawer : List (Html Msg)
-drawer =
-    [ Layout.title [] [ text "Example drawer" ]
-    , Layout.navigation
-        []
-        [ Layout.link
-            [ Layout.href "https://github.com/debois/elm-mdl" ]
-            [ text "github" ]
-        , Layout.link
-            [ Layout.href "http://package.elm-lang.org/packages/debois/elm-mdl/latest/" ]
-            [ text "elm-package" ]
-        , Layout.link
-            [ Layout.href "#cards"
-            , Layout.onClick (Layout.toggleDrawer Mdl)
-            ]
-            [ text "Card component" ]
+drawer : Model -> List (Html Msg)
+drawer model =
+    [ Layout.title [] [ text "ToolBox" ]
+    , Toggles.switch Mdl
+        [ 0 ]
+        model.mdl
+        [ Toggles.ripple
+        , Toggles.value model.debugStylesheet
+        , Toggles.onClick ToggleDebug
         ]
+        [ text "Debug" ]
     ]
 
 
