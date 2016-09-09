@@ -11,6 +11,7 @@ import Material.Layout as Layout
 import Material.Options as Options exposing (css, when)
 import Material.Scheme as Scheme
 import Material.Icon as Icon
+import Material.Toggles as Toggles
 import Material.Typography as Typography
 import Layout.Types
 import Accounts.View
@@ -71,7 +72,15 @@ view' model =
             }
             |> (\contents ->
                     div []
-                        [ contents
+                        [ if model.debugStylesheet then
+                            Html.node "link"
+                                [ Html.Attributes.attribute "rel" "stylesheet"
+                                , Html.Attributes.attribute "href" "http://localhost:9072/thesett-laf/styles/debug.css"
+                                ]
+                                []
+                          else
+                            div [] []
+                        , contents
                           {-
                              Dialogs need to be pulled up here to make the dialog
                              polyfill work on some browsers.
@@ -97,6 +106,14 @@ header model =
                 ]
                 []
             , Layout.spacer
+            , Toggles.switch Mdl
+                [ 0 ]
+                model.mdl
+                [ Toggles.ripple
+                , Toggles.value True
+                , Toggles.onClick ToggleDebug
+                ]
+                [ text "Debug" ]
             ]
         ]
     else

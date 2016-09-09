@@ -11,6 +11,10 @@ import Permissions.State
 import Main.Types exposing (..)
 
 
+log =
+    Debug.log "top"
+
+
 init : Model
 init =
     { mdl = Material.model
@@ -21,6 +25,7 @@ init =
     , menus = Menu.State.init
     , selectedTab = 0
     , transparentHeader = False
+    , debugStylesheet = False
     }
 
 
@@ -50,3 +55,10 @@ update action model =
 
         MenusMsg a ->
             lift .menus (\m x -> { m | menus = x }) MenusMsg Menu.State.update a model
+
+        ToggleDebug ->
+            let
+                d =
+                    log "toggle debug"
+            in
+                ( { model | debugStylesheet = not model.debugStylesheet }, Cmd.none )

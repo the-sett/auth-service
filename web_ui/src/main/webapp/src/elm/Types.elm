@@ -17,6 +17,7 @@ type alias Model =
     , menus : Menu.Types.Model
     , selectedTab : Int
     , transparentHeader : Bool
+    , debugStylesheet : Bool
     }
 
 
@@ -29,3 +30,4 @@ type Msg
     | LayoutMsg Layout.Types.Msg
     | MenusMsg Menu.Types.Msg
     | ToggleHeader
+    | ToggleDebug
