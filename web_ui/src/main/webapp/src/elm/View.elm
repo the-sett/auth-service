@@ -110,7 +110,7 @@ header model =
                 [ 0 ]
                 model.mdl
                 [ Toggles.ripple
-                , Toggles.value True
+                , Toggles.value model.debugStylesheet
                 , Toggles.onClick ToggleDebug
                 ]
                 [ text "Debug" ]
