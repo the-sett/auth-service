@@ -21,10 +21,6 @@ log =
     Debug.log "top"
 
 
-
--- main : Program Never
-
-
 main : Program (Maybe Auth.Types.Model)
 main =
     Routing.programWithFlags
@@ -40,6 +36,11 @@ main =
                     ]
         , update = update
         }
+
+
+
+-- The program may be started with an existing auth model (containing an
+-- authentication token). If this is the case, the token is kept.
 
 
 init' : Maybe Auth.Types.Model -> ( Model, Cmd Msg )
