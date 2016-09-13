@@ -28,7 +28,6 @@ import com.thesett.auth.services.rest.AuthResource;
 import com.thesett.auth.services.rest.FacebookAuthResource;
 import com.thesett.auth.services.rest.GithubAuthResource;
 import com.thesett.auth.services.rest.GoogleAuthResource;
-import com.thesett.jtrial.web.WebResource;
 import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.config.shiro.ShiroBundle;
 import com.thesett.util.config.shiro.ShiroConfiguration;
@@ -38,8 +37,6 @@ import com.thesett.util.security.shiro.ShiroUtils;
 import com.thesett.util.security.web.ShiroJWTRealmSetupListener;
 import com.thesett.util.servlet.filter.CORSFilter;
 import com.thesett.util.swagger.EnumTypeModelConverter;
-import com.thesett.util.views.handlebars.HandlebarsBundle;
-import com.thesett.util.views.handlebars.HandlebarsBundleConfig;
 
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.client.JerseyClientBuilder;
@@ -88,23 +85,6 @@ public class Example
             }
         };
 
-    /** Configure the locations of the handlebars templates. */
-    private final HandlebarsBundle handlebarsBundle =
-        new HandlebarsBundle()
-        {
-            /** {@inheritDoc} */
-            protected void configureHandlebars(HandlebarsBundleConfig configuration)
-            {
-                addTemplatePath("/META-INF/resources/webjars/thesett-laf/views/layouts");
-                addTemplatePath("/META-INF/resources/webjars/thesett-laf/views/partials");
-                addTemplatePath("/META-INF/resources/webjars/thesett-laf/views");
-
-                addTemplatePath("/webapp/app/views/layouts");
-                addTemplatePath("/webapp/app/views/partials");
-                addTemplatePath("/webapp/app/views");
-            }
-        };
-
     /**
      * Sets up some additional DropWizard modules.
      *
@@ -119,8 +99,7 @@ public class Example
 
         bootstrap.addBundle(new AssetsBundle("/META-INF/resources/webjars/thesett-laf/", "/thesett-laf", null,
                 "thesett-laf"));
-        bootstrap.addBundle(new ConfiguredAssetsBundle("/webapp/app/", "/app"));
-        bootstrap.addBundle(handlebarsBundle);
+        bootstrap.addBundle(new ConfiguredAssetsBundle("/webapp/app/", "/auth-service", "index.html"));
     }
 
     /**
@@ -176,9 +155,6 @@ public class Example
 
         // Attach a configurator for Shiro to the Servlet lifecycle.
         environment.servlets().addServletListeners(new ShiroJWTRealmSetupListener(keyPair.getPublic()));
-
-        WebResource webResource = new WebResource(serviceFactory);
-        environment.jersey().register(webResource);
 
         AccountDAO accountDAO = new AccountDAOImpl(sessionFactory, validatorFactory);
         AuthResource authResource = new AuthResource(accountDAO, keyPair);
