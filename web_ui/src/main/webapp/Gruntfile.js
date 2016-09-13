@@ -52,14 +52,14 @@ module.exports = function(grunt) {
             'dist': {
                 files: [{
                     expand: true,
-                    cwd: 'src/views',
-                    src: ['**'],
-                    dest: 'app/views'
-                }, {
-                    expand: true,
                     cwd: 'src/styles',
                     src: ['**'],
                     dest: 'app/styles'
+                }, {
+                    expand: true,
+                    cwd: 'bower_components/thesett-laf/app',
+                    src: ['**'],
+                    dest: 'app'
                 }, {
                     expand: true,
                     cwd: 'src',
