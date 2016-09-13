@@ -14,19 +14,18 @@ import Main.View exposing (..)
 import Accounts.State
 import Roles.State
 import Permissions.State
+import Auth.Types
 
 
-main : Program Never
+-- main : Program Never
+
+
+main : Program (Maybe Auth.Types.Model)
 main =
-    Routing.program
+    Routing.programWithFlags
         { delta2url = delta2url
         , location2messages = location2messages
-        , init =
-            ( { init
-                | mdl = Layout.setTabsWidth 1384 init.mdl
-              }
-            , Layout.sub0 Mdl
-            )
+        , init = init'
         , view = view
         , subscriptions =
             \init ->
@@ -36,6 +35,15 @@ main =
                     ]
         , update = update
         }
+
+
+init' : Maybe Auth.Types.Model -> ( Model, Cmd Msg )
+init' authModel =
+    ( { init
+        | mdl = Layout.setTabsWidth 1384 init.mdl
+      }
+    , Layout.sub0 Mdl
+    )
 
 
 

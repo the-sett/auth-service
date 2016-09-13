@@ -1,21 +1,34 @@
 <!DOCTYPE html>
 <html xmlns:ng="http://angularjs.org" class="no-js" lang="en" ng-app="jModeller" id="ng-app">
-    <head>
-        <meta charset="UTF-8">
 
-        <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,500|Roboto+Mono|Roboto+Condensed:400,700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.green-indigo.min.css" />
+<head>
+    <meta charset="UTF-8">
 
-        <link rel="stylesheet" href="styles/main.css">
-        <link rel="stylesheet" href="styles/auth-service.css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,500|Roboto+Mono|Roboto+Condensed:400,700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.green-indigo.min.css" />
 
-        <script src="auth_web_ui.js"></script>
-    </head>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/auth-service.css">
 
-    <body>
-        <script>
-         var app = Elm.Main.fullscreen();
-        </script>
-    </body>
+    <script src="auth_web_ui.js"></script>
+</head>
+
+<body>
+    <script>
+        var storedState = localStorage.getItem('model');
+        var startingState = storedState ? JSON.parse(storedState) : null;
+
+        var app = Elm.Main.fullscreen(startingState);
+
+        app.ports.setStorage.subscribe(function(state) {
+            localStorage.setItem('model', JSON.stringify(state));
+        });
+
+        app.ports.removeStorage.subscribe(function() {
+            localStorage.removeItem('model');
+        });
+    </script>
+</body>
+
 </html>
