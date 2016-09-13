@@ -6,10 +6,12 @@ import Menu.Types
 import Accounts.Types
 import Roles.Types
 import Permissions.Types
+import Auth.Types
 
 
 type alias Model =
-    { mdl : Material.Model
+    { auth : Auth.Types.Model
+    , mdl : Material.Model
     , accounts : Accounts.Types.Model
     , roles : Roles.Types.Model
     , permissions : Permissions.Types.Model

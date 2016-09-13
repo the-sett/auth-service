@@ -3,6 +3,8 @@ module Main.State exposing (init, update)
 import Platform.Cmd exposing (..)
 import Material
 import Material.Helpers exposing (pure, lift, lift')
+import Material.Layout as Layout
+import Auth.State
 import Layout.State
 import Menu.State
 import Accounts.State
@@ -17,7 +19,8 @@ log =
 
 init : Model
 init =
-    { mdl = Material.model
+    { auth = Auth.State.init
+    , mdl = Layout.setTabsWidth 1384 Material.model
     , accounts = Accounts.State.init
     , roles = Roles.State.init
     , permissions = Permissions.State.init

@@ -17,6 +17,11 @@ import Permissions.State
 import Auth.Types
 
 
+log =
+    Debug.log "top"
+
+
+
 -- main : Program Never
 
 
@@ -39,11 +44,24 @@ main =
 
 init' : Maybe Auth.Types.Model -> ( Model, Cmd Msg )
 init' authModel =
-    ( { init
-        | mdl = Layout.setTabsWidth 1384 init.mdl
-      }
-    , Layout.sub0 Mdl
-    )
+    case authModel of
+        Just authModel ->
+            let
+                d =
+                    log "authModel present"
+            in
+                ( { init
+                    | auth = authModel
+                  }
+                , Layout.sub0 Mdl
+                )
+
+        Nothing ->
+            let
+                d =
+                    log "authModel not present"
+            in
+                ( init, Layout.sub0 Mdl )
 
 
 
