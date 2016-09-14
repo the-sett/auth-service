@@ -29,22 +29,11 @@ module.exports = function(grunt) {
             }
         },
 
-        'jshint': {
-            'beforeconcat': ['src/js/**/*.js'],
-        },
-
         'elm': {
             compile: {
                 files: {
                     'app/auth_web_ui.js': ['src/elm/**/*.elm']
                 }
-            }
-        },
-
-        'html2js': {
-            dist: {
-                src: ['src/views/*.html'],
-                dest: 'tmp/templates.js'
             }
         },
 
@@ -69,26 +58,6 @@ module.exports = function(grunt) {
             }
         },
 
-        ngtemplates: {
-            authService: {
-                options: {
-                    prefix: '/',
-                    htmlmin: {
-                        collapseBooleanAttributes: true,
-                        collapseWhitespace: true,
-                        removeAttributeQuotes: true,
-                        removeComments: true,
-                        removeEmptyAttributes: true,
-                        removeRedundantAttributes: true,
-                        removeScriptTypeAttributes: true,
-                        removeStyleLinkTypeAttributes: true
-                    }
-                },
-                src: 'app/views/**.html',
-                dest: 'app/template.js'
-            }
-        },
-
         'concat': {
             options: {
                 separator: ';\n'
@@ -98,38 +67,6 @@ module.exports = function(grunt) {
                     'src/js/**/*.js'
                 ],
                 'dest': 'app/<%= pkg.name %>.js'
-            },
-            'libs': {
-                'src': [
-                    'app/libs/jquery/dist/jquery.min.js',
-                    'app/libs/angular/angular.min.js',
-                    'app/libs/bootstrap/dist/js/bootstrap.min.js',
-                    'app/libs/angular-bootstrap/ui-bootstrap-tpls.min.js',
-                    'app/libs/ng-table/dist/ng-table.min.js',
-                    'app/libs/angular-resource/angular-resource.min.js',
-                    'app/libs/angular-ui-router/release/angular-ui-router.min.js',
-                    'app/libs/angular-toastr/dist/angular-toastr.tpls.min.js',
-                    'app/libs/angular-ui-router-menus/dist/angular-ui-router-menus.min.js',
-                    'app/libs/satellizer/satellizer.min.js',
-
-                    'app/<%= pkg.name %>.js',
-                    'app/template.js'
-                ],
-                'dest': 'app/<%= pkg.name %>.js'
-            }
-        },
-
-        'ngAnnotate': {
-            options: {
-                singleQuotes: true
-            },
-            dist: {
-                files: [{
-                    expand: true,
-                    src: ['app/<%= pkg.name %>.js'],
-                    ext: '.annotated.js',
-                    extDot: 'last'
-                }, ]
             }
         },
 
@@ -229,6 +166,6 @@ module.exports = function(grunt) {
 
     grunt.registerTask('dev', ['bower', 'connect:server', 'watch:dev']);
     grunt.registerTask('minified', ['bower', 'connect:server', 'watch:min']);
-    grunt.registerTask('build', ['bower', 'html2js', 'copy', 'elm', 'concat:libs', 'responsive_images']);
+    grunt.registerTask('build', ['bower', 'copy', 'elm', 'responsive_images']);
     grunt.registerTask('package', ['build', 'uglify', 'compress']);
 };
