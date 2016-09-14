@@ -108,7 +108,7 @@ view' model =
                 { header = header model
                 , drawer = []
                 , tabs =
-                    ( tabTitles
+                    ( []
                     , []
                     )
                 , main = [ welcomeView model ]
