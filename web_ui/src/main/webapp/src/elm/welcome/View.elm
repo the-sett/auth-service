@@ -21,7 +21,7 @@ root model =
             [ div [ class "mdl-grid" ]
                 [ div [ class "mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp" ]
                     [ div [ class "mdl-card__media" ]
-                        [ img [ src "images/more-from-4-large.png" ]
+                        [ img [ src "images/data_center-large.png" ]
                             []
                         ]
                     , div [ class "mdl-card__title" ]
