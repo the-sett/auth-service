@@ -17,6 +17,8 @@ import Layout.Types
 import Accounts.View
 import Roles.View
 import Permissions.View
+import Welcome.View
+import Auth.State
 import Main.Types exposing (..)
 
 
@@ -33,11 +35,7 @@ view =
 view' : Model -> Html Msg
 view' model =
     let
-        top =
-            (Array.get model.selectedTab tabViews |> Maybe.withDefault e404) model
-    in
-        Layout.render Mdl
-            model.mdl
+        layoutOptions =
             [ Layout.selectedTab model.selectedTab
             , Layout.onSelectTab SelectTab
             , Layout.fixedHeader `when` model.layout.fixedHeader
@@ -62,37 +60,57 @@ view' model =
               else
                 Options.nop
             ]
-            { header = header model
-            , drawer = []
-            , tabs =
-                ( tabTitles
-                , []
-                )
-            , main = [ top ]
-            }
-            |> (\contents ->
-                    div []
-                        [ if model.debugStylesheet then
-                            Html.node "link"
-                                [ Html.Attributes.attribute "rel" "stylesheet"
-                                , Html.Attributes.attribute "href" "styles/debug.css"
-                                ]
-                                []
-                          else
-                            div [] []
-                        , contents
-                          {-
-                             Dialogs need to be pulled up here to make the dialog
-                             polyfill work on some browsers.
-                          -}
-                        , case nth model.selectedTab tabs of
-                            Just ( "Accounts", _, _ ) ->
-                                App.map AccountsMsg (Accounts.View.dialog model.accounts)
 
-                            _ ->
-                                div [] []
+        framing contents =
+            div []
+                [ if model.debugStylesheet then
+                    Html.node "link"
+                        [ Html.Attributes.attribute "rel" "stylesheet"
+                        , Html.Attributes.attribute "href" "styles/debug.css"
                         ]
-               )
+                        []
+                  else
+                    div [] []
+                , contents
+                  {-
+                     Dialogs need to be pulled up here to make the dialog
+                     polyfill work on some browsers.
+                  -}
+                , case nth model.selectedTab tabs of
+                    Just ( "Accounts", _, _ ) ->
+                        App.map AccountsMsg (Accounts.View.dialog model.accounts)
+
+                    _ ->
+                        div [] []
+                ]
+
+        appTop =
+            (Array.get model.selectedTab tabViews |> Maybe.withDefault e404) model
+
+        app =
+            Layout.render Mdl
+                model.mdl
+                layoutOptions
+                { header = header model
+                , drawer = []
+                , tabs =
+                    ( tabTitles
+                    , []
+                    )
+                , main = [ appTop ]
+                }
+                |> framing
+
+        welcome =
+            Welcome.View.root
+    in
+        -- if Auth.State.isLoggedIn model.auth then
+        app
+
+
+
+-- else
+--     welcome
 
 
 header : Model -> List (Html Msg)

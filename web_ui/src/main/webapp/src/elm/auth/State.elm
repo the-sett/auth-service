@@ -1,4 +1,4 @@
-port module Auth.State exposing (init)
+port module Auth.State exposing (init, isLoggedIn)
 
 import Http
 import Http.Decorators
@@ -12,6 +12,14 @@ init : Model
 init =
     { token = ""
     }
+
+
+isLoggedIn : Model -> Bool
+isLoggedIn model =
+    if model.token == "" then
+        False
+    else
+        True
 
 
 api =
