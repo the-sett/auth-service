@@ -191,30 +191,3 @@ e404 _ =
             ]
             [ text "404" ]
         ]
-
-
-
--- Old stuff
-
-
-drawer : Model -> List (Html Msg)
-drawer model =
-    [ Layout.title [] [ text "ToolBox" ]
-    , Toggles.switch Mdl
-        [ 0 ]
-        model.mdl
-        [ Toggles.ripple
-        , Toggles.value model.debugStylesheet
-        , Toggles.onClick ToggleDebug
-        ]
-        [ text "Debug" ]
-    ]
-
-
-stylesheet : Html a
-stylesheet =
-    Options.stylesheet """
-  .mdl-layout__header--transparent {
-    background: url('https://getmdl.io/assets/demos/transparent.jpg') center / cover;
-  }
-"""
