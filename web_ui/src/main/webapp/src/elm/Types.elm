@@ -1,6 +1,7 @@
 module Main.Types exposing (..)
 
 import Material
+import Welcome.Types
 import Layout.Types
 import Menu.Types
 import Accounts.Types
@@ -10,7 +11,8 @@ import Auth.Types
 
 
 type alias Model =
-    { auth : Auth.Types.Model
+    { welcome : Welcome.Types.Model
+    , auth : Auth.Types.Model
     , mdl : Material.Model
     , accounts : Accounts.Types.Model
     , roles : Roles.Types.Model
@@ -26,6 +28,7 @@ type alias Model =
 type Msg
     = SelectTab Int
     | Mdl (Material.Msg Msg)
+    | WelcomeMsg Welcome.Types.Msg
     | AccountsMsg Accounts.Types.Msg
     | RolesMsg Roles.Types.Msg
     | PermissionsMsg Permissions.Types.Msg

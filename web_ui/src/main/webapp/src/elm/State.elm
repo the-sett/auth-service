@@ -4,6 +4,7 @@ import Platform.Cmd exposing (..)
 import Material
 import Material.Helpers exposing (pure, lift, lift')
 import Material.Layout as Layout
+import Welcome.State
 import Auth.State
 import Layout.State
 import Menu.State
@@ -19,7 +20,8 @@ log =
 
 init : Model
 init =
-    { auth = Auth.State.init
+    { welcome = Welcome.State.init
+    , auth = Auth.State.init
     , mdl = Layout.setTabsWidth 1384 Material.model
     , accounts = Accounts.State.init
     , roles = Roles.State.init
@@ -43,6 +45,9 @@ update action model =
 
         Mdl msg ->
             Material.update msg model
+
+        WelcomeMsg a ->
+            lift .welcome (\m x -> { m | welcome = x }) WelcomeMsg Welcome.State.update a model
 
         AccountsMsg a ->
             lift .accounts (\m x -> { m | accounts = x }) AccountsMsg Accounts.State.update a model

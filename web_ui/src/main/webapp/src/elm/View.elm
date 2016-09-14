@@ -102,15 +102,23 @@ view' model =
                 |> framing
 
         welcome =
-            Welcome.View.root
+            Layout.render Mdl
+                model.mdl
+                layoutOptions
+                { header = header model
+                , drawer = []
+                , tabs =
+                    ( tabTitles
+                    , []
+                    )
+                , main = [ welcomeView model ]
+                }
+                |> framing
     in
-        -- if Auth.State.isLoggedIn model.auth then
-        app
-
-
-
--- else
---     welcome
+        if Auth.State.isLoggedIn model.auth then
+            app
+        else
+            welcome
 
 
 header : Model -> List (Html Msg)
@@ -138,6 +146,11 @@ header model =
         ]
     else
         []
+
+
+welcomeView : Model -> Html Msg
+welcomeView =
+    .welcome >> Welcome.View.root >> App.map WelcomeMsg
 
 
 tabs : List ( String, String, Model -> Html Msg )
