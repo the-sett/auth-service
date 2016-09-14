@@ -13,6 +13,12 @@ type Msg
     | LogOut
 
 
+type alias AuthRequest =
+    { username : String
+    , password : String
+    }
+
+
 type alias Model =
     { token : String
     }
