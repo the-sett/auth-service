@@ -13,6 +13,7 @@ import javax.validation.ValidatorFactory;
 import javax.ws.rs.client.Client;
 
 import com.bazaarvoice.dropwizard.assets.ConfiguredAssetsBundle;
+import com.google.common.cache.CacheBuilderSpec;
 import com.thesett.auth.config.AppConfiguration;
 import com.thesett.auth.dao.AccountDAO;
 import com.thesett.auth.dao.AccountDAOImpl;
@@ -97,9 +98,7 @@ public class Example
         bootstrap.addBundle(swaggerBundle);
         ModelConverters.getInstance().addConverter(new EnumTypeModelConverter());
 
-        bootstrap.addBundle(new AssetsBundle("/META-INF/resources/webjars/thesett-laf/", "/thesett-laf", null,
-                "thesett-laf"));
-        bootstrap.addBundle(new ConfiguredAssetsBundle("/webapp/app/", "/auth-service", "index.html"));
+        bootstrap.addBundle(new ConfiguredAssetsBundle("/webapp/app/", CacheBuilderSpec.disableCaching(), "/auth-service", "index.html"));
     }
 
     /**

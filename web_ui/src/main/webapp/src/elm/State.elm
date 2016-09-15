@@ -39,14 +39,23 @@ update action model =
 update' : Msg -> Model -> ( Model, Cmd Msg )
 update' action model =
     case action of
+        Mdl msg ->
+            Material.update msg model
+
         SelectTab k ->
             ( { model | selectedTab = k }, Cmd.none )
 
         ToggleHeader ->
             ( { model | transparentHeader = not model.transparentHeader }, Cmd.none )
 
-        Mdl msg ->
-            Material.update msg model
+        ToggleDebug ->
+            ( { model | debugStylesheet = not model.debugStylesheet }, Cmd.none )
+
+        LogOut ->
+            ( model, Auth.State.logout |> Cmd.map AuthMsg )
+
+        AuthMsg a ->
+            lift .auth (\m x -> { m | auth = x }) AuthMsg Auth.State.update a model
 
         WelcomeMsg a ->
             lift .welcome (\m x -> { m | welcome = x, auth = x.auth }) WelcomeMsg Welcome.State.update a model
@@ -65,6 +74,3 @@ update' action model =
 
         MenusMsg a ->
             lift .menus (\m x -> { m | menus = x }) MenusMsg Menu.State.update a model
-
-        ToggleDebug ->
-            ( { model | debugStylesheet = not model.debugStylesheet }, Cmd.none )

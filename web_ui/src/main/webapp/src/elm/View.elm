@@ -13,6 +13,7 @@ import Material.Scheme as Scheme
 import Material.Icon as Icon
 import Material.Toggles as Toggles
 import Material.Typography as Typography
+import Material.Button as Button
 import Layout.Types
 import Accounts.View
 import Roles.View
@@ -132,6 +133,19 @@ header model =
                 ]
                 []
             , Layout.spacer
+            , if Auth.State.isLoggedIn model.auth then
+                div []
+                    [ Button.render Mdl
+                        [ 1, 2 ]
+                        model.mdl
+                        [ Button.colored
+                        , Button.onClick LogOut
+                        ]
+                        [ text "Log Out"
+                        ]
+                    ]
+              else
+                div [] []
             , div [ id "debug-box" ]
                 [ Toggles.switch Mdl
                     [ 0 ]

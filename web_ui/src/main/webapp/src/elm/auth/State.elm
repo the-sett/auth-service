@@ -1,4 +1,4 @@
-port module Auth.State exposing (update, init, isLoggedIn, login)
+port module Auth.State exposing (update, init, isLoggedIn, login, logout)
 
 import Log
 import Http
@@ -79,6 +79,11 @@ port removeStorage : Model -> Cmd msg
 login : AuthRequest -> Cmd Msg
 login request =
     LogIn request |> Cmd.Extra.message
+
+
+logout : Cmd Msg
+logout =
+    LogOut |> Cmd.Extra.message
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

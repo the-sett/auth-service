@@ -28,6 +28,7 @@ type alias Model =
 type Msg
     = SelectTab Int
     | Mdl (Material.Msg Msg)
+    | AuthMsg Auth.Types.Msg
     | WelcomeMsg Welcome.Types.Msg
     | AccountsMsg Accounts.Types.Msg
     | RolesMsg Roles.Types.Msg
@@ -36,3 +37,4 @@ type Msg
     | MenusMsg Menu.Types.Msg
     | ToggleHeader
     | ToggleDebug
+    | LogOut
