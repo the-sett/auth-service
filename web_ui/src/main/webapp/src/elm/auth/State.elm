@@ -46,7 +46,7 @@ authRequestEncoder model =
 
 tokenDecoder : Decoder String
 tokenDecoder =
-    "id_token" := Decode.string
+    "token" := Decode.string
 
 
 loginRequest : AuthRequest -> Task Http.Error String

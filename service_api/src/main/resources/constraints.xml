@@ -16,6 +16,13 @@
     </bean>
 
 
+    <bean class="AuthResponse" ignore-annotations="true">
+        <field name="token">
+            <valid/>
+        </field>
+    </bean>
+
+
     <bean class="Account" ignore-annotations="true">
         <field name="username">
             <valid/>

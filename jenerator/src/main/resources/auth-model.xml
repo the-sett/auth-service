@@ -1,7 +1,7 @@
 <!-- Defines the content catalogue for The Cookery Book website. -->
-<CatalogueDefinition xmlns="http://thesett.com/catalogue-def-0.2" 
+<CatalogueDefinition xmlns="http://thesett.com/catalogue-def-0.2"
                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    
+
     <Package name="com.thesett.auth.model"/>
 
     <!-- For providing references to records (also used for simple summary queries) -->
@@ -35,12 +35,16 @@
     <EntityDef name="permission">
         <Unique natural_key="true">
             <String name="name"/>
-        </Unique>        
+        </Unique>
     </EntityDef>
 
     <ComponentDef name="authRequest">
         <String name="username"/>
         <String name="password"/>
+    </ComponentDef>
+
+    <ComponentDef name="authResponse">
+        <String name="token"/>
     </ComponentDef>
 
 </CatalogueDefinition>

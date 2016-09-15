@@ -17,10 +17,7 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 import com.thesett.auth.dao.AccountDAO;
-import com.thesett.auth.model.Account;
-import com.thesett.auth.model.AuthRequest;
-import com.thesett.auth.model.Permission;
-import com.thesett.auth.model.Role;
+import com.thesett.auth.model.*;
 import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
 import com.thesett.util.security.jwt.JwtUtils;
@@ -131,7 +128,7 @@ public class AuthResource
         String token = JwtUtils.createToken(account.getUsername(), permissions, keyPair.getPrivate());
         NewCookie cookie = new NewCookie("jwt", token, "/", "localhost", "jwt", 600, false, true);
 
-        Response response = Response.ok().cookie(cookie).entity("\"" + token + "\"").build();
+        Response response = Response.ok().cookie(cookie).entity(new AuthResponse().withToken(token)).build();
 
         return response;
     }
