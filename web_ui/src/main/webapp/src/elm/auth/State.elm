@@ -25,7 +25,7 @@ isLoggedIn model =
 
 
 api =
-    "http://localhost:9070/auth"
+    "http://localhost:9070/auth/"
 
 
 routes =
