@@ -35,7 +35,7 @@ update' action model =
             ( model, Cmd.none )
 
         Login ->
-            ( model, Auth.State.loginCmd { username = model.username, password = model.password } |> Cmd.map AuthMsg )
+            ( model, Auth.State.login { username = model.username, password = model.password } |> Cmd.map AuthMsg )
 
         Cancel ->
             ( model, Cmd.none )

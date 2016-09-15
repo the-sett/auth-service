@@ -1,10 +1,11 @@
-port module Auth.State exposing (update, init, isLoggedIn, loginCmd)
+port module Auth.State exposing (update, init, isLoggedIn, login)
 
 import Log
 import Http
 import Http.Decorators
 import Auth.Types exposing (..)
 import Task exposing (Task)
+import Cmd.Extra
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode exposing (..)
 
@@ -48,8 +49,8 @@ tokenDecoder =
     "id_token" := Decode.string
 
 
-login : AuthRequest -> Task Http.Error String
-login model =
+loginRequest : AuthRequest -> Task Http.Error String
+loginRequest model =
     { verb = "POST"
     , headers = [ ( "Content-Type", "application/json" ) ]
     , url = routes.loginUrl
@@ -61,7 +62,7 @@ login model =
 
 loginCmd : AuthRequest -> Cmd Msg
 loginCmd model =
-    Task.perform AuthError GetTokenSuccess <| login model
+    Task.perform AuthError GetTokenSuccess <| loginRequest model
 
 
 setStorageHelper : Model -> ( Model, Cmd Msg )
@@ -73,6 +74,11 @@ port setStorage : Model -> Cmd msg
 
 
 port removeStorage : Model -> Cmd msg
+
+
+login : AuthRequest -> Cmd Msg
+login request =
+    LogIn request |> Cmd.Extra.message
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
