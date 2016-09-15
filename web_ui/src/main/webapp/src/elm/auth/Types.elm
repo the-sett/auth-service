@@ -7,6 +7,7 @@ type Msg
     = HttpError Http.Error
     | AuthError Http.Error
     | GetTokenSuccess String
+    | LogIn AuthRequest
     | LogOut
 
 
@@ -18,4 +19,5 @@ type alias AuthRequest =
 
 type alias Model =
     { token : String
+    , errorMsg : String
     }

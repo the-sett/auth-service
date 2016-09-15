@@ -11,6 +11,7 @@ import Json.Encode as Encode exposing (..)
 init : Model
 init =
     { token = ""
+    , errorMsg = ""
     }
 
 
@@ -46,20 +47,20 @@ tokenDecoder =
     "id_token" := Decode.string
 
 
-login : AuthRequest -> String -> Task Http.Error String
-login model apiUrl =
+login : AuthRequest -> Task Http.Error String
+login model =
     { verb = "POST"
     , headers = [ ( "Content-Type", "application/json" ) ]
-    , url = apiUrl
+    , url = routes.loginUrl
     , body = Http.string <| Encode.encode 0 <| authRequestEncoder model
     }
         |> Http.send Http.defaultSettings
         |> Http.fromJson tokenDecoder
 
 
-loginCmd : AuthRequest -> String -> Cmd Msg
-loginCmd model apiUrl =
-    Task.perform AuthError GetTokenSuccess <| login model routes.loginUrl
+loginCmd : AuthRequest -> Cmd Msg
+loginCmd model =
+    Task.perform AuthError GetTokenSuccess <| login model
 
 
 setStorageHelper : Model -> ( Model, Cmd Msg )
@@ -71,3 +72,22 @@ port setStorage : Model -> Cmd msg
 
 
 port removeStorage : Model -> Cmd msg
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        HttpError _ ->
+            ( model, Cmd.none )
+
+        AuthError error ->
+            ( { model | errorMsg = (toString error) }, Cmd.none )
+
+        GetTokenSuccess newToken ->
+            setStorageHelper { model | token = newToken }
+
+        LogIn authRequest ->
+            ( model, loginCmd authRequest )
+
+        LogOut ->
+            ( { model | token = "" }, removeStorage model )
