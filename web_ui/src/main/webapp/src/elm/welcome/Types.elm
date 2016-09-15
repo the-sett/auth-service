@@ -16,7 +16,7 @@ type Msg
     = Mdl (Material.Msg Msg)
     | AuthMsg Auth.Types.Msg
     | GetStarted
-    | Login
+    | LogIn
     | Cancel
     | UpdateUsername String
     | UpdatePassword String

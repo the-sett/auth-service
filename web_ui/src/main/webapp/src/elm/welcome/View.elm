@@ -57,7 +57,7 @@ root model =
                                         [ 1, 2 ]
                                         model.mdl
                                         [ Button.colored
-                                        , Button.onClick Login
+                                        , Button.onClick LogIn
                                         ]
                                         [ text "Log In"
                                         , Icon.i "chevron_right"
