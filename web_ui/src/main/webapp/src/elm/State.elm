@@ -49,7 +49,7 @@ update' action model =
             Material.update msg model
 
         WelcomeMsg a ->
-            lift .welcome (\m x -> { m | welcome = x }) WelcomeMsg Welcome.State.update a model
+            lift .welcome (\m x -> { m | welcome = x, auth = x.auth }) WelcomeMsg Welcome.State.update a model
 
         AccountsMsg a ->
             lift .accounts (\m x -> { m | accounts = x }) AccountsMsg Accounts.State.update a model

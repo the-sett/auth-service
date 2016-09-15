@@ -5,6 +5,7 @@ import Platform.Cmd exposing (Cmd)
 import Material
 import Material.Helpers exposing (lift)
 import Welcome.Types exposing (..)
+import Auth.State
 
 
 init : Model
@@ -12,6 +13,7 @@ init =
     { mdl = Material.model
     , username = ""
     , password = ""
+    , auth = Auth.State.init
     }
 
 
@@ -25,6 +27,9 @@ update' action model =
     case action of
         Mdl action' ->
             Material.update action' model
+
+        AuthMsg a ->
+            lift .auth (\m x -> { m | auth = x }) AuthMsg Auth.State.update a model
 
         GetStarted ->
             ( model, Cmd.none )

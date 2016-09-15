@@ -1,4 +1,4 @@
-port module Auth.State exposing (init, isLoggedIn)
+port module Auth.State exposing (update, init, isLoggedIn)
 
 import Log
 import Http
