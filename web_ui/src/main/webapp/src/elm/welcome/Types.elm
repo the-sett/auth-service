@@ -15,3 +15,5 @@ type Msg
     | GetStarted
     | Login
     | Cancel
+    | UpdateUsername String
+    | UpdatePassword String

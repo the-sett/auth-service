@@ -36,6 +36,7 @@ root model =
                                 [ Textfield.label "Username"
                                 , Textfield.floatingLabel
                                 , Textfield.text'
+                                , Textfield.onInput UpdateUsername
                                 ]
                             , Textfield.render Mdl
                                 [ 1, 2 ]
@@ -44,6 +45,7 @@ root model =
                                 , Textfield.floatingLabel
                                 , Textfield.text'
                                 , Textfield.password
+                                , Textfield.onInput UpdatePassword
                                 ]
                             ]
                         ]
@@ -54,8 +56,8 @@ root model =
                                     [ Button.render Mdl
                                         [ 1, 2 ]
                                         model.mdl
-                                        [ Dialog.closeOn "click"
-                                        , Button.colored
+                                        [ Button.colored
+                                        , Button.onClick Login
                                         ]
                                         [ text "Log In"
                                         , Icon.i "chevron_right"

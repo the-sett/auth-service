@@ -44,3 +44,17 @@ update action model =
                     log "cancel"
             in
                 ( model, Cmd.none )
+
+        UpdateUsername str ->
+            let
+                d =
+                    log "update username"
+            in
+                ( { model | username = str }, Cmd.none )
+
+        UpdatePassword str ->
+            let
+                d =
+                    log "update password"
+            in
+                ( { model | password = str }, Cmd.none )
