@@ -6,9 +6,6 @@ import Http
 type Msg
     = HttpError Http.Error
     | AuthError Http.Error
-    | SetUsername String
-    | SetPassword String
-    | ClickLogIn
     | GetTokenSuccess String
     | LogOut
 
