@@ -6,7 +6,9 @@ import Material
 import Material.Helpers exposing (pure, lift, lift')
 import Material.Layout as Layout
 import Welcome.State
+import Welcome.Types
 import Auth.State
+import Auth.Types
 import Layout.State
 import Menu.State
 import Accounts.State
@@ -58,7 +60,12 @@ update' action model =
             lift .auth (\m x -> { m | auth = x }) AuthMsg Auth.State.update a model
 
         WelcomeMsg a ->
-            lift .welcome (\m x -> { m | welcome = x, auth = x.auth }) WelcomeMsg Welcome.State.update a model
+            case a of
+                Welcome.Types.AuthMsg b ->
+                    lift .welcome (\m x -> { m | welcome = x, auth = x.auth }) WelcomeMsg Welcome.State.update a model
+
+                _ ->
+                    lift .welcome (\m x -> { m | welcome = x }) WelcomeMsg Welcome.State.update a model
 
         AccountsMsg a ->
             lift .accounts (\m x -> { m | accounts = x }) AccountsMsg Accounts.State.update a model

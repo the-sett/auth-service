@@ -26,7 +26,7 @@ root model =
                         ]
                     , div [ class "mdl-card__title" ]
                         [ h4 [ class "mdl-card__title-text" ]
-                            [ text "Log In" ]
+                            [ text "Test Log In" ]
                         ]
                     , div [ class "mdl-card__supporting-text" ]
                         [ form [ action "#" ]
