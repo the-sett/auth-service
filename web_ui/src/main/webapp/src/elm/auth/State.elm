@@ -1,5 +1,6 @@
 port module Auth.State exposing (init, isLoggedIn)
 
+import Log
 import Http
 import Http.Decorators
 import Auth.Types exposing (..)
@@ -75,7 +76,12 @@ port removeStorage : Model -> Cmd msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update action model =
+    update' (Log.debug "auth" action) model
+
+
+update' : Msg -> Model -> ( Model, Cmd Msg )
+update' msg model =
     case msg of
         HttpError _ ->
             ( model, Cmd.none )

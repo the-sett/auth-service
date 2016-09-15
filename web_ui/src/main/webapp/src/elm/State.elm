@@ -1,5 +1,6 @@
 module Main.State exposing (init, update)
 
+import Log
 import Platform.Cmd exposing (..)
 import Material
 import Material.Helpers exposing (pure, lift, lift')
@@ -12,10 +13,6 @@ import Accounts.State
 import Roles.State
 import Permissions.State
 import Main.Types exposing (..)
-
-
-log =
-    Debug.log "top"
 
 
 init : Model
@@ -36,6 +33,11 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
+    update' (Log.debug "top" action) model
+
+
+update' : Msg -> Model -> ( Model, Cmd Msg )
+update' action model =
     case action of
         SelectTab k ->
             ( { model | selectedTab = k }, Cmd.none )
@@ -65,8 +67,4 @@ update action model =
             lift .menus (\m x -> { m | menus = x }) MenusMsg Menu.State.update a model
 
         ToggleDebug ->
-            let
-                d =
-                    log "toggle debug"
-            in
-                ( { model | debugStylesheet = not model.debugStylesheet }, Cmd.none )
+            ( { model | debugStylesheet = not model.debugStylesheet }, Cmd.none )

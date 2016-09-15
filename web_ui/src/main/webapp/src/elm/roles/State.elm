@@ -1,5 +1,6 @@
 module Roles.State exposing (init, update)
 
+import Log
 import Platform.Cmd exposing (Cmd)
 import Material
 import Material.Helpers exposing (lift)
@@ -14,6 +15,11 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
+    update' (Log.debug "roles" action) model
+
+
+update' : Msg -> Model -> ( Model, Cmd Msg )
+update' action model =
     case action of
         Mdl action' ->
             Material.update action' model

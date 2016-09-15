@@ -4,11 +4,8 @@ import Platform.Cmd exposing (Cmd)
 import Material
 import Material.Helpers exposing (lift)
 import Accounts.Types exposing (..)
+import Log
 import Set as Set
-
-
-log =
-    Debug.log "accounts"
 
 
 init : Model
@@ -40,6 +37,11 @@ someSelected model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
+    update' (Log.debug "accounts" action) model
+
+
+update' : Msg -> Model -> ( Model, Cmd Msg )
+update' action model =
     case action of
         Mdl action' ->
             Material.update action' model
@@ -65,29 +67,13 @@ update action model =
                 ! []
 
         Add ->
-            let
-                d =
-                    log "add"
-            in
-                ( model, Cmd.none )
+            ( model, Cmd.none )
 
         Delete ->
-            let
-                d =
-                    log "delete"
-            in
-                ( model, Cmd.none )
+            ( model, Cmd.none )
 
         ConfirmDelete ->
-            let
-                d =
-                    log "confirm delete"
-            in
-                ( model, Cmd.none )
+            ( model, Cmd.none )
 
         Edit ->
-            let
-                d =
-                    log "edit"
-            in
-                ( model, Cmd.none )
+            ( model, Cmd.none )
