@@ -21,8 +21,8 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ receiveLogin LogIn
-        , receiveLogout (\x -> LogOut)
-        , receiveUnauthed (\x -> NotAuthed)
+        , receiveLogout (\_ -> LogOut)
+        , receiveUnauthed (\_ -> NotAuthed)
         ]
 
 
