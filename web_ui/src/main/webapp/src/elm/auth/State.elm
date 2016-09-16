@@ -3,7 +3,6 @@ port module Auth.State exposing (update, subscriptions, init, isLoggedIn, login,
 import Log
 import Http
 import Http.Decorators
-import Messaging exposing (..)
 import Auth.Types exposing (..)
 import Task exposing (Task)
 import Cmd.Extra
@@ -80,6 +79,9 @@ port setStorage : Model -> Cmd msg
 
 
 port removeStorage : Model -> Cmd msg
+
+
+port receive : (String -> msg) -> Sub msg
 
 
 login : AuthRequest -> Cmd Msg

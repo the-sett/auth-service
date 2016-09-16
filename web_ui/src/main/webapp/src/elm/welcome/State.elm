@@ -2,7 +2,7 @@ module Welcome.State exposing (init, update)
 
 import Log
 import Platform.Cmd exposing (Cmd)
-import Messaging exposing (..)
+import Auth.Messaging
 import Material
 import Material.Helpers exposing (lift)
 import Welcome.Types exposing (..)
@@ -38,7 +38,7 @@ update' action model =
         LogIn ->
             ( model
             , Cmd.batch
-                [ dispatch "Test"
+                [ Auth.Messaging.dispatch "Test"
                 , Auth.State.login { username = model.username, password = model.password } |> Cmd.map AuthMsg
                 ]
             )
