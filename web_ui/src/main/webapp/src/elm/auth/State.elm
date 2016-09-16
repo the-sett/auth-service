@@ -19,7 +19,7 @@ init =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    receive Message
+    receiveLogin LogIn
 
 
 isLoggedIn : Model -> Bool
@@ -81,7 +81,13 @@ port setStorage : Model -> Cmd msg
 port removeStorage : Model -> Cmd msg
 
 
-port receive : (String -> msg) -> Sub msg
+port receiveLogin : (AuthRequest -> msg) -> Sub msg
+
+
+port receiveLogout : (String -> msg) -> Sub msg
+
+
+port receiveUnauthed : (String -> msg) -> Sub msg
 
 
 login : AuthRequest -> Cmd Msg
@@ -117,5 +123,5 @@ update' msg model =
         LogOut ->
             ( { model | token = "" }, removeStorage model )
 
-        Message _ ->
+        NotAuthed ->
             ( model, Cmd.none )

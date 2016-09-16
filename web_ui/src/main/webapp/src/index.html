@@ -29,8 +29,16 @@
             localStorage.removeItem('model');
         });
 
-        app.ports.dispatch.subscribe(function(msg) {
-            app.ports.receive.send(msg);
+        app.ports.sendLogin.subscribe(function(msg) {
+            app.ports.receiveLogin.send(msg);
+        });
+
+        app.ports.sendLogout.subscribe(function(msg) {
+            app.ports.receiveLogout.send(msg);
+        });
+
+        app.ports.sendUnauthed.subscribe(function(msg) {
+            app.ports.receiveUnauthed.send(msg);
         });
     </script>
 </body>

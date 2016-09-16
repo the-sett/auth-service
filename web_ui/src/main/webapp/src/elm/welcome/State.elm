@@ -38,8 +38,8 @@ update' action model =
         LogIn ->
             ( model
             , Cmd.batch
-                [ Auth.dispatch "Test"
-                , Auth.State.login { username = model.username, password = model.password } |> Cmd.map AuthMsg
+                [ Auth.login { username = model.username, password = model.password }
+                  -- , Auth.State.login { username = model.username, password = model.password } |> Cmd.map AuthMsg
                 ]
             )
 
