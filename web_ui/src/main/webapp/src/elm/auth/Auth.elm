@@ -1,9 +1,13 @@
 port module Auth exposing (..)
 
-import Auth.Types exposing (..)
+
+type alias Credentials =
+    { username : String
+    , password : String
+    }
 
 
-login : AuthRequest -> Cmd msg
+login : Credentials -> Cmd msg
 login authRequest =
     sendLogin authRequest
 
@@ -18,7 +22,7 @@ unauthed =
     sendUnauthed ()
 
 
-port sendLogin : AuthRequest -> Cmd msg
+port sendLogin : Credentials -> Cmd msg
 
 
 port sendLogout : () -> Cmd msg
