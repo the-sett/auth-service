@@ -19,12 +19,15 @@ import Accounts.State exposing (..)
 import Auth.Types
 
 
-root : Model -> {- Auth.Types.Model -> -} Html Msg
-root model =
-    {- authState -}
+root : Model -> Auth.Types.AuthState -> Html Msg
+root model authState =
     div [ class "layout-fixed-width" ]
         [ h4 [] [ text "User Accounts" ]
         , table model
+        , if authState.loggedIn then
+            h4 [] [ text "Logged In" ]
+          else
+            h4 [] [ text "Not Logged In" ]
         ]
 
 

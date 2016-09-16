@@ -169,7 +169,7 @@ welcomeView =
 
 tabs : List ( String, String, Model -> Html Msg )
 tabs =
-    [ ( "Accounts", "accounts", .accounts >> Accounts.View.root >> App.map AccountsMsg )
+    [ ( "Accounts", "accounts", (\model -> Accounts.View.root model.accounts model.auth.authState) >> App.map AccountsMsg )
     , ( "Roles", "roles", .roles >> Roles.View.root >> App.map RolesMsg )
     , ( "Permissions", "permissions", .permissions >> Permissions.View.root >> App.map PermissionsMsg )
     ]

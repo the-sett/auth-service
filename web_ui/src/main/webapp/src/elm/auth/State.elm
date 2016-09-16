@@ -98,6 +98,18 @@ port receiveLogout : (() -> msg) -> Sub msg
 port receiveUnauthed : (() -> msg) -> Sub msg
 
 
+
+-- This is where the token gets decoded and checked.
+
+
+authStateFromToken : String -> AuthState
+authStateFromToken token =
+    if token == "" then
+        { loggedIn = False, permissions = [] }
+    else
+        { loggedIn = True, permissions = [] }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     update' (Log.debug "auth" action) model
@@ -113,13 +125,13 @@ update' msg model =
             ( { model | errorMsg = (toString error) }, Cmd.none )
 
         GetTokenSuccess newToken ->
-            setStorageHelper { model | token = newToken }
+            setStorageHelper { model | token = newToken, authState = authStateFromToken newToken }
 
         LogIn authRequest ->
             ( model, loginCmd authRequest )
 
         LogOut ->
-            ( { model | token = "" }, removeStorage model )
+            ( { model | token = "", authState = authStateFromToken "" }, removeStorage model )
 
         NotAuthed ->
             ( model, Cmd.none )
