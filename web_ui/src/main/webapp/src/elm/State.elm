@@ -61,12 +61,7 @@ update' action model =
             lift .auth (\m x -> { m | auth = x }) AuthMsg Auth.State.update a model
 
         WelcomeMsg a ->
-            case a of
-                Welcome.Types.AuthMsg b ->
-                    lift .welcome (\m x -> { m | welcome = x, auth = x.auth }) WelcomeMsg Welcome.State.update a model
-
-                _ ->
-                    lift .welcome (\m x -> { m | welcome = x }) WelcomeMsg Welcome.State.update a model
+            lift .welcome (\m x -> { m | welcome = x }) WelcomeMsg Welcome.State.update a model
 
         AccountsMsg a ->
             lift .accounts (\m x -> { m | accounts = x }) AccountsMsg Accounts.State.update a model

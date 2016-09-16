@@ -8,13 +8,11 @@ type alias Model =
     { mdl : Material.Model
     , username : String
     , password : String
-    , auth : Auth.Types.Model
     }
 
 
 type Msg
     = Mdl (Material.Msg Msg)
-    | AuthMsg Auth.Types.Msg
     | GetStarted
     | LogIn
     | Cancel
