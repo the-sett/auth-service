@@ -14,6 +14,10 @@ init : Model
 init =
     { token = ""
     , errorMsg = ""
+    , authState =
+        { loggedIn = False
+        , permissions = []
+        }
     }
 
 

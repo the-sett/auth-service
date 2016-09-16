@@ -16,10 +16,12 @@ import Material.Icon as Icon
 import Material.Toggles as Toggles
 import Accounts.Types exposing (..)
 import Accounts.State exposing (..)
+import Auth.Types
 
 
-root : Model -> Html Msg
+root : Model -> {- Auth.Types.Model -> -} Html Msg
 root model =
+    {- authState -}
     div [ class "layout-fixed-width" ]
         [ h4 [] [ text "User Accounts" ]
         , table model

@@ -18,7 +18,14 @@ type Msg
     | NotAuthed
 
 
+type alias AuthState =
+    { loggedIn : Bool
+    , permissions : List String
+    }
+
+
 type alias Model =
     { token : String
     , errorMsg : String
+    , authState : AuthState
     }
