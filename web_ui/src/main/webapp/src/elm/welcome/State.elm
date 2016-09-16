@@ -39,7 +39,6 @@ update' action model =
             ( model
             , Cmd.batch
                 [ Auth.login { username = model.username, password = model.password }
-                  -- , Auth.State.login { username = model.username, password = model.password } |> Cmd.map AuthMsg
                 ]
             )
 

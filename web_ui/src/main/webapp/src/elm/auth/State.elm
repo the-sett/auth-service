@@ -1,4 +1,4 @@
-port module Auth.State exposing (update, subscriptions, init, isLoggedIn, login, logout)
+port module Auth.State exposing (update, subscriptions, init, isLoggedIn)
 
 import Log
 import Http
@@ -19,7 +19,11 @@ init =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    receiveLogin LogIn
+    Sub.batch
+        [ receiveLogin LogIn
+        , receiveLogout LogOut
+        , receiveUnauthed NotAuthed
+        ]
 
 
 isLoggedIn : Model -> Bool
@@ -90,16 +94,6 @@ port receiveLogout : (String -> msg) -> Sub msg
 port receiveUnauthed : (String -> msg) -> Sub msg
 
 
-login : AuthRequest -> Cmd Msg
-login request =
-    LogIn request |> Cmd.Extra.message
-
-
-logout : Cmd Msg
-logout =
-    LogOut |> Cmd.Extra.message
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     update' (Log.debug "auth" action) model
@@ -120,8 +114,8 @@ update' msg model =
         LogIn authRequest ->
             ( model, loginCmd authRequest )
 
-        LogOut ->
+        LogOut _ ->
             ( { model | token = "" }, removeStorage model )
 
-        NotAuthed ->
+        NotAuthed _ ->
             ( model, Cmd.none )

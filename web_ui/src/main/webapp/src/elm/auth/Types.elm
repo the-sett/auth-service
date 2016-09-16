@@ -14,8 +14,8 @@ type Msg
     | AuthError Http.Error
     | GetTokenSuccess String
     | LogIn AuthRequest
-    | LogOut
-    | NotAuthed
+    | LogOut String
+    | NotAuthed String
 
 
 type alias Model =

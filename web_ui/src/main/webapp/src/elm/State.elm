@@ -9,6 +9,7 @@ import Welcome.State
 import Welcome.Types
 import Auth.State
 import Auth.Types
+import Auth
 import Layout.State
 import Menu.State
 import Accounts.State
@@ -54,7 +55,7 @@ update' action model =
             ( { model | debugStylesheet = not model.debugStylesheet }, Cmd.none )
 
         LogOut ->
-            ( model, Auth.State.logout |> Cmd.map AuthMsg )
+            ( model, Auth.logout )
 
         AuthMsg a ->
             lift .auth (\m x -> { m | auth = x }) AuthMsg Auth.State.update a model
