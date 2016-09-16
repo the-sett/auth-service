@@ -1,4 +1,4 @@
-port module Auth.State exposing (update, subscriptions, init, isLoggedIn)
+port module Auth.State exposing (update, subscriptions, init)
 
 import Log
 import Http
@@ -28,14 +28,6 @@ subscriptions model =
         , receiveLogout (\_ -> LogOut)
         , receiveUnauthed (\_ -> NotAuthed)
         ]
-
-
-isLoggedIn : Model -> Bool
-isLoggedIn model =
-    if model.token == "" then
-        False
-    else
-        True
 
 
 api =

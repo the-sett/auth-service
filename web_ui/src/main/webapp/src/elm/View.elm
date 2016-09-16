@@ -19,7 +19,7 @@ import Accounts.View
 import Roles.View
 import Permissions.View
 import Welcome.View
-import Auth.State
+import Auth.Types
 import Main.Types exposing (..)
 
 
@@ -28,13 +28,13 @@ nth k xs =
     List.drop k xs |> List.head
 
 
-view : Model -> Html Msg
-view =
-    Html.Lazy.lazy view'
+view : Auth.Types.AuthState -> Model -> Html Msg
+view authState =
+    Html.Lazy.lazy (view' authState)
 
 
-view' : Model -> Html Msg
-view' model =
+view' : Auth.Types.AuthState -> Model -> Html Msg
+view' authState model =
     let
         layoutOptions =
             [ Layout.selectedTab model.selectedTab
@@ -92,7 +92,7 @@ view' model =
             Layout.render Mdl
                 model.mdl
                 layoutOptions
-                { header = header model
+                { header = header authState model
                 , drawer = []
                 , tabs =
                     ( tabTitles
@@ -106,7 +106,7 @@ view' model =
             Layout.render Mdl
                 model.mdl
                 layoutOptions
-                { header = header model
+                { header = header authState model
                 , drawer = []
                 , tabs =
                     ( []
@@ -116,14 +116,14 @@ view' model =
                 }
                 |> framing
     in
-        if Auth.State.isLoggedIn model.auth then
+        if authState.loggedIn then
             app
         else
             welcome
 
 
-header : Model -> List (Html Msg)
-header model =
+header : Auth.Types.AuthState -> Model -> List (Html Msg)
+header authState model =
     if model.layout.withHeader then
         [ Layout.row
             []
@@ -133,7 +133,7 @@ header model =
                 ]
                 []
             , Layout.spacer
-            , if Auth.State.isLoggedIn model.auth then
+            , if authState.loggedIn then
                 div []
                     [ Button.render Mdl
                         [ 1, 2 ]
@@ -169,7 +169,7 @@ welcomeView =
 
 tabs : List ( String, String, Model -> Html Msg )
 tabs =
-    [ ( "Accounts", "accounts", (\model -> Accounts.View.root model.accounts model.auth.authState) >> App.map AccountsMsg )
+    [ ( "Accounts", "accounts", .accounts >> Accounts.View.root >> App.map AccountsMsg )
     , ( "Roles", "roles", .roles >> Roles.View.root >> App.map RolesMsg )
     , ( "Permissions", "permissions", .permissions >> Permissions.View.root >> App.map PermissionsMsg )
     ]

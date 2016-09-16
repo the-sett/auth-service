@@ -6,7 +6,6 @@ import Material
 import Material.Helpers exposing (lift)
 import Welcome.Types exposing (..)
 import Auth
-import Auth.State
 
 
 init : Model

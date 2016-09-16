@@ -29,7 +29,7 @@ main =
         { delta2url = delta2url
         , location2messages = location2messages
         , init = init'
-        , view = view
+        , view = \model -> view model.auth.authState model
         , subscriptions =
             \init ->
                 Sub.batch
