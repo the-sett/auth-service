@@ -9,6 +9,7 @@ type Msg
     | GetTokenSuccess String
     | LogIn AuthRequest
     | LogOut
+    | Message String
 
 
 type alias AuthRequest =

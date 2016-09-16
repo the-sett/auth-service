@@ -1,8 +1,9 @@
-port module Auth.State exposing (update, init, isLoggedIn, login, logout)
+port module Auth.State exposing (update, subscriptions, init, isLoggedIn, login, logout)
 
 import Log
 import Http
 import Http.Decorators
+import Messaging exposing (..)
 import Auth.Types exposing (..)
 import Task exposing (Task)
 import Cmd.Extra
@@ -15,6 +16,11 @@ init =
     { token = ""
     , errorMsg = ""
     }
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    receive Message
 
 
 isLoggedIn : Model -> Bool
@@ -108,3 +114,6 @@ update' msg model =
 
         LogOut ->
             ( { model | token = "" }, removeStorage model )
+
+        Message _ ->
+            ( model, Cmd.none )

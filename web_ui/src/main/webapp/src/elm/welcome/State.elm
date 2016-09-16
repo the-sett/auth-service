@@ -2,6 +2,7 @@ module Welcome.State exposing (init, update)
 
 import Log
 import Platform.Cmd exposing (Cmd)
+import Messaging exposing (..)
 import Material
 import Material.Helpers exposing (lift)
 import Welcome.Types exposing (..)
@@ -35,7 +36,12 @@ update' action model =
             ( model, Cmd.none )
 
         LogIn ->
-            ( model, Auth.State.login { username = model.username, password = model.password } |> Cmd.map AuthMsg )
+            ( model
+            , Cmd.batch
+                [ dispatch "Test"
+                , Auth.State.login { username = model.username, password = model.password } |> Cmd.map AuthMsg
+                ]
+            )
 
         Cancel ->
             ( model, Cmd.none )

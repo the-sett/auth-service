@@ -28,6 +28,10 @@
         app.ports.removeStorage.subscribe(function() {
             localStorage.removeItem('model');
         });
+
+        app.ports.dispatch.subscribe(function(msg) {
+            app.ports.receive.send(msg);
+        });
     </script>
 </body>
 

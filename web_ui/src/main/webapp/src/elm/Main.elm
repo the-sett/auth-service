@@ -15,6 +15,8 @@ import Accounts.State
 import Roles.State
 import Permissions.State
 import Auth.Types
+import Auth.State
+import Welcome.State
 
 
 log =
@@ -33,6 +35,7 @@ main =
                 Sub.batch
                     [ Sub.map MenusMsg (Menu.subs Menu.Types.MDL init.menus.mdl)
                     , Layout.subs Mdl init.mdl
+                    , Sub.map AuthMsg (Auth.State.subscriptions init.auth)
                     ]
         , update = update
         }
