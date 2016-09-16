@@ -10,18 +10,18 @@ login authRequest =
 
 logout : Cmd msg
 logout =
-    sendLogout ""
+    sendLogout ()
 
 
 unauthed : Cmd msg
 unauthed =
-    sendUnauthed ""
+    sendUnauthed ()
 
 
 port sendLogin : AuthRequest -> Cmd msg
 
 
-port sendLogout : String -> Cmd msg
+port sendLogout : () -> Cmd msg
 
 
-port sendUnauthed : String -> Cmd msg
+port sendUnauthed : () -> Cmd msg

@@ -21,8 +21,8 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ receiveLogin LogIn
-        , receiveLogout LogOut
-        , receiveUnauthed NotAuthed
+        , receiveLogout (\x -> LogOut)
+        , receiveUnauthed (\x -> NotAuthed)
         ]
 
 
@@ -88,10 +88,10 @@ port removeStorage : Model -> Cmd msg
 port receiveLogin : (AuthRequest -> msg) -> Sub msg
 
 
-port receiveLogout : (String -> msg) -> Sub msg
+port receiveLogout : (() -> msg) -> Sub msg
 
 
-port receiveUnauthed : (String -> msg) -> Sub msg
+port receiveUnauthed : (() -> msg) -> Sub msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -114,8 +114,8 @@ update' msg model =
         LogIn authRequest ->
             ( model, loginCmd authRequest )
 
-        LogOut _ ->
+        LogOut ->
             ( { model | token = "" }, removeStorage model )
 
-        NotAuthed _ ->
+        NotAuthed ->
             ( model, Cmd.none )
