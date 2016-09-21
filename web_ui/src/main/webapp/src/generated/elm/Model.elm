@@ -24,10 +24,10 @@ namedRefEncoder (NamedRef model) =
 namedRefDecoder : Decoder NamedRef
 namedRefDecoder =
     (Decode.succeed
-        (\n1 n2 ->
+        (\name name2 ->
             NamedRef
-                { name = n1
-                , name2 = n2
+                { name = name
+                , name2 = name2
                 }
         )
     )
