@@ -23,6 +23,13 @@ namedRefEncoder (NamedRef model) =
 
 namedRefDecoder : Decoder NamedRef
 namedRefDecoder =
-    (Decode.succeed (\n1 n2 -> NamedRef { name = n1, name2 = n2 }))
+    (Decode.succeed
+        (\n1 n2 ->
+            NamedRef
+                { name = n1
+                , name2 = n2
+                }
+        )
+    )
         |: ("name" := Decode.string)
         |: ("name2" := Decode.string)
