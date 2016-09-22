@@ -17,13 +17,30 @@ import Material.Toggles as Toggles
 import Accounts.Types exposing (..)
 import Accounts.State exposing (..)
 import Auth.Types
+import Model
 
 
 root : Model -> Html Msg
 root model =
     div [ class "layout-fixed-width" ]
         [ h4 [] [ text "User Accounts" ]
-        , table model
+        , Button.render Mdl
+            [ 0, 1 ]
+            model.mdl
+            [ Button.accent
+            , Button.ripple
+            , Button.onClick
+                (Add
+                    (Model.Account
+                        { username = "test"
+                        , password = "test"
+                        , roles = []
+                        , id = "10"
+                        }
+                    )
+                )
+            ]
+            [ text "Create" ]
         ]
 
 
@@ -99,7 +116,7 @@ controlBar model =
                     [ Button.fab
                     , Button.colored
                     , Button.ripple
-                    , Button.onClick Add
+                      -- , Button.onClick Add
                     ]
                     [ Icon.i "add" ]
                 ]

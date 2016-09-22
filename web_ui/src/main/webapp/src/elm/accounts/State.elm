@@ -6,6 +6,9 @@ import Material.Helpers exposing (lift)
 import Accounts.Types exposing (..)
 import Log
 import Set as Set
+import Model
+import Account.Service
+import Task
 
 
 init : Model
@@ -66,7 +69,13 @@ update' action model =
             }
                 ! []
 
-        Add ->
+        Add account ->
+            ( model, createCmd account )
+
+        Error msg ->
+            ( model, Cmd.none )
+
+        Done account ->
             ( model, Cmd.none )
 
         Delete ->
@@ -77,3 +86,8 @@ update' action model =
 
         Edit ->
             ( model, Cmd.none )
+
+
+createCmd : Model.Account -> Cmd Msg
+createCmd model =
+    Task.perform Error Done <| Account.Service.create model
