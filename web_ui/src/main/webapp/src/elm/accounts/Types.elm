@@ -24,9 +24,7 @@ type Msg
     = Mdl (Material.Msg Msg)
     | Toggle (String)
     | ToggleAll
-    | Add Model.Account
+    | Add
     | Delete
     | ConfirmDelete
     | Edit
-    | Error Http.Error
-    | Done Model.Account

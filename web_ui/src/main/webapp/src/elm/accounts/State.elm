@@ -69,13 +69,7 @@ update' action model =
             }
                 ! []
 
-        Add account ->
-            ( model, createCmd account )
-
-        Error msg ->
-            ( model, Cmd.none )
-
-        Done account ->
+        Add ->
             ( model, Cmd.none )
 
         Delete ->
@@ -86,8 +80,3 @@ update' action model =
 
         Edit ->
             ( model, Cmd.none )
-
-
-createCmd : Model.Account -> Cmd Msg
-createCmd model =
-    Task.perform Error Done <| Account.Service.create model
