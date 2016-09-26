@@ -7,7 +7,10 @@ import Json.Encode as Encode exposing (..)
 import Task exposing (Task)
 import Model exposing (..)
 
-api =  "/api/"
+
+api =
+    "/api/"
+
 
 routes =
     { findAll = api ++ "account"
@@ -17,6 +20,7 @@ routes =
     , update = api ++ "account/"
     , delete = api ++ "account/"
     }
+
 
 findAll : Task Http.Error (List Account)
 findAll =
@@ -28,6 +32,7 @@ findAll =
         |> Http.send Http.defaultSettings
         |> Http.fromJson (Decode.list accountDecoder)
 
+
 findByExample : Account -> Task Http.Error (List Account)
 findByExample model =
     { verb = "POST"
@@ -37,6 +42,7 @@ findByExample model =
     }
         |> Http.send Http.defaultSettings
         |> Http.fromJson (Decode.list accountDecoder)
+
 
 create : Account -> Task Http.Error Account
 create model =
@@ -74,16 +80,23 @@ update id model =
 promoteError : Http.RawError -> Http.Error
 promoteError rawError =
     case rawError of
-        Http.RawTimeout -> Http.Timeout
-        Http.RawNetworkError -> Http.NetworkError
+        Http.RawTimeout ->
+            Http.Timeout
+
+        Http.RawNetworkError ->
+            Http.NetworkError
+
 
 delete : String -> Task Http.Error Http.Response
 delete id =
-   { verb = "DELETE"
-   , headers = []
-   , url = routes.delete ++ id
-   , body = Http.empty
-   }
-       |> Http.send Http.defaultSettings
-       |> Task.mapError promoteError
+    { verb = "DELETE"
+    , headers = []
+    , url = routes.delete ++ id
+    , body = Http.empty
+    }
+        |> Http.send Http.defaultSettings
+        |> Task.mapError promoteError
+
+
+
 -- Needs more work as also to pick up HTTP error codes as BadResponse?
