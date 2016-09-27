@@ -58,15 +58,21 @@ update' action model =
                         |> Maybe.withDefault -1
 
                 initCmd =
-                    case location of
-                        "" ->
+                    if not model.auth.authState.loggedIn then
+                        if location == "welcome" then
                             Cmd.none
+                        else
+                            Navigation.newUrl "#welcome"
+                    else
+                        case location of
+                            "" ->
+                                Cmd.none
 
-                        "accounts" ->
-                            Cmd.Extra.message (AccountsMsg Accounts.Types.Init)
+                            "accounts" ->
+                                Cmd.Extra.message (AccountsMsg Accounts.Types.Init)
 
-                        x ->
-                            Cmd.none
+                            x ->
+                                Cmd.none
             in
                 ( { model | selectedTab = tabNo }, initCmd )
 

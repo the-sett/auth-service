@@ -1,6 +1,7 @@
 port module Auth.State exposing (update, subscriptions, init)
 
 import Log
+import Navigation
 import Http
 import Http.Decorators
 import Auth.Types exposing (..)
@@ -122,7 +123,9 @@ update' msg model =
             ( model, loginCmd authRequest )
 
         LogOut ->
-            ( { model | token = "", authState = authStateFromToken "" }, removeStorage model )
+            ( { model | token = "", authState = authStateFromToken "" }
+            , Cmd.batch [ removeStorage model, Navigation.newUrl "#welcome" ]
+            )
 
         NotAuthed ->
             ( model, Cmd.none )
