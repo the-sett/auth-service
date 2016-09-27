@@ -6,17 +6,10 @@ import Model
 import Http
 
 
-type alias Data =
-    { material : String
-    , quantity : String
-    , unitPrice : String
-    }
-
-
 type alias Model =
     { mdl : Material.Model
     , selected : Set String
-    , data : List Data
+    , data : List Model.Account
     }
 
 

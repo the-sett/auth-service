@@ -16,16 +16,14 @@ init =
     { mdl = Material.model
     , selected = Set.empty
     , data =
-        [ { material = "Acrylic (Transparent)", quantity = "25", unitPrice = "$2.90" }
-        , { material = "Plywood (Birch)", quantity = "50", unitPrice = "$1.25" }
-        , { material = "Laminate (Gold on Blue)", quantity = "10", unitPrice = "$2.35" }
+        [ Model.Account { id = "1", username = "admin", password = "", roles = [] }
         ]
     }
 
 
-key : Data -> String
-key =
-    .material
+key : Model.Account -> String
+key (Model.Account account) =
+    account.id
 
 
 allSelected : Model -> Bool
