@@ -50,19 +50,19 @@ table model =
             , Table.tbody []
                 (model.data
                     |> List.indexedMap
-                        (\idx (Model.Account item) ->
+                        (\idx ((Model.Account accountRec) as account) ->
                             Table.tr
-                                [ Table.selected `when` Set.member (key (Model.Account item)) model.selected ]
+                                [ Table.selected `when` Set.member (key account) model.selected ]
                                 [ Table.td []
                                     [ Toggles.checkbox Mdl
                                         [ idx ]
                                         model.mdl
-                                        [ Toggles.onClick (Toggle <| key (Model.Account item))
-                                        , Toggles.value <| Set.member (key (Model.Account item)) model.selected
+                                        [ Toggles.onClick (Toggle <| key account)
+                                        , Toggles.value <| Set.member (key account) model.selected
                                         ]
                                         []
                                     ]
-                                , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text item.username ]
+                                , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text accountRec.username ]
                                 , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
                                     [ Button.render Mdl
                                         [ 0, idx ]
