@@ -27,7 +27,7 @@ import Main.View
 init : Model
 init =
     { welcome = Welcome.State.init
-    , auth = Auth.State.init
+    , auth = setLogoutLocation Auth.State.init
     , mdl = Layout.setTabsWidth 1384 Material.model
     , accounts = Accounts.State.init
     , roles = Roles.State.init
@@ -38,6 +38,10 @@ init =
     , transparentHeader = False
     , debugStylesheet = False
     }
+
+
+setLogoutLocation authState =
+    { authState | logoutLocation = "#welcome" }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

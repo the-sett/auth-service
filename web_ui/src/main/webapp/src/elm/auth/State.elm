@@ -18,6 +18,8 @@ init =
         { loggedIn = False
         , permissions = []
         }
+    , forwardLocation = ""
+    , logoutLocation = ""
     }
 
 
@@ -124,7 +126,7 @@ update' msg model =
 
         LogOut ->
             ( { model | token = "", authState = authStateFromToken "" }
-            , Cmd.batch [ removeStorage model, Navigation.newUrl "#welcome" ]
+            , Cmd.batch [ removeStorage model, Navigation.newUrl model.logoutLocation ]
             )
 
         NotAuthed ->

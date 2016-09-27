@@ -28,4 +28,6 @@ type alias Model =
     { token : String
     , errorMsg : String
     , authState : AuthState
+    , forwardLocation : String
+    , logoutLocation : String
     }
