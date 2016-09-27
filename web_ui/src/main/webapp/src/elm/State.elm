@@ -4,6 +4,7 @@ import Log
 import Array exposing (Array)
 import Dict exposing (Dict)
 import Navigation
+import Cmd.Extra
 import Platform.Cmd exposing (..)
 import Material
 import Material.Helpers exposing (pure, lift, lift')
@@ -62,7 +63,7 @@ update' action model =
                             Cmd.none
 
                         "accounts" ->
-                            Cmd.none
+                            Cmd.Extra.message (AccountsMsg Accounts.Types.Init)
 
                         x ->
                             Cmd.none
