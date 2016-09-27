@@ -35,91 +35,100 @@ view authState =
 
 view' : Auth.Types.AuthState -> Model -> Html Msg
 view' authState model =
-    let
-        layoutOptions =
-            [ Layout.selectedTab model.selectedTab
-            , Layout.onSelectTab SelectTab
-            , Layout.fixedHeader `when` model.layout.fixedHeader
-            , Layout.fixedDrawer `when` model.layout.fixedDrawer
-            , Layout.fixedTabs `when` model.layout.fixedTabs
-            , (case model.layout.header of
-                Layout.Types.Waterfall x ->
-                    Layout.waterfall x
+    if authState.loggedIn then
+        app authState model
+    else
+        welcome authState model
 
-                Layout.Types.Seamed ->
-                    Layout.seamed
 
-                Layout.Types.Standard ->
-                    Options.nop
+layoutOptions : Model -> List (Layout.Property Msg)
+layoutOptions model =
+    [ Layout.selectedTab model.selectedTab
+    , Layout.onSelectTab SelectTab
+    , Layout.fixedHeader `when` model.layout.fixedHeader
+    , Layout.fixedDrawer `when` model.layout.fixedDrawer
+    , Layout.fixedTabs `when` model.layout.fixedTabs
+    , (case model.layout.header of
+        Layout.Types.Waterfall x ->
+            Layout.waterfall x
 
-                Layout.Types.Scrolling ->
-                    Layout.scrolling
-              )
-                `when` model.layout.withHeader
-            , if model.transparentHeader then
-                Layout.transparentHeader
-              else
-                Options.nop
-            ]
+        Layout.Types.Seamed ->
+            Layout.seamed
 
-        framing contents =
-            div []
-                [ if model.debugStylesheet then
-                    Html.node "link"
-                        [ Html.Attributes.attribute "rel" "stylesheet"
-                        , Html.Attributes.attribute "href" "styles/debug.css"
-                        ]
-                        []
-                  else
-                    div [] []
-                , contents
-                  {-
-                     Dialogs need to be pulled up here to make the dialog
-                     polyfill work on some browsers.
-                  -}
-                , case nth model.selectedTab tabs of
-                    Just ( "Accounts", _, _ ) ->
-                        App.map AccountsMsg (Accounts.View.dialog model.accounts)
+        Layout.Types.Standard ->
+            Options.nop
 
-                    _ ->
-                        div [] []
+        Layout.Types.Scrolling ->
+            Layout.scrolling
+      )
+        `when` model.layout.withHeader
+    , if model.transparentHeader then
+        Layout.transparentHeader
+      else
+        Options.nop
+    ]
+
+
+framing : Model -> Html Msg -> Html Msg
+framing model contents =
+    div []
+        [ if model.debugStylesheet then
+            Html.node "link"
+                [ Html.Attributes.attribute "rel" "stylesheet"
+                , Html.Attributes.attribute "href" "styles/debug.css"
                 ]
+                []
+          else
+            div [] []
+        , contents
+          {-
+             Dialogs need to be pulled up here to make the dialog
+             polyfill work on some browsers.
+          -}
+        , case nth model.selectedTab tabs of
+            Just ( "Accounts", _, _ ) ->
+                App.map AccountsMsg (Accounts.View.dialog model.accounts)
 
-        appTop =
-            (Array.get model.selectedTab tabViews |> Maybe.withDefault e404) model
+            _ ->
+                div [] []
+        ]
 
-        app =
-            Layout.render Mdl
-                model.mdl
-                layoutOptions
-                { header = header authState model
-                , drawer = []
-                , tabs =
-                    ( tabTitles
-                    , []
-                    )
-                , main = [ appTop ]
-                }
-                |> framing
 
-        welcome =
-            Layout.render Mdl
-                model.mdl
-                layoutOptions
-                { header = header authState model
-                , drawer = []
-                , tabs =
-                    ( []
-                    , []
-                    )
-                , main = [ welcomeView model ]
-                }
-                |> framing
-    in
-        if authState.loggedIn then
-            app
-        else
-            welcome
+appTop : Model -> Html Msg
+appTop model =
+    (Array.get model.selectedTab tabViews |> Maybe.withDefault e404) model
+
+
+app : Auth.Types.AuthState -> Model -> Html Msg
+app authState model =
+    Layout.render Mdl
+        model.mdl
+        (layoutOptions model)
+        { header = header authState model
+        , drawer = []
+        , tabs =
+            ( tabTitles
+            , []
+            )
+        , main = [ appTop model ]
+        }
+        |> framing model
+
+
+welcome : Auth.Types.AuthState -> Model -> Html Msg
+welcome authState model =
+    Layout.render Mdl
+        model.mdl
+        (layoutOptions model)
+        { header = header authState model
+        , drawer = []
+        , tabs =
+            ( []
+            , []
+            )
+        , main = [ welcomeView model ]
+        }
+        |> framing model
 
 
 header : Auth.Types.AuthState -> Model -> List (Html Msg)
