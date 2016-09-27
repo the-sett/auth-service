@@ -47,6 +47,9 @@ update' action model =
         Mdl action' ->
             Material.update action' model
 
+        Init ->
+            ( model, Cmd.none )
+
         ToggleAll ->
             { model
                 | selected =

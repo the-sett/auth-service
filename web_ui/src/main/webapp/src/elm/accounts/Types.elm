@@ -15,6 +15,7 @@ type alias Model =
 
 type Msg
     = Mdl (Material.Msg Msg)
+    | Init
     | Toggle (String)
     | ToggleAll
     | Add

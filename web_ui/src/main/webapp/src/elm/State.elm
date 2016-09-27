@@ -16,6 +16,7 @@ import Auth
 import Layout.State
 import Menu.State
 import Accounts.State
+import Accounts.Types
 import Roles.State
 import Permissions.State
 import Main.Types exposing (..)
@@ -49,13 +50,24 @@ update' action model =
         Mdl msg ->
             Material.update msg model
 
-        SelectLocation l ->
+        SelectLocation location ->
             let
                 tabNo =
-                    Dict.get l Main.View.urlTabs
+                    Dict.get location Main.View.urlTabs
                         |> Maybe.withDefault -1
+
+                initCmd =
+                    case location of
+                        "" ->
+                            Cmd.none
+
+                        "accounts" ->
+                            Cmd.none
+
+                        x ->
+                            Cmd.none
             in
-                ( { model | selectedTab = tabNo }, Cmd.none )
+                ( { model | selectedTab = tabNo }, initCmd )
 
         SelectTab k ->
             ( model, urlOfTab k |> Navigation.newUrl )
