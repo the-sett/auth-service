@@ -72,11 +72,6 @@ loginCmd model =
     Task.perform AuthError GetTokenSuccess <| loginRequest model
 
 
-setStorageHelper : Model -> ( Model, Cmd Msg )
-setStorageHelper model =
-    ( model, setStorage model )
-
-
 port setStorage : Model -> Cmd msg
 
 
@@ -119,7 +114,11 @@ update' msg model =
             ( { model | errorMsg = (toString error) }, Cmd.none )
 
         GetTokenSuccess newToken ->
-            setStorageHelper { model | token = newToken, authState = authStateFromToken newToken }
+            let
+                model' =
+                    { model | token = newToken, authState = authStateFromToken newToken }
+            in
+                ( model', setStorage model' )
 
         LogIn authRequest ->
             ( model, loginCmd authRequest )
