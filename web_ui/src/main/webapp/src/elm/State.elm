@@ -41,7 +41,7 @@ init =
 
 
 setLogoutLocation authState =
-    { authState | logoutLocation = "#welcome" }
+    { authState | logoutLocation = "#welcome", forwardLocation = "#accounts" }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
