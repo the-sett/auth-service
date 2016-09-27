@@ -1,6 +1,9 @@
 module Main.State exposing (init, update)
 
 import Log
+import Array exposing (Array)
+import Dict exposing (Dict)
+import Navigation
 import Platform.Cmd exposing (..)
 import Material
 import Material.Helpers exposing (pure, lift, lift')
@@ -16,6 +19,7 @@ import Accounts.State
 import Roles.State
 import Permissions.State
 import Main.Types exposing (..)
+import Main.View
 
 
 init : Model
@@ -45,8 +49,16 @@ update' action model =
         Mdl msg ->
             Material.update msg model
 
+        SelectLocation l ->
+            let
+                tabNo =
+                    Dict.get l Main.View.urlTabs
+                        |> Maybe.withDefault -1
+            in
+                ( { model | selectedTab = tabNo }, Cmd.none )
+
         SelectTab k ->
-            ( { model | selectedTab = k }, Cmd.none )
+            ( model, urlOfTab k |> Navigation.newUrl )
 
         ToggleHeader ->
             ( { model | transparentHeader = not model.transparentHeader }, Cmd.none )
@@ -77,3 +89,8 @@ update' action model =
 
         MenusMsg a ->
             lift .menus (\m x -> { m | menus = x }) MenusMsg Menu.State.update a model
+
+
+urlOfTab : Int -> String
+urlOfTab tabNo =
+    "#" ++ (Array.get tabNo Main.View.tabUrls |> Maybe.withDefault "")

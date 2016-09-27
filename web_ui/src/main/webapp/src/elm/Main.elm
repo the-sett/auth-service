@@ -90,12 +90,4 @@ delta2url model1 model2 =
 
 location2messages : Navigation.Location -> List Msg
 location2messages location =
-    [ case String.dropLeft 1 location.hash of
-        "" ->
-            SelectTab 0
-
-        x ->
-            Dict.get x urlTabs
-                |> Maybe.withDefault -1
-                |> SelectTab
-    ]
+    [ String.dropLeft 1 location.hash |> SelectLocation ]

@@ -27,6 +27,7 @@ type alias Model =
 
 type Msg
     = SelectTab Int
+    | SelectLocation String
     | Mdl (Material.Msg Msg)
     | AuthMsg Auth.Types.Msg
     | WelcomeMsg Welcome.Types.Msg
