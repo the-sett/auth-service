@@ -118,7 +118,9 @@ update' msg model =
                 model' =
                     { model | token = newToken, authState = authStateFromToken newToken }
             in
-                ( model', setStorage model' )
+                ( model'
+                , Cmd.batch [ setStorage model', Navigation.newUrl model.forwardLocation ]
+                )
 
         LogIn authRequest ->
             ( model, loginCmd authRequest )
