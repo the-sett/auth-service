@@ -5,7 +5,6 @@ import Http
 import Http.Decorators
 import Auth.Types exposing (..)
 import Task exposing (Task)
-import Cmd.Extra
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode exposing (..)
 
