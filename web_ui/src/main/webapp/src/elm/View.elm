@@ -29,8 +29,8 @@ nth k xs =
 
 
 view : Auth.Types.AuthState -> Model -> Html Msg
-view authState =
-    Html.Lazy.lazy (view' authState)
+view =
+    Html.Lazy.lazy2 view'
 
 
 view' : Auth.Types.AuthState -> Model -> Html Msg
