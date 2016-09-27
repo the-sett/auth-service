@@ -1,6 +1,7 @@
 module Welcome.View exposing (root)
 
 import Html exposing (..)
+import Html.Lazy
 import Html.Attributes exposing (title, class, href, src, action)
 import Material.Options as Options exposing (Style, cs, when, nop, disabled)
 import Material.Color as Color
@@ -15,7 +16,12 @@ import Welcome.State exposing (..)
 
 
 root : Model -> Html Msg
-root model =
+root =
+    Html.Lazy.lazy root'
+
+
+root' : Model -> Html Msg
+root' model =
     div []
         [ div [ class "layout-fixed-width--one-card" ]
             [ div [ class "mdl-grid" ]
