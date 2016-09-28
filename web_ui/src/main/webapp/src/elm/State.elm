@@ -28,7 +28,7 @@ import Main.View
 init : Model
 init =
     { welcome = Welcome.State.init
-    , auth = setLogoutLocation Auth.State.init
+    , auth = setLoginLocations Auth.State.init
     , mdl = Layout.setTabsWidth 1384 Material.model
     , accounts = Accounts.State.init
     , roles = Roles.State.init
@@ -39,10 +39,6 @@ init =
     , transparentHeader = False
     , debugStylesheet = False
     }
-
-
-setLogoutLocation authState =
-    { authState | logoutLocation = "#welcome", forwardLocation = "#accounts" }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -120,31 +116,57 @@ filterNothing list =
                     filterNothing xs
 
 
+setLoginLocations authState =
+    { authState | logoutLocation = "#welcome", forwardLocation = "#accounts" }
+
+
+
+{-
+   This is the main router for the application, invoked on all url location changes.
+
+   When not logged in and not already on the welcome page, this will forward to the welcome
+   page to log in. The location being requested will be saved in the auth forward location, so
+   that it can be forwarded to upon succesfull login.
+
+   When forwarding to a location with an 'Init' event available, this will be triggered
+   in order that a particular location can initialize itself.
+-}
+
+
 selectLocation : Model -> String -> ( Model, Cmd Msg )
 selectLocation model location =
     let
+        -- Flag indicating whether the welcome location should be navigated to.
         jumpToWelcome =
             not model.auth.authState.loggedIn && location /= "welcome"
 
+        -- Maybe a command to jump to the welcome location.
         jumpToWelcomeCmd =
             if jumpToWelcome then
                 Navigation.newUrl "#welcome" |> Just
             else
                 Nothing
 
+        -- Saves the location as the current forward location on the auth state.
         forwardLocation authState =
             { authState | forwardLocation = "#" ++ location }
 
+        -- When not on the welcome location, the current location is saved as the
+        -- current auth forwarding location, so that it can be restored after a
+        -- login.
         jumpToWelcomeModel =
             if location /= "welcome" then
                 { model | auth = forwardLocation model.auth }
             else
                 model
 
+        -- Choses which tab is currently active.
         tabNo =
             Dict.get location Main.View.urlTabs
                 |> Maybe.withDefault -1
 
+        -- Maybe a command to trigger the 'Init' event when navigating to a location
+        -- with such an event.
         initCmd =
             if not jumpToWelcome then
                 case location of
@@ -156,6 +178,7 @@ selectLocation model location =
             else
                 Nothing
 
+        -- The model updated with the currently selected tab.
         selectTabModel =
             { jumpToWelcomeModel | selectedTab = tabNo }
     in
