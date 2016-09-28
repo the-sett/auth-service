@@ -9,27 +9,44 @@ import Http
 
 
 type Msg
-    = Done (Result.Result Http.Error Model.Account)
+    = Create (Result.Result Http.Error Model.Account)
+    | FindAll (Result.Result Http.Error (List Model.Account))
 
 
-createCmd : Model.Account -> Cmd Msg
-createCmd model =
+findAll : Cmd Msg
+findAll =
+    Account.Service.findAll
+        |> Task.perform (\error -> FindAll (Result.Err error)) (\result -> FindAll (Result.Ok result))
+
+
+create : Model.Account -> Cmd Msg
+create model =
     Account.Service.create model
-        |> Task.perform (\error -> Done (Result.Err error)) (\result -> Done (Result.Ok result))
+        |> Task.perform (\error -> Create (Result.Err error)) (\result -> Create (Result.Ok result))
 
 
 type alias Callbacks model msg =
-    { create : Model.Account -> model -> Cmd msg
+    { findAll : List (Model.Account) -> model -> Cmd msg
+    , create : Model.Account -> model -> Cmd msg
     }
 
 
 update : Callbacks model msg -> Msg -> model -> Cmd msg
 update callbacks action model =
     case action of
-        Done result ->
+        Create result ->
             (case result of
                 Ok account ->
                     callbacks.create account model
+
+                Err _ ->
+                    Cmd.none
+            )
+
+        FindAll result ->
+            (case result of
+                Ok account ->
+                    callbacks.findAll account model
 
                 Err _ ->
                     Cmd.none
