@@ -4,6 +4,7 @@ import Log
 import Array exposing (Array)
 import Dict exposing (Dict)
 import Navigation
+import Maybe exposing (Maybe)
 import Cmd.Extra
 import Platform.Cmd exposing (..)
 import Material
@@ -97,28 +98,65 @@ urlOfTab tabNo =
     "#" ++ (Array.get tabNo Main.View.tabUrls |> Maybe.withDefault "")
 
 
+
+{-
+   Filters the Nothings out of a list, leaving a list holding only the values
+   from the Justs.
+-}
+
+
+filterNothing : List (Maybe a) -> List a
+filterNothing list =
+    case list of
+        [] ->
+            []
+
+        x :: xs ->
+            case x of
+                Just value ->
+                    value :: filterNothing xs
+
+                Nothing ->
+                    filterNothing xs
+
+
 selectLocation : Model -> String -> ( Model, Cmd Msg )
 selectLocation model location =
     let
+        jumpToWelcome =
+            not model.auth.authState.loggedIn && location /= "welcome"
+
+        jumpToWelcomeCmd =
+            if jumpToWelcome then
+                Navigation.newUrl "#welcome" |> Just
+            else
+                Nothing
+
+        forwardLocation authState =
+            { authState | forwardLocation = "#" ++ location }
+
+        jumpToWelcomeModel =
+            if location /= "welcome" then
+                { model | auth = forwardLocation model.auth }
+            else
+                model
+
         tabNo =
             Dict.get location Main.View.urlTabs
                 |> Maybe.withDefault -1
 
         initCmd =
-            if not model.auth.authState.loggedIn then
-                if location == "welcome" then
-                    Cmd.none
-                else
-                    Navigation.newUrl "#welcome"
-            else
+            if not jumpToWelcome then
                 case location of
-                    "" ->
-                        Cmd.none
-
                     "accounts" ->
-                        Cmd.Extra.message (AccountsMsg Accounts.Types.Init)
+                        Cmd.Extra.message (AccountsMsg Accounts.Types.Init) |> Just
 
                     x ->
-                        Cmd.none
+                        Nothing
+            else
+                Nothing
+
+        selectTabModel =
+            { jumpToWelcomeModel | selectedTab = tabNo }
     in
-        ( { model | selectedTab = tabNo }, initCmd )
+        ( selectTabModel, Cmd.batch (filterNothing [ jumpToWelcomeCmd, initCmd ]) )
