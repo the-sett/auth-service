@@ -56,32 +56,10 @@ update' action model =
             Material.update msg model
 
         SelectLocation location ->
-            let
-                tabNo =
-                    Dict.get location Main.View.urlTabs
-                        |> Maybe.withDefault -1
-
-                initCmd =
-                    if not model.auth.authState.loggedIn then
-                        if location == "welcome" then
-                            Cmd.none
-                        else
-                            Navigation.newUrl "#welcome"
-                    else
-                        case location of
-                            "" ->
-                                Cmd.none
-
-                            "accounts" ->
-                                Cmd.Extra.message (AccountsMsg Accounts.Types.Init)
-
-                            x ->
-                                Cmd.none
-            in
-                ( { model | selectedTab = tabNo }, initCmd )
+            selectLocation model location
 
         SelectTab k ->
-            ( model, urlOfTab k |> Navigation.newUrl )
+            ( { model | selectedTab = k }, urlOfTab k |> Navigation.newUrl )
 
         ToggleHeader ->
             ( { model | transparentHeader = not model.transparentHeader }, Cmd.none )
@@ -117,3 +95,30 @@ update' action model =
 urlOfTab : Int -> String
 urlOfTab tabNo =
     "#" ++ (Array.get tabNo Main.View.tabUrls |> Maybe.withDefault "")
+
+
+selectLocation : Model -> String -> ( Model, Cmd Msg )
+selectLocation model location =
+    let
+        tabNo =
+            Dict.get location Main.View.urlTabs
+                |> Maybe.withDefault -1
+
+        initCmd =
+            if not model.auth.authState.loggedIn then
+                if location == "welcome" then
+                    Cmd.none
+                else
+                    Navigation.newUrl "#welcome"
+            else
+                case location of
+                    "" ->
+                        Cmd.none
+
+                    "accounts" ->
+                        Cmd.Extra.message (AccountsMsg Accounts.Types.Init)
+
+                    x ->
+                        Cmd.none
+    in
+        ( { model | selectedTab = tabNo }, initCmd )
