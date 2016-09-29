@@ -6,6 +6,7 @@ import Dict exposing (Dict)
 import Navigation
 import Maybe exposing (Maybe)
 import Cmd.Extra
+import Exts.Maybe exposing (catMaybes)
 import Platform.Cmd exposing (..)
 import Material
 import Material.Helpers exposing (pure, lift, lift')
@@ -94,28 +95,6 @@ urlOfTab tabNo =
     "#" ++ (Array.get tabNo Main.View.tabUrls |> Maybe.withDefault "")
 
 
-
-{-
-   Filters the Nothings out of a list, leaving a list holding only the values
-   from the Justs.
--}
-
-
-filterNothing : List (Maybe a) -> List a
-filterNothing list =
-    case list of
-        [] ->
-            []
-
-        x :: xs ->
-            case x of
-                Just value ->
-                    value :: filterNothing xs
-
-                Nothing ->
-                    filterNothing xs
-
-
 setLoginLocations authState =
     { authState | logoutLocation = "#welcome", forwardLocation = "#accounts" }
 
@@ -182,4 +161,4 @@ selectLocation model location =
         selectTabModel =
             { jumpToWelcomeModel | selectedTab = tabNo }
     in
-        ( selectTabModel, Cmd.batch (filterNothing [ jumpToWelcomeCmd, initCmd ]) )
+        ( selectTabModel, Cmd.batch (catMaybes [ jumpToWelcomeCmd, initCmd ]) )

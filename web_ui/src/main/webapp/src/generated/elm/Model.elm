@@ -3,8 +3,9 @@ module Model exposing (..)
 import Set exposing (Set)
 import Dict exposing (Dict)
 import Json.Decode as Decode exposing (..)
-import Json.Decode.Extra exposing ((|:))
+import Json.Decode.Extra exposing ((|:), withDefault, maybeNull)
 import Json.Encode as Encode exposing (..)
+import Exts.Maybe exposing (catMaybes)
 
 
 type NamedRef
@@ -90,19 +91,25 @@ type Account
     = Account
         { username : String
         , password : String
-        , roles : List Role
+        , roles : Maybe (List Role)
         , id : String
         }
 
 
 accountEncoder : Account -> Encode.Value
 accountEncoder (Account model) =
-    Encode.object
-        [ ( "username", Encode.string model.username )
-        , ( "password", Encode.string model.password )
-        , ( "roles", model.roles |> List.map roleEncoder |> Encode.list )
-        , ( "id", Encode.string model.id )
-        ]
+    [ Just ( "username", Encode.string model.username )
+    , Just ( "password", Encode.string model.password )
+    , case model.roles of
+        Just roles ->
+            Just ( "roles", roles |> List.map roleEncoder |> Encode.list )
+
+        Nothing ->
+            Nothing
+    , Just ( "id", Encode.string model.id )
+    ]
+        |> catMaybes
+        |> Encode.object
 
 
 accountDecoder : Decoder Account
@@ -119,8 +126,10 @@ accountDecoder =
     )
         |: ("username" := Decode.string)
         |: ("password" := Decode.string)
-        |: ("roles" := Decode.list roleDecoder)
-        |: ("id" := Decode.string)
+        |: (("roles" := maybeNull (Decode.list roleDecoder))
+                |> withDefault Nothing
+           )
+        |: ("id" := Decode.int |> Decode.map toString)
 
 
 type Role

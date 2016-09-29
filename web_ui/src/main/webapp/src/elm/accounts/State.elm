@@ -20,7 +20,7 @@ init =
     { mdl = Material.model
     , selected = Set.empty
     , data =
-        [ Model.Account { id = "1", username = "admin", password = "", roles = [] }
+        [ Model.Account { id = "1", username = "admin", password = "", roles = Just [] }
         ]
     }
 
