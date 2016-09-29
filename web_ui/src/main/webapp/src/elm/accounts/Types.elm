@@ -4,6 +4,7 @@ import Material
 import Set exposing (..)
 import Model
 import Http
+import Account.Api
 
 
 type alias Model =
@@ -15,6 +16,7 @@ type alias Model =
 
 type Msg
     = Mdl (Material.Msg Msg)
+    | AccountApi (Account.Api.Msg)
     | Init
     | Toggle (String)
     | ToggleAll

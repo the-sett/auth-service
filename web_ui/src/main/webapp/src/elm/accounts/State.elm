@@ -1,9 +1,11 @@
 module Accounts.State exposing (init, update, allSelected, someSelected, key)
 
 import Platform.Cmd exposing (Cmd)
+import Cmd.Extra
 import Material
 import Material.Helpers exposing (lift)
 import Accounts.Types exposing (..)
+import Account.Api
 import Log
 import Set as Set
 import Model
@@ -36,6 +38,13 @@ someSelected model =
     Set.size model.selected > 0
 
 
+callbacks : Account.Api.Callbacks Model msg
+callbacks =
+    { findAll = \accounts -> \model -> Cmd.none
+    , create = \account -> \model -> Cmd.none
+    }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     update' (Log.debug "accounts" action) model
@@ -47,8 +56,12 @@ update' action model =
         Mdl action' ->
             Material.update action' model
 
+        AccountApi action' ->
+            --( model, Cmd.none )
+            ( model, Account.Api.update callbacks action' model )
+
         Init ->
-            ( model, Cmd.none )
+            ( model, Cmd.map AccountApi Account.Api.findAll )
 
         ToggleAll ->
             { model

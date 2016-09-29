@@ -1,6 +1,7 @@
 module Account.Api exposing (..)
 
 import Platform.Cmd exposing (Cmd)
+import Log
 import Model
 import Account.Service
 import Task
@@ -11,6 +12,10 @@ import Http
 type Msg
     = Create (Result.Result Http.Error Model.Account)
     | FindAll (Result.Result Http.Error (List Model.Account))
+
+
+
+--Cmd.map AccountApi Account.Api.findAll
 
 
 findAll : Cmd Msg
@@ -33,6 +38,11 @@ type alias Callbacks model msg =
 
 update : Callbacks model msg -> Msg -> model -> Cmd msg
 update callbacks action model =
+    update' callbacks (Log.debug "account.api" action) model
+
+
+update' : Callbacks model msg -> Msg -> model -> Cmd msg
+update' callbacks action model =
     case action of
         Create result ->
             (case result of
