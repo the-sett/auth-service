@@ -30,19 +30,19 @@ create model =
         |> Task.perform (\error -> Create (Result.Err error)) (\result -> Create (Result.Ok result))
 
 
-type alias Callbacks model =
-    { findAll : List (Model.Account) -> model -> model
-    , create : Model.Account -> model -> model
-    , error : Http.Error -> model -> model
+type alias Callbacks model msg =
+    { findAll : List (Model.Account) -> model -> ( model, Cmd msg )
+    , create : Model.Account -> model -> ( model, Cmd msg )
+    , error : Http.Error -> model -> ( model, Cmd msg )
     }
 
 
-update : Callbacks model -> Msg -> model -> model
+update : Callbacks model msg -> Msg -> model -> ( model, Cmd msg )
 update callbacks action model =
     update' callbacks (Log.debug "account.api" action) model
 
 
-update' : Callbacks model -> Msg -> model -> model
+update' : Callbacks model msg -> Msg -> model -> ( model, Cmd msg )
 update' callbacks action model =
     case action of
         Create result ->

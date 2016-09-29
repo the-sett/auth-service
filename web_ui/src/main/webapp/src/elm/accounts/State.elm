@@ -2,6 +2,7 @@ module Accounts.State exposing (init, update, allSelected, someSelected, key)
 
 import Platform.Cmd exposing (Cmd)
 import Cmd.Extra
+import Http
 import Material
 import Material.Helpers exposing (lift)
 import Accounts.Types exposing (..)
@@ -11,6 +12,7 @@ import Set as Set
 import Model
 import Account.Service
 import Task
+import Auth
 
 
 init : Model
@@ -38,15 +40,25 @@ someSelected model =
     Set.size model.selected > 0
 
 
-callbacks : Account.Api.Callbacks Model
+callbacks : Account.Api.Callbacks Model Msg
 callbacks =
     { findAll =
         \accounts ->
             \model ->
-                { model | data = accounts }
-    , create = \account -> \model -> model
-    , error = \error -> \model -> model
+                ( { model | data = accounts }, Cmd.none )
+    , create = \account -> \model -> ( model, Cmd.none )
+    , error = error
     }
+
+
+error : Http.Error -> model -> ( model, Cmd msg )
+error httpError model =
+    case httpError of
+        Http.BadResponse 401 message ->
+            ( model, Auth.logout )
+
+        _ ->
+            ( model, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -62,7 +74,7 @@ update' action model =
 
         AccountApi action' ->
             --( model, Cmd.none )
-            ( Account.Api.update callbacks action' model, Cmd.none )
+            Account.Api.update callbacks action' model
 
         Init ->
             ( model, Cmd.map AccountApi Account.Api.findAll )
