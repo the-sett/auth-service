@@ -38,10 +38,10 @@ someSelected model =
     Set.size model.selected > 0
 
 
-callbacks : Account.Api.Callbacks Model msg
+callbacks : Account.Api.Callbacks Model
 callbacks =
-    { findAll = \accounts -> \model -> Cmd.none
-    , create = \account -> \model -> Cmd.none
+    { findAll = \accounts -> \model -> model
+    , create = \account -> \model -> model
     }
 
 
@@ -58,7 +58,7 @@ update' action model =
 
         AccountApi action' ->
             --( model, Cmd.none )
-            ( model, Account.Api.update callbacks action' model )
+            ( Account.Api.update callbacks action' model, Cmd.none )
 
         Init ->
             ( model, Cmd.map AccountApi Account.Api.findAll )
