@@ -33,6 +33,7 @@ create model =
 type alias Callbacks model =
     { findAll : List (Model.Account) -> model -> model
     , create : Model.Account -> model -> model
+    , error : Http.Error -> model -> model
     }
 
 
@@ -49,8 +50,8 @@ update' callbacks action model =
                 Ok account ->
                     callbacks.create account model
 
-                Err _ ->
-                    model
+                Err httpError ->
+                    callbacks.error httpError model
             )
 
         FindAll result ->
@@ -58,8 +59,8 @@ update' callbacks action model =
                 Ok account ->
                     callbacks.findAll account model
 
-                Err _ ->
-                    model
+                Err httpError ->
+                    callbacks.error httpError model
             )
 
 

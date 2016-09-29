@@ -40,8 +40,12 @@ someSelected model =
 
 callbacks : Account.Api.Callbacks Model
 callbacks =
-    { findAll = \accounts -> \model -> model
+    { findAll =
+        \accounts ->
+            \model ->
+                { model | data = accounts }
     , create = \account -> \model -> model
+    , error = \error -> \model -> model
     }
 
 
