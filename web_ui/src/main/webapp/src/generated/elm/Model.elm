@@ -16,9 +16,10 @@ type NamedRef
 
 namedRefEncoder : NamedRef -> Encode.Value
 namedRefEncoder (NamedRef model) =
-    Encode.object
-        [ ( "name", Encode.string model.name )
-        ]
+    [ Just ( "name", Encode.string model.name )
+    ]
+        |> catMaybes
+        |> Encode.object
 
 
 namedRefDecoder : Decoder NamedRef
@@ -42,10 +43,11 @@ type AuthRequest
 
 authRequestEncoder : AuthRequest -> Encode.Value
 authRequestEncoder (AuthRequest model) =
-    Encode.object
-        [ ( "username", Encode.string model.username )
-        , ( "password", Encode.string model.password )
-        ]
+    [ Just ( "username", Encode.string model.username )
+    , Just ( "password", Encode.string model.password )
+    ]
+        |> catMaybes
+        |> Encode.object
 
 
 authRequestDecoder : Decoder AuthRequest
@@ -70,9 +72,10 @@ type AuthResponse
 
 authResponseEncoder : AuthResponse -> Encode.Value
 authResponseEncoder (AuthResponse model) =
-    Encode.object
-        [ ( "token", Encode.string model.token )
-        ]
+    [ Just ( "token", Encode.string model.token )
+    ]
+        |> catMaybes
+        |> Encode.object
 
 
 authResponseDecoder : Decoder AuthResponse
@@ -126,29 +129,38 @@ accountDecoder =
     )
         |: ("username" := Decode.string)
         |: ("password" := Decode.string)
-        |: (("roles" := maybeNull (Decode.list roleDecoder))
-                |> withDefault Nothing
-           )
+        |: (("roles" := maybeNull (Decode.list roleDecoder)) |> withDefault Nothing)
         |: ("id" := Decode.int |> Decode.map toString)
 
 
 type Role
     = Role
         { name : String
-        , accounts : List Account
-        , permissions : List Permission
+        , accounts : Maybe (List Account)
+        , permissions : Maybe (List Permission)
         , id : String
         }
 
 
 roleEncoder : Role -> Encode.Value
 roleEncoder (Role model) =
-    Encode.object
-        [ ( "name", Encode.string model.name )
-        , ( "accounts", model.accounts |> List.map accountEncoder |> Encode.list )
-        , ( "permissions", model.permissions |> List.map permissionEncoder |> Encode.list )
-        , ( "id", Encode.string model.id )
-        ]
+    [ Just ( "name", Encode.string model.name )
+    , case model.accounts of
+        Just accounts ->
+            Just ( "accounts", accounts |> List.map accountEncoder |> Encode.list )
+
+        Nothing ->
+            Nothing
+    , case model.permissions of
+        Just permissions ->
+            Just ( "permissions", permissions |> List.map permissionEncoder |> Encode.list )
+
+        Nothing ->
+            Nothing
+    , Just ( "id", Encode.string model.id )
+    ]
+        |> catMaybes
+        |> Encode.object
 
 
 roleDecoder : Decoder Role
@@ -164,9 +176,9 @@ roleDecoder =
         )
     )
         |: ("name" := Decode.string)
-        |: ("accounts" := Decode.list accountDecoder)
-        |: ("permissions" := Decode.list permissionDecoder)
-        |: ("id" := Decode.string)
+        |: (("accounts" := maybeNull (Decode.list accountDecoder)) |> withDefault Nothing)
+        |: (("permissions" := maybeNull (Decode.list permissionDecoder)) |> withDefault Nothing)
+        |: ("id" := Decode.int |> Decode.map toString)
 
 
 type Permission
@@ -178,10 +190,11 @@ type Permission
 
 permissionEncoder : Permission -> Encode.Value
 permissionEncoder (Permission model) =
-    Encode.object
-        [ ( "name", Encode.string model.name )
-        , ( "id", Encode.string model.id )
-        ]
+    [ Just ( "name", Encode.string model.name )
+    , Just ( "id", Encode.string model.id )
+    ]
+        |> catMaybes
+        |> Encode.object
 
 
 permissionDecoder : Decoder Permission
@@ -195,4 +208,4 @@ permissionDecoder =
         )
     )
         |: ("name" := Decode.string)
-        |: ("id" := Decode.string)
+        |: ("id" := Decode.int |> Decode.map toString)
