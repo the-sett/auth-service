@@ -2,6 +2,7 @@ module Accounts.Types exposing (..)
 
 import Material
 import Set exposing (..)
+import Array exposing (Array)
 import Model
 import Http
 import Account.Service
@@ -10,7 +11,7 @@ import Account.Service
 type alias Model =
     { mdl : Material.Model
     , selected : Set String
-    , data : List Model.Account
+    , data : Array Model.Account
     }
 
 
@@ -23,4 +24,4 @@ type Msg
     | Add
     | Delete
     | ConfirmDelete
-    | Edit
+    | Edit Int

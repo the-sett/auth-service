@@ -1,6 +1,7 @@
 module Accounts.View exposing (root, dialog)
 
 import Set as Set
+import Array
 import Debug as Debug
 import Html exposing (..)
 import Html.Attributes exposing (title, class)
@@ -49,6 +50,7 @@ table model =
                 ]
             , Table.tbody []
                 (model.data
+                    |> Array.toList
                     |> List.indexedMap
                         (\idx ((Model.Account accountRec) as account) ->
                             Table.tr
@@ -69,7 +71,7 @@ table model =
                                         model.mdl
                                         [ Button.accent
                                         , Button.ripple
-                                        , Button.onClick Edit
+                                        , Button.onClick (Edit idx)
                                         ]
                                         [ text "Edit" ]
                                     ]
@@ -87,7 +89,7 @@ controlBar model =
         [ div [ class "control-bar__row" ]
             [ div [ class "control-bar__left-0" ]
                 [ span [ class "mdl-chip mdl-chip__text" ]
-                    [ text (toString (List.length model.data) ++ " items") ]
+                    [ text (toString (Array.length model.data) ++ " items") ]
                 ]
             , div [ class "control-bar__right-0" ]
                 [ Button.render Mdl

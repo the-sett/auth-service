@@ -7,7 +7,8 @@ import Material
 import Material.Helpers exposing (lift)
 import Accounts.Types exposing (..)
 import Log
-import Set as Set
+import Set
+import Array
 import Model
 import Account.Service
 import Task
@@ -21,6 +22,7 @@ init =
     , data =
         [ Model.Account { id = "1", username = "admin", password = "", roles = Just [] }
         ]
+            |> Array.fromList
     }
 
 
@@ -31,7 +33,7 @@ key (Model.Account account) =
 
 allSelected : Model -> Bool
 allSelected model =
-    Set.size model.selected == List.length model.data
+    Set.size model.selected == Array.length model.data
 
 
 someSelected : Model -> Bool
@@ -53,7 +55,7 @@ callbacks =
 
 accountList : List Model.Account -> Model -> ( Model, Cmd msg )
 accountList accounts model =
-    ( { model | data = accounts }, Cmd.none )
+    ( { model | data = Array.fromList accounts }, Cmd.none )
 
 
 error : Http.Error -> model -> ( model, Cmd msg )
@@ -89,7 +91,7 @@ update' action model =
                     if allSelected model then
                         Set.empty
                     else
-                        List.map key model.data |> Set.fromList
+                        Array.map key model.data |> Array.toList |> Set.fromList
             }
                 ! []
 
@@ -112,5 +114,5 @@ update' action model =
         ConfirmDelete ->
             ( model, Cmd.none )
 
-        Edit ->
+        Edit idx ->
             ( model, Cmd.none )
