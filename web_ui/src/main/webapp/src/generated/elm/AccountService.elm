@@ -1,11 +1,66 @@
-module Account.Service exposing (..)
+module Account.Service exposing (Msg, update, Callbacks, findAll, create)
 
+import Log
+import Platform.Cmd exposing (Cmd)
+import Result
+import Http
 import Http
 import Http.Decorators
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode exposing (..)
 import Task exposing (Task)
 import Model exposing (..)
+
+
+type Msg
+    = Create (Result.Result Http.Error Model.Account)
+    | FindAll (Result.Result Http.Error (List Model.Account))
+
+
+findAll : Cmd Msg
+findAll =
+    findAllTask
+        |> Task.perform (\error -> FindAll (Result.Err error)) (\result -> FindAll (Result.Ok result))
+
+
+create : Model.Account -> Cmd Msg
+create model =
+    createTask model
+        |> Task.perform (\error -> Create (Result.Err error)) (\result -> Create (Result.Ok result))
+
+
+type alias Callbacks model msg =
+    { findAll : List (Model.Account) -> model -> ( model, Cmd msg )
+    , create : Model.Account -> model -> ( model, Cmd msg )
+    , error : Http.Error -> model -> ( model, Cmd msg )
+    }
+
+
+update : Callbacks model msg -> Msg -> model -> ( model, Cmd msg )
+update callbacks action model =
+    update' callbacks (Log.debug "account.api" action) model
+
+
+update' : Callbacks model msg -> Msg -> model -> ( model, Cmd msg )
+update' callbacks action model =
+    case action of
+        Create result ->
+            (case result of
+                Ok account ->
+                    callbacks.create account model
+
+                Err httpError ->
+                    callbacks.error httpError model
+            )
+
+        FindAll result ->
+            (case result of
+                Ok account ->
+                    callbacks.findAll account model
+
+                Err httpError ->
+                    callbacks.error httpError model
+            )
 
 
 api =
@@ -22,8 +77,8 @@ routes =
     }
 
 
-findAll : Task Http.Error (List Account)
-findAll =
+findAllTask : Task Http.Error (List Account)
+findAllTask =
     { verb = "GET"
     , headers = []
     , url = routes.findAll
@@ -33,8 +88,8 @@ findAll =
         |> Http.fromJson (Decode.list accountDecoder)
 
 
-findByExample : Account -> Task Http.Error (List Account)
-findByExample model =
+findByExampleTask : Account -> Task Http.Error (List Account)
+findByExampleTask model =
     { verb = "POST"
     , headers = []
     , url = routes.findByExample
@@ -44,8 +99,8 @@ findByExample model =
         |> Http.fromJson (Decode.list accountDecoder)
 
 
-create : Account -> Task Http.Error Account
-create model =
+createTask : Account -> Task Http.Error Account
+createTask model =
     { verb = "POST"
     , headers = [ ( "Content-Type", "application/json" ) ]
     , url = routes.create
@@ -55,8 +110,8 @@ create model =
         |> Http.fromJson accountDecoder
 
 
-retrieve : String -> Task Http.Error Account
-retrieve id =
+retrieveTask : String -> Task Http.Error Account
+retrieveTask id =
     { verb = "GET"
     , headers = []
     , url = routes.retrieve ++ id
@@ -66,8 +121,8 @@ retrieve id =
         |> Http.fromJson accountDecoder
 
 
-update : String -> Account -> Task Http.Error Account
-update id model =
+updateTask : String -> Account -> Task Http.Error Account
+updateTask id model =
     { verb = "PUT"
     , headers = [ ( "Content-Type", "application/json" ) ]
     , url = routes.update ++ id
@@ -87,8 +142,8 @@ promoteError rawError =
             Http.NetworkError
 
 
-delete : String -> Task Http.Error Http.Response
-delete id =
+deleteTask : String -> Task Http.Error Http.Response
+deleteTask id =
     { verb = "DELETE"
     , headers = []
     , url = routes.delete ++ id

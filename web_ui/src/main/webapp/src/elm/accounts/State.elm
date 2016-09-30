@@ -6,7 +6,6 @@ import Http
 import Material
 import Material.Helpers exposing (lift)
 import Accounts.Types exposing (..)
-import Account.Api
 import Log
 import Set as Set
 import Model
@@ -40,7 +39,7 @@ someSelected model =
     Set.size model.selected > 0
 
 
-callbacks : Account.Api.Callbacks Model Msg
+callbacks : Account.Service.Callbacks Model Msg
 callbacks =
     { findAll =
         \accounts ->
@@ -74,10 +73,10 @@ update' action model =
 
         AccountApi action' ->
             --( model, Cmd.none )
-            Account.Api.update callbacks action' model
+            Account.Service.update callbacks action' model
 
         Init ->
-            ( model, Cmd.map AccountApi Account.Api.findAll )
+            ( model, Cmd.map AccountApi Account.Service.findAll )
 
         ToggleAll ->
             { model
