@@ -72,11 +72,10 @@ update' action model =
             Material.update action' model
 
         AccountApi action' ->
-            --( model, Cmd.none )
             Account.Service.update callbacks action' model
 
         Init ->
-            ( model, Cmd.map AccountApi Account.Service.findAll )
+            ( model, Account.Service.findAll AccountApi )
 
         ToggleAll ->
             { model

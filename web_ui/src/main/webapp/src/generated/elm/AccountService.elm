@@ -17,16 +17,18 @@ type Msg
     | FindAll (Result.Result Http.Error (List Model.Account))
 
 
-findAll : Cmd Msg
-findAll =
+findAll : (Msg -> msg) -> Cmd msg
+findAll msg =
     findAllTask
         |> Task.perform (\error -> FindAll (Result.Err error)) (\result -> FindAll (Result.Ok result))
+        |> Cmd.map msg
 
 
-create : Model.Account -> Cmd Msg
-create model =
+create : (Msg -> msg) -> Model.Account -> Cmd msg
+create msg model =
     createTask model
         |> Task.perform (\error -> Create (Result.Err error)) (\result -> Create (Result.Ok result))
+        |> Cmd.map msg
 
 
 type alias Callbacks model msg =
