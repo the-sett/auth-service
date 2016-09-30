@@ -41,20 +41,19 @@ someSelected model =
 
 callbacks : Account.Service.Callbacks Model Msg
 callbacks =
-    { findAll =
-        \accounts ->
-            \model ->
-                ( { model | data = accounts }, Cmd.none )
-    , findByExample =
-        \accounts ->
-            \model ->
-                ( { model | data = accounts }, Cmd.none )
+    { findAll = accountList
+    , findByExample = accountList
     , create = \account -> \model -> ( model, Cmd.none )
     , retrieve = \account -> \model -> ( model, Cmd.none )
     , update = \account -> \model -> ( model, Cmd.none )
     , delete = \response -> \model -> ( model, Cmd.none )
     , error = error
     }
+
+
+accountList : List Model.Account -> Model -> ( Model, Cmd msg )
+accountList accounts model =
+    ( { model | data = accounts }, Cmd.none )
 
 
 error : Http.Error -> model -> ( model, Cmd msg )
