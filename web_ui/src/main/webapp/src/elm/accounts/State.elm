@@ -45,7 +45,14 @@ callbacks =
         \accounts ->
             \model ->
                 ( { model | data = accounts }, Cmd.none )
+    , findByExample =
+        \accounts ->
+            \model ->
+                ( { model | data = accounts }, Cmd.none )
     , create = \account -> \model -> ( model, Cmd.none )
+    , retrieve = \account -> \model -> ( model, Cmd.none )
+    , update = \account -> \model -> ( model, Cmd.none )
+    , delete = \response -> \model -> ( model, Cmd.none )
     , error = error
     }
 
@@ -75,7 +82,7 @@ update' action model =
             Account.Service.update callbacks action' model
 
         Init ->
-            ( model, Account.Service.findAll AccountApi )
+            ( model, Account.Service.invokeFindAll AccountApi )
 
         ToggleAll ->
             { model
