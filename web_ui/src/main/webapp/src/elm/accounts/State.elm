@@ -82,7 +82,7 @@ update' action model =
             Account.Service.update callbacks action' model
 
         Init ->
-            ( model, Account.Service.invokeFindAll AccountApi )
+            ( { model | selected = Set.empty }, Account.Service.invokeFindAll AccountApi )
 
         ToggleAll ->
             { model
