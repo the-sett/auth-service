@@ -1,15 +1,15 @@
 module Accounts.State exposing (init, update, allSelected, someSelected, key)
 
+import Log
+import Set
+import Array
+import Maybe
 import Platform.Cmd exposing (Cmd)
 import Cmd.Extra
 import Http
 import Material
 import Material.Helpers exposing (lift)
 import Accounts.Types exposing (..)
-import Log
-import Set
-import Array
-import Maybe
 import Model
 import Account.Service
 import Task
@@ -26,6 +26,9 @@ init =
             |> Array.fromList
     , accountToEdit = Nothing
     , viewState = ListView
+    , username = ""
+    , password1 = ""
+    , password2 = ""
     }
 
 
@@ -135,3 +138,12 @@ update' action model =
 
                     Just (Model.Account account) ->
                         ( model, Account.Service.invokeRetrieve AccountApi account.id )
+
+        UpdateUsername username ->
+            ( { model | username = username }, Cmd.none )
+
+        UpdatePassword1 password ->
+            ( { model | password1 = password }, Cmd.none )
+
+        UpdatePassword2 password ->
+            ( { model | password2 = password }, Cmd.none )

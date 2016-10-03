@@ -166,16 +166,28 @@ accountForm model =
         [ Textfield.render Mdl
             [ 1 ]
             model.mdl
-            [ Textfield.label "Text..."
+            [ Textfield.label "Username"
             , Textfield.floatingLabel
             , Textfield.text'
+            , Textfield.onInput UpdateUsername
             ]
         , Textfield.render Mdl
             [ 2 ]
             model.mdl
-            [ Textfield.label "Number.."
+            [ Textfield.label "Password"
             , Textfield.floatingLabel
-              -- , Textfield.onInput Upd4
+            , Textfield.onInput UpdatePassword1
+            ]
+        , Textfield.render Mdl
+            [ 3 ]
+            model.mdl
+            [ Textfield.label "Repeat Password"
+            , Textfield.floatingLabel
+            , Textfield.onInput UpdatePassword2
+            , if not (model.password1 == model.password2) then
+                Textfield.error <| "Passwords do not match."
+              else
+                Options.nop
             ]
         , div [ class "control-bar" ]
             [ div [ class "control-bar__row" ]

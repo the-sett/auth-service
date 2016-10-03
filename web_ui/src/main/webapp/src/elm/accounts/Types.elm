@@ -21,6 +21,9 @@ type alias Model =
     , data : Array Model.Account
     , accountToEdit : Maybe Model.Account
     , viewState : ViewState
+    , username : String
+    , password1 : String
+    , password2 : String
     }
 
 
@@ -34,3 +37,6 @@ type Msg
     | Delete
     | ConfirmDelete
     | Edit Int
+    | UpdateUsername String
+    | UpdatePassword1 String
+    | UpdatePassword2 String
