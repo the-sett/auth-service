@@ -9,6 +9,7 @@ import Accounts.Types exposing (..)
 import Log
 import Set
 import Array
+import Maybe
 import Model
 import Account.Service
 import Task
@@ -23,6 +24,7 @@ init =
         [ Model.Account { id = "1", username = "admin", password = "", roles = Just [] }
         ]
             |> Array.fromList
+    , accountToEdit = Nothing
     , viewState = ListView
     }
 
@@ -47,7 +49,7 @@ callbacks =
     { findAll = accountList
     , findByExample = accountList
     , create = \account -> \model -> ( model, Cmd.none )
-    , retrieve = \account -> \model -> ( model, Cmd.none )
+    , retrieve = accountToEdit
     , update = \account -> \model -> ( model, Cmd.none )
     , delete = \response -> \model -> ( model, Cmd.none )
     , error = error
@@ -57,6 +59,11 @@ callbacks =
 accountList : List Model.Account -> Model -> ( Model, Cmd msg )
 accountList accounts model =
     ( { model | data = Array.fromList accounts }, Cmd.none )
+
+
+accountToEdit : Model.Account -> Model -> ( Model, Cmd msg )
+accountToEdit account model =
+    ( { model | viewState = EditView, accountToEdit = Just account }, Cmd.none )
 
 
 error : Http.Error -> model -> ( model, Cmd msg )
@@ -118,4 +125,13 @@ update' action model =
             ( model, Cmd.none )
 
         Edit idx ->
-            ( { model | viewState = EditView }, Cmd.none )
+            let
+                item =
+                    Array.get idx model.data
+            in
+                case item of
+                    Nothing ->
+                        ( model, Cmd.none )
+
+                    Just (Model.Account account) ->
+                        ( model, Account.Service.invokeRetrieve AccountApi account.id )

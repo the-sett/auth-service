@@ -3,6 +3,7 @@ module Accounts.Types exposing (..)
 import Material
 import Set exposing (..)
 import Array exposing (Array)
+import Maybe
 import Model
 import Http
 import Account.Service
@@ -18,6 +19,7 @@ type alias Model =
     { mdl : Material.Model
     , selected : Set String
     , data : Array Model.Account
+    , accountToEdit : Maybe Model.Account
     , viewState : ViewState
     }
 
