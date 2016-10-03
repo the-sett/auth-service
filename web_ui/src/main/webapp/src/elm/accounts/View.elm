@@ -191,17 +191,42 @@ accountForm model =
               else
                 Options.nop
             ]
-        , div [ class "control-bar" ]
-            [ div [ class "control-bar__row" ]
-                [ div [ class "control-bar__left-0" ]
-                    [ Button.render Mdl
-                        [ 0 ]
-                        model.mdl
-                        [ Button.colored
-                        , Button.ripple
-                        ]
-                        [ text "Submit" ]
+        , if model.viewState == CreateView then
+            addControlBar model
+          else
+            editControlBar model
+        ]
+
+
+editControlBar : Model -> Html Msg
+editControlBar model =
+    div [ class "control-bar" ]
+        [ div [ class "control-bar__row" ]
+            [ div [ class "control-bar__left-0" ]
+                [ Button.render Mdl
+                    [ 0 ]
+                    model.mdl
+                    [ Button.colored
+                    , Button.ripple
                     ]
+                    [ text "Save" ]
+                ]
+            ]
+        ]
+
+
+addControlBar : Model -> Html Msg
+addControlBar model =
+    div [ class "control-bar" ]
+        [ div [ class "control-bar__row" ]
+            [ div [ class "control-bar__left-0" ]
+                [ Button.render Mdl
+                    [ 0 ]
+                    model.mdl
+                    [ Button.colored
+                    , Button.ripple
+                    ]
+                    [ text "Create" ]
                 ]
             ]
         ]
