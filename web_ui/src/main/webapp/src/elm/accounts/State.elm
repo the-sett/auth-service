@@ -84,7 +84,9 @@ update' action model =
             Account.Service.update callbacks action' model
 
         Init ->
-            ( { model | selected = Set.empty }, Account.Service.invokeFindAll AccountApi )
+            ( { model | selected = Set.empty, viewState = ListView }
+            , Account.Service.invokeFindAll AccountApi
+            )
 
         ToggleAll ->
             { model
@@ -107,7 +109,7 @@ update' action model =
                 ! []
 
         Add ->
-            ( model, Cmd.none )
+            ( { model | viewState = CreateView }, Cmd.none )
 
         Delete ->
             ( model, Cmd.none )
@@ -116,4 +118,4 @@ update' action model =
             ( model, Cmd.none )
 
         Edit idx ->
-            ( model, Cmd.none )
+            ( { model | viewState = EditView }, Cmd.none )

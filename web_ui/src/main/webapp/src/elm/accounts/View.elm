@@ -4,7 +4,7 @@ import Set as Set
 import Array
 import Debug as Debug
 import Html exposing (..)
-import Html.Attributes exposing (title, class)
+import Html.Attributes exposing (title, class, action)
 import Html.App as App
 import Platform.Cmd exposing (Cmd)
 import String
@@ -15,6 +15,7 @@ import Material.Table as Table
 import Material.Button as Button
 import Material.Icon as Icon
 import Material.Toggles as Toggles
+import Material.Textfield as Textfield
 import Accounts.Types exposing (..)
 import Accounts.State exposing (..)
 import Auth.Types
@@ -25,7 +26,10 @@ root : Model -> Html Msg
 root model =
     div [ class "layout-fixed-width" ]
         [ h4 [] [ text "User Accounts" ]
-        , table model
+        , if model.viewState == ListView then
+            table model
+          else
+            accountForm model
         ]
 
 
@@ -150,6 +154,39 @@ dialog model =
                             ]
                             [ text "Confirm" ]
                         ]
+                    ]
+                ]
+            ]
+        ]
+
+
+accountForm : Model -> Html Msg
+accountForm model =
+    form [ action "#" ]
+        [ Textfield.render Mdl
+            [ 1 ]
+            model.mdl
+            [ Textfield.label "Text..."
+            , Textfield.floatingLabel
+            , Textfield.text'
+            ]
+        , Textfield.render Mdl
+            [ 2 ]
+            model.mdl
+            [ Textfield.label "Number.."
+            , Textfield.floatingLabel
+              -- , Textfield.onInput Upd4
+            ]
+        , div [ class "control-bar" ]
+            [ div [ class "control-bar__row" ]
+                [ div [ class "control-bar__left-0" ]
+                    [ Button.render Mdl
+                        [ 0 ]
+                        model.mdl
+                        [ Button.colored
+                        , Button.ripple
+                        ]
+                        [ text "Submit" ]
                     ]
                 ]
             ]
