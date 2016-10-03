@@ -8,10 +8,17 @@ import Http
 import Account.Service
 
 
+type ViewState
+    = ListView
+    | CreateView
+    | EditView
+
+
 type alias Model =
     { mdl : Material.Model
     , selected : Set String
     , data : Array Model.Account
+    , viewState : ViewState
     }
 
 

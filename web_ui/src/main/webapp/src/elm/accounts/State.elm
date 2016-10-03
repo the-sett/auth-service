@@ -23,6 +23,7 @@ init =
         [ Model.Account { id = "1", username = "admin", password = "", roles = Just [] }
         ]
             |> Array.fromList
+    , viewState = ListView
     }
 
 
