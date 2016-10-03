@@ -186,7 +186,7 @@ accountForm model =
             , Textfield.floatingLabel
             , Textfield.password
             , Textfield.onInput UpdatePassword2
-            , if model.password1 /= model.password2 then
+            , if checkPasswordMatch model then
                 Textfield.error <| "Passwords do not match."
               else
                 Options.nop
@@ -196,6 +196,15 @@ accountForm model =
           else
             editControlBar model
         ]
+
+
+checkPasswordMatch model =
+    model.password1 /= model.password2
+
+
+checkAll : model -> List (model -> Bool) -> Bool
+checkAll model checks =
+    List.map (\check -> check model) checks |> List.foldl (&&) True
 
 
 editControlBar : Model -> Html Msg
@@ -225,6 +234,10 @@ addControlBar model =
                     model.mdl
                     [ Button.colored
                     , Button.ripple
+                    , if checkAll model [ checkPasswordMatch ] then
+                        Button.colored
+                      else
+                        Button.disabled
                     ]
                     [ text "Create" ]
                 ]
