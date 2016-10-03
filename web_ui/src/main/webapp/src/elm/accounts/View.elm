@@ -186,7 +186,7 @@ accountForm model =
             , Textfield.floatingLabel
             , Textfield.password
             , Textfield.onInput UpdatePassword2
-            , if not (model.password1 == model.password2) then
+            , if model.password1 /= model.password2 then
                 Textfield.error <| "Passwords do not match."
               else
                 Options.nop
