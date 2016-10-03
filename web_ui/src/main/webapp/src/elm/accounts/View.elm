@@ -176,6 +176,7 @@ accountForm model =
             model.mdl
             [ Textfield.label "Password"
             , Textfield.floatingLabel
+            , Textfield.password
             , Textfield.onInput UpdatePassword1
             ]
         , Textfield.render Mdl
@@ -183,6 +184,7 @@ accountForm model =
             model.mdl
             [ Textfield.label "Repeat Password"
             , Textfield.floatingLabel
+            , Textfield.password
             , Textfield.onInput UpdatePassword2
             , if not (model.password1 == model.password2) then
                 Textfield.error <| "Passwords do not match."
