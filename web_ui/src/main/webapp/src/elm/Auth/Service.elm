@@ -45,6 +45,15 @@ type alias Callbacks model msg =
     }
 
 
+callbacks : Callbacks model msg
+callbacks =
+    { login = \_ -> \model -> ( model, Cmd.none )
+    , refresh = \_ -> \model -> ( model, Cmd.none )
+    , logout = \_ -> \model -> ( model, Cmd.none )
+    , error = \_ -> \model -> ( model, Cmd.none )
+    }
+
+
 update : Callbacks model msg -> Msg -> model -> ( model, Cmd msg )
 update callbacks action model =
     update' callbacks (Log.debug "account.api" action) model
