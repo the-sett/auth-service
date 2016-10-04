@@ -67,6 +67,17 @@ type alias Callbacks model msg =
     , error : Http.Error -> model -> ( model, Cmd msg )
     }
 
+callbacks : Callbacks model msg
+callbacks =
+    { findAll = \_ -> \model -> ( model, Cmd.none )
+    , findByExample = \_ -> \model -> ( model, Cmd.none )
+    , create = \_ -> \model -> ( model, Cmd.none )
+    , retrieve = \_ -> \model -> ( model, Cmd.none )
+    , update = \_ -> \model -> ( model, Cmd.none )
+    , delete = \_ -> \model -> ( model, Cmd.none )
+    , error = \_ -> \model -> ( model, Cmd.none )
+    }
+
 
 update : Callbacks model msg -> Msg -> model -> ( model, Cmd msg )
 update callbacks action model =
