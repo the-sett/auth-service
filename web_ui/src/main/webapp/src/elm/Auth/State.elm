@@ -58,10 +58,7 @@ callbacks =
     }
 
 
-
---login : Model.AuthResponse -> model -> ( model, Cmd msg )
-
-
+login : Model.AuthResponse -> Model -> ( Model, Cmd Msg )
 login (Model.AuthResponse response) model =
     let
         model' =
@@ -72,18 +69,12 @@ login (Model.AuthResponse response) model =
         )
 
 
-
---refresh : Model.AuthResponse -> model -> ( model, Cmd msg )
-
-
+refresh : Model.AuthResponse -> Model -> ( Model, Cmd Msg )
 refresh response model =
     ( model, Cmd.none )
 
 
-
---logout : Http.Response -> model -> ( model, Cmd msg )
-
-
+logout : Http.Response -> Model -> ( Model, Cmd Msg )
 logout response model =
     ( { model | token = "", authState = authStateFromToken "" }
     , Cmd.batch [ removeStorage model, Navigation.newUrl model.logoutLocation ]
