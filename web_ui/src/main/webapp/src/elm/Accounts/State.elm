@@ -28,6 +28,7 @@ init =
     }
 
 
+checkPasswordMatch : { b | password1 : a, password2 : a } -> Bool
 checkPasswordMatch model =
     model.password1 /= model.password2
 

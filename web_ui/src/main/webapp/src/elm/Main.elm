@@ -14,6 +14,7 @@ import Auth.Types
 import Auth.State
 
 
+log : a -> a
 log =
     Debug.log "top"
 
