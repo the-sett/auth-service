@@ -5,16 +5,11 @@ import Set
 import Array
 import Maybe
 import Platform.Cmd exposing (Cmd)
-import Cmd.Extra
-import Http
 import Material
-import Material.Helpers exposing (lift)
 import Utils exposing (..)
 import Accounts.Types exposing (..)
 import Model
 import Account.Service
-import Task
-import Auth
 
 
 init : Model

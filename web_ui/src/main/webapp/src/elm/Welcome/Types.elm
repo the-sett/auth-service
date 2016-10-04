@@ -1,7 +1,6 @@
 module Welcome.Types exposing (..)
 
 import Material
-import Auth.Types
 
 
 type alias Model =
