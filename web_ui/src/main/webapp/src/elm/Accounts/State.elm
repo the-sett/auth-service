@@ -10,16 +10,15 @@ import Utils exposing (..)
 import Accounts.Types exposing (..)
 import Model
 import Account.Service
+import Role.Service
 
 
 init : Model
 init =
     { mdl = Material.model
     , selected = Set.empty
-    , accounts =
-        [ Model.Account { id = "1", username = "admin", password = "", roles = Just [] }
-        ]
-            |> Array.fromList
+    , accounts = Array.empty
+    , roles = Array.empty
     , accountToEdit = Nothing
     , viewState = ListView
     , username = ""
@@ -48,8 +47,8 @@ someSelected model =
     Set.size model.selected > 0
 
 
-callbacks : Account.Service.Callbacks Model Msg
-callbacks =
+accountCallbacks : Account.Service.Callbacks Model Msg
+accountCallbacks =
     { findAll = accountList
     , findByExample = accountList
     , create = \account -> \model -> ( model, Cmd.none )
@@ -82,7 +81,7 @@ update' action model =
             Material.update action' model
 
         AccountApi action' ->
-            Account.Service.update callbacks action' model
+            Account.Service.update accountCallbacks action' model
 
         Init ->
             ( { model | selected = Set.empty, viewState = ListView }
