@@ -13,7 +13,7 @@ error : Http.Error -> model -> ( model, Cmd msg )
 error httpError model =
     case httpError of
         Http.BadResponse 401 message ->
-            ( model, Auth.logout )
+            ( model, Auth.unauthed )
 
         _ ->
             ( model, Cmd.none )
