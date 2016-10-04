@@ -5,9 +5,6 @@ import Navigation
 import Http
 import Utils exposing (..)
 import Auth.Types exposing (..)
-import Task exposing (Task)
-import Json.Decode as Decode exposing (..)
-import Json.Encode as Encode exposing (..)
 import Auth.Service
 import Model
 
@@ -89,13 +86,14 @@ authStateFromToken token =
         { loggedIn = True, permissions = [] }
 
 
+authRequestFromCredentials : Credentials -> Model.AuthRequest
+authRequestFromCredentials credentials =
+    Model.AuthRequest { username = credentials.username, password = credentials.password }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     update' (Log.debug "auth" action) model
-
-
-authRequestFromCredentials credentials =
-    Model.AuthRequest { username = credentials.username, password = credentials.password }
 
 
 update' : Msg -> Model -> ( Model, Cmd Msg )

@@ -5,8 +5,6 @@ import Platform.Cmd exposing (Cmd)
 import Result
 import Http
 import Http
-import Http.Decorators
-import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode exposing (..)
 import Task exposing (Task)
 import Model exposing (..)
