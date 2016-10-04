@@ -16,6 +16,7 @@ import Material.Button as Button
 import Material.Icon as Icon
 import Material.Toggles as Toggles
 import Material.Textfield as Textfield
+import Utils exposing (..)
 import Accounts.Types exposing (..)
 import Accounts.State exposing (..)
 import Auth.Types
@@ -198,15 +199,6 @@ accountForm model =
         ]
 
 
-checkPasswordMatch model =
-    model.password1 /= model.password2
-
-
-checkAll : model -> List (model -> Bool) -> Bool
-checkAll model checks =
-    List.map (\check -> check model) checks |> List.foldl (&&) True
-
-
 editControlBar : Model -> Html Msg
 editControlBar model =
     div [ class "control-bar" ]
@@ -234,7 +226,7 @@ addControlBar model =
                     model.mdl
                     [ Button.colored
                     , Button.ripple
-                    , if checkAll model [ checkPasswordMatch ] then
+                    , if checkAll [ checkPasswordMatch ] model then
                         Button.colored
                       else
                         Button.disabled

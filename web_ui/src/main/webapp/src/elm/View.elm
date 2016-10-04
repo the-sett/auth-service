@@ -14,6 +14,7 @@ import Material.Icon as Icon
 import Material.Toggles as Toggles
 import Material.Typography as Typography
 import Material.Button as Button
+import Utils exposing (..)
 import Layout.Types
 import Accounts.View
 import Roles.View
@@ -21,11 +22,6 @@ import Permissions.View
 import Welcome.View
 import Auth.Types
 import Main.Types exposing (..)
-
-
-nth : Int -> List a -> Maybe a
-nth k xs =
-    List.drop k xs |> List.head
 
 
 view : Auth.Types.AuthState -> Model -> Html Msg

@@ -1,4 +1,4 @@
-module Accounts.State exposing (init, update, allSelected, someSelected, key)
+module Accounts.State exposing (init, update, allSelected, someSelected, key, checkPasswordMatch)
 
 import Log
 import Set
@@ -9,6 +9,7 @@ import Cmd.Extra
 import Http
 import Material
 import Material.Helpers exposing (lift)
+import Utils exposing (..)
 import Accounts.Types exposing (..)
 import Model
 import Account.Service
@@ -30,6 +31,10 @@ init =
     , password1 = ""
     , password2 = ""
     }
+
+
+checkPasswordMatch model =
+    model.password1 /= model.password2
 
 
 key : Model.Account -> String
@@ -67,16 +72,6 @@ accountList accounts model =
 accountToEdit : Model.Account -> Model -> ( Model, Cmd msg )
 accountToEdit account model =
     ( { model | viewState = EditView, accountToEdit = Just account }, Cmd.none )
-
-
-error : Http.Error -> model -> ( model, Cmd msg )
-error httpError model =
-    case httpError of
-        Http.BadResponse 401 message ->
-            ( model, Auth.logout )
-
-        _ ->
-            ( model, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
