@@ -49,14 +49,16 @@ someSelected model =
 
 accountCallbacks : Account.Service.Callbacks Model Msg
 accountCallbacks =
-    { findAll = accountList
-    , findByExample = accountList
-    , create = \account -> \model -> ( model, Cmd.none )
-    , retrieve = accountToEdit
-    , update = \account -> \model -> ( model, Cmd.none )
-    , delete = \response -> \model -> ( model, Cmd.none )
-    , error = error
-    }
+    let
+        default =
+            Account.Service.callbacks
+    in
+        { default
+            | findAll = accountList
+            , findByExample = accountList
+            , retrieve = accountToEdit
+            , error = error
+        }
 
 
 accountList : List Model.Account -> Model -> ( Model, Cmd msg )
@@ -67,6 +69,23 @@ accountList accounts model =
 accountToEdit : Model.Account -> Model -> ( Model, Cmd msg )
 accountToEdit account model =
     ( { model | viewState = EditView, accountToEdit = Just account }, Cmd.none )
+
+
+roleCallbacks : Role.Service.Callbacks Model Msg
+roleCallbacks =
+    let
+        default =
+            Role.Service.callbacks
+    in
+        { default
+            | findAll = roleList
+            , error = error
+        }
+
+
+roleList : List Model.Role -> Model -> ( Model, Cmd msg )
+roleList roles model =
+    ( { model | roles = Array.fromList roles }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -82,6 +101,9 @@ update' action model =
 
         AccountApi action' ->
             Account.Service.update accountCallbacks action' model
+
+        RoleApi action' ->
+            Role.Service.update roleCallbacks action' model
 
         Init ->
             ( { model | selected = Set.empty, viewState = ListView }
@@ -109,7 +131,7 @@ update' action model =
                 ! []
 
         Add ->
-            ( { model | viewState = CreateView }, Cmd.none )
+            ( { model | viewState = CreateView }, Role.Service.invokeFindAll RoleApi )
 
         Delete ->
             ( model, Cmd.none )
@@ -127,7 +149,12 @@ update' action model =
                         ( model, Cmd.none )
 
                     Just (Model.Account account) ->
-                        ( model, Account.Service.invokeRetrieve AccountApi account.id )
+                        ( model
+                        , Cmd.batch
+                            [ Account.Service.invokeRetrieve AccountApi account.id
+                            , Role.Service.invokeFindAll RoleApi
+                            ]
+                        )
 
         UpdateUsername username ->
             ( { model | username = username }, Cmd.none )
