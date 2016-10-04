@@ -157,7 +157,7 @@ dialog model =
 
 accountForm : Model -> Html Msg
 accountForm model =
-    form [ action "#" ]
+    div []
         [ Textfield.render Mdl
             [ 1 ]
             model.mdl
@@ -186,46 +186,50 @@ accountForm model =
               else
                 Options.nop
             ]
-        , if model.viewState == CreateView then
-            addControlBar model
+        , accountControlBar model
+        ]
+
+
+validateAccount : Model -> Bool
+validateAccount =
+    checkAll [ checkPasswordMatch ]
+
+
+completeButton : String -> Model -> Html Msg
+completeButton label model =
+    Button.render Mdl
+        [ 0 ]
+        model.mdl
+        [ Button.ripple
+        , if validateAccount model then
+            Button.colored
           else
-            editControlBar model
+            Button.disabled
         ]
+        [ text label ]
 
 
-editControlBar : Model -> Html Msg
-editControlBar model =
+accountControlBar : Model -> Html Msg
+accountControlBar model =
     div [ class "control-bar" ]
         [ div [ class "control-bar__row" ]
             [ div [ class "control-bar__left-0" ]
                 [ Button.render Mdl
                     [ 0 ]
                     model.mdl
-                    [ Button.colored
-                    , Button.ripple
+                    [ Button.ripple
+                    , Button.accent
+                    , Button.onClick Init
                     ]
-                    [ text "Save" ]
+                    [ Icon.i "chevron_left"
+                    , text "Back"
+                    ]
                 ]
-            ]
-        ]
-
-
-addControlBar : Model -> Html Msg
-addControlBar model =
-    div [ class "control-bar" ]
-        [ div [ class "control-bar__row" ]
-            [ div [ class "control-bar__left-0" ]
-                [ Button.render Mdl
-                    [ 0 ]
-                    model.mdl
-                    [ Button.colored
-                    , Button.ripple
-                    , if checkAll [ checkPasswordMatch ] model then
-                        Button.colored
-                      else
-                        Button.disabled
-                    ]
-                    [ text "Create" ]
+            , div [ class "control-bar__right-0" ]
+                [ if model.viewState == EditView then
+                    completeButton "Save" model
+                  else
+                    completeButton "Create" model
                 ]
             ]
         ]
