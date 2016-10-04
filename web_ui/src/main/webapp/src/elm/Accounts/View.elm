@@ -48,7 +48,7 @@ table model =
                     ]
                 ]
             , Table.tbody []
-                (model.data
+                (model.accounts
                     |> Array.toList
                     |> List.indexedMap
                         (\idx ((Model.Account accountRec) as account) ->
@@ -88,7 +88,7 @@ controlBar model =
         [ div [ class "control-bar__row" ]
             [ div [ class "control-bar__left-0" ]
                 [ span [ class "mdl-chip mdl-chip__text" ]
-                    [ text (toString (Array.length model.data) ++ " items") ]
+                    [ text (toString (Array.length model.accounts) ++ " items") ]
                 ]
             , div [ class "control-bar__right-0" ]
                 [ Button.render Mdl

@@ -16,7 +16,7 @@ init : Model
 init =
     { mdl = Material.model
     , selected = Set.empty
-    , data =
+    , accounts =
         [ Model.Account { id = "1", username = "admin", password = "", roles = Just [] }
         ]
             |> Array.fromList
@@ -40,7 +40,7 @@ key (Model.Account account) =
 
 allSelected : Model -> Bool
 allSelected model =
-    Set.size model.selected == Array.length model.data
+    Set.size model.selected == Array.length model.accounts
 
 
 someSelected : Model -> Bool
@@ -62,7 +62,7 @@ callbacks =
 
 accountList : List Model.Account -> Model -> ( Model, Cmd msg )
 accountList accounts model =
-    ( { model | data = Array.fromList accounts }, Cmd.none )
+    ( { model | accounts = Array.fromList accounts }, Cmd.none )
 
 
 accountToEdit : Model.Account -> Model -> ( Model, Cmd msg )
@@ -95,7 +95,7 @@ update' action model =
                     if allSelected model then
                         Set.empty
                     else
-                        Array.map key model.data |> Array.toList |> Set.fromList
+                        Array.map key model.accounts |> Array.toList |> Set.fromList
             }
                 ! []
 
@@ -121,7 +121,7 @@ update' action model =
         Edit idx ->
             let
                 item =
-                    Array.get idx model.data
+                    Array.get idx model.accounts
             in
                 case item of
                     Nothing ->
