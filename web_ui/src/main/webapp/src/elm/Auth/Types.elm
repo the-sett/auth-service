@@ -1,19 +1,19 @@
 module Auth.Types exposing (..)
 
 import Http
+import Model
+import Auth.Service
 
 
-type alias AuthRequest =
+type alias Credentials =
     { username : String
     , password : String
     }
 
 
 type Msg
-    = HttpError Http.Error
-    | AuthError Http.Error
-    | GetTokenSuccess String
-    | LogIn AuthRequest
+    = AuthApi (Auth.Service.Msg)
+    | LogIn Credentials
     | LogOut
     | NotAuthed
 

@@ -3,10 +3,13 @@ port module Auth.State exposing (update, subscriptions, init)
 import Log
 import Navigation
 import Http
+import Utils exposing (..)
 import Auth.Types exposing (..)
 import Task exposing (Task)
 import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode exposing (..)
+import Auth.Service
+import Model
 
 
 init : Model
@@ -31,53 +34,13 @@ subscriptions model =
         ]
 
 
-api =
-    "/auth/"
-
-
-routes =
-    { loginUrl = api ++ "login"
-    , logoutUrl = api ++ "logout"
-    , refreshUrl = api ++ "refresh"
-    }
-
-
-authRequestEncoder : AuthRequest -> Encode.Value
-authRequestEncoder model =
-    Encode.object
-        [ ( "username", Encode.string model.username )
-        , ( "password", Encode.string model.password )
-        ]
-
-
-tokenDecoder : Decoder String
-tokenDecoder =
-    "token" := Decode.string
-
-
-loginRequest : AuthRequest -> Task Http.Error String
-loginRequest model =
-    { verb = "POST"
-    , headers = [ ( "Content-Type", "application/json" ) ]
-    , url = routes.loginUrl
-    , body = Http.string <| Encode.encode 0 <| authRequestEncoder model
-    }
-        |> Http.send Http.defaultSettings
-        |> Http.fromJson tokenDecoder
-
-
-loginCmd : AuthRequest -> Cmd Msg
-loginCmd model =
-    Task.perform AuthError GetTokenSuccess <| loginRequest model
-
-
 port setStorage : Model -> Cmd msg
 
 
 port removeStorage : Model -> Cmd msg
 
 
-port receiveLogin : (AuthRequest -> msg) -> Sub msg
+port receiveLogin : (Credentials -> msg) -> Sub msg
 
 
 port receiveLogout : (() -> msg) -> Sub msg
@@ -86,8 +49,45 @@ port receiveLogout : (() -> msg) -> Sub msg
 port receiveUnauthed : (() -> msg) -> Sub msg
 
 
+callbacks : Auth.Service.Callbacks Model Msg
+callbacks =
+    { login = login
+    , refresh = refresh
+    , logout = logout
+    , error = error
+    }
 
--- This is where the token gets decoded and checked.
+
+
+--login : Model.AuthResponse -> model -> ( model, Cmd msg )
+
+
+login (Model.AuthResponse response) model =
+    let
+        model' =
+            { model | token = response.token, authState = authStateFromToken response.token }
+    in
+        ( model'
+        , Cmd.batch [ setStorage model', Navigation.newUrl model.forwardLocation ]
+        )
+
+
+
+--refresh : Model.AuthResponse -> model -> ( model, Cmd msg )
+
+
+refresh response model =
+    ( model, Cmd.none )
+
+
+
+--logout : Http.Response -> model -> ( model, Cmd msg )
+
+
+logout response model =
+    ( { model | token = "", authState = authStateFromToken "" }
+    , Cmd.batch [ removeStorage model, Navigation.newUrl model.logoutLocation ]
+    )
 
 
 authStateFromToken : String -> AuthState
@@ -103,31 +103,23 @@ update action model =
     update' (Log.debug "auth" action) model
 
 
+authRequestFromCredentials credentials =
+    Model.AuthRequest { username = credentials.username, password = credentials.password }
+
+
 update' : Msg -> Model -> ( Model, Cmd Msg )
 update' msg model =
     case msg of
-        HttpError _ ->
-            ( model, Cmd.none )
+        AuthApi action' ->
+            Auth.Service.update callbacks action' model
 
-        AuthError error ->
-            ( { model | errorMsg = (toString error) }, Cmd.none )
-
-        GetTokenSuccess newToken ->
-            let
-                model' =
-                    { model | token = newToken, authState = authStateFromToken newToken }
-            in
-                ( model'
-                , Cmd.batch [ setStorage model', Navigation.newUrl model.forwardLocation ]
-                )
-
-        LogIn authRequest ->
-            ( model, loginCmd authRequest )
+        LogIn credentials ->
+            ( model, Auth.Service.invokeLogin AuthApi (authRequestFromCredentials credentials) )
 
         LogOut ->
+            ( model, Auth.Service.invokeLogout AuthApi )
+
+        NotAuthed ->
             ( { model | token = "", authState = authStateFromToken "" }
             , Cmd.batch [ removeStorage model, Navigation.newUrl model.logoutLocation ]
             )
-
-        NotAuthed ->
-            ( model, Cmd.none )
