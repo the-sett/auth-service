@@ -3,7 +3,6 @@ module Welcome.State exposing (init, update)
 import Log
 import Platform.Cmd exposing (Cmd)
 import Material
-import Material.Helpers exposing (lift)
 import Welcome.Types exposing (..)
 import Auth
 

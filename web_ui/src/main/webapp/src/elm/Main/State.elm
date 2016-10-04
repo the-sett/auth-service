@@ -12,9 +12,7 @@ import Material
 import Material.Helpers exposing (pure, lift, lift')
 import Material.Layout as Layout
 import Welcome.State
-import Welcome.Types
 import Auth.State
-import Auth.Types
 import Auth
 import Layout.State
 import Menu.State

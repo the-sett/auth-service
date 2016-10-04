@@ -3,7 +3,6 @@ module Roles.State exposing (init, update)
 import Log
 import Platform.Cmd exposing (Cmd)
 import Material
-import Material.Helpers exposing (lift)
 import Roles.Types exposing (..)
 
 

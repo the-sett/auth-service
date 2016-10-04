@@ -6,11 +6,8 @@ import Html exposing (..)
 import Html.Attributes exposing (href, class, style, id)
 import Html.Lazy
 import Html.App as App
-import Material.Color as Color
 import Material.Layout as Layout
 import Material.Options as Options exposing (css, when)
-import Material.Scheme as Scheme
-import Material.Icon as Icon
 import Material.Toggles as Toggles
 import Material.Typography as Typography
 import Material.Button as Button

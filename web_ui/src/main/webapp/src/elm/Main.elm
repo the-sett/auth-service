@@ -1,7 +1,6 @@
 module Main exposing (..)
 
 import Array exposing (Array)
-import Dict exposing (Dict)
 import String
 import Navigation
 import RouteUrl as Routing
@@ -11,12 +10,8 @@ import Menu.Types
 import Main.Types exposing (..)
 import Main.State exposing (..)
 import Main.View exposing (..)
-import Accounts.State
-import Roles.State
-import Permissions.State
 import Auth.Types
 import Auth.State
-import Welcome.State
 
 
 log =
