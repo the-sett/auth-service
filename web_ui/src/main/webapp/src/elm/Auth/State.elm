@@ -3,7 +3,6 @@ port module Auth.State exposing (update, subscriptions, init)
 import Log
 import Navigation
 import Http
-import Http.Decorators
 import Auth.Types exposing (..)
 import Task exposing (Task)
 import Json.Decode as Decode exposing (..)
