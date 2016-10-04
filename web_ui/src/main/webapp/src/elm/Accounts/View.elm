@@ -11,6 +11,8 @@ import Material.Button as Button
 import Material.Icon as Icon
 import Material.Toggles as Toggles
 import Material.Textfield as Textfield
+import Material.Grid as Grid
+import Material.Chip as Chip
 import Utils exposing (..)
 import Accounts.Types exposing (..)
 import Accounts.State exposing (..)
@@ -157,36 +159,64 @@ dialog model =
 
 accountForm : Model -> Html Msg
 accountForm model =
-    div []
-        [ Textfield.render Mdl
-            [ 1 ]
-            model.mdl
-            [ Textfield.label "Username"
-            , Textfield.floatingLabel
-            , Textfield.text'
-            , Textfield.onInput UpdateUsername
+    Grid.grid []
+        [ Grid.cell [ Grid.size Grid.All 12 ]
+            [ Textfield.render Mdl
+                [ 1 ]
+                model.mdl
+                [ Textfield.label "Username"
+                , Textfield.floatingLabel
+                , Textfield.text'
+                , Textfield.onInput UpdateUsername
+                ]
             ]
-        , Textfield.render Mdl
-            [ 2 ]
-            model.mdl
-            [ Textfield.label "Password"
-            , Textfield.floatingLabel
-            , Textfield.password
-            , Textfield.onInput UpdatePassword1
+        , Grid.cell [ Grid.size Grid.All 12 ]
+            [ Textfield.render
+                Mdl
+                [ 2 ]
+                model.mdl
+                [ Textfield.label "Password"
+                , Textfield.floatingLabel
+                , Textfield.password
+                , Textfield.onInput UpdatePassword1
+                ]
             ]
-        , Textfield.render Mdl
-            [ 3 ]
-            model.mdl
-            [ Textfield.label "Repeat Password"
-            , Textfield.floatingLabel
-            , Textfield.password
-            , Textfield.onInput UpdatePassword2
-            , if checkPasswordMatch model then
-                Textfield.error <| "Passwords do not match."
-              else
-                Options.nop
+        , Grid.cell [ Grid.size Grid.All 12 ]
+            [ Textfield.render
+                Mdl
+                [ 3 ]
+                model.mdl
+                [ Textfield.label "Repeat Password"
+                , Textfield.floatingLabel
+                , Textfield.password
+                , Textfield.onInput UpdatePassword2
+                , if checkPasswordMatch model then
+                    Textfield.error <| "Passwords do not match."
+                  else
+                    Options.nop
+                ]
             ]
-        , accountControlBar model
+        , Grid.cell [ Grid.size Grid.All 12 ]
+            [ Textfield.render
+                Mdl
+                [ 4 ]
+                model.mdl
+                [ Textfield.label "Filter Roles"
+                , Textfield.floatingLabel
+                ]
+            , Chip.button
+                [ Options.css "margin" "5px 5px"
+                  --, Chip.onClick (ChipClick index)
+                  --, Chip.deleteClick (RemoveChip index)
+                ]
+                [ Chip.content []
+                    [ text ("Amazing Chip") ]
+                ]
+            ]
+        , Grid.cell [ Grid.size Grid.All 12 ]
+            [ accountControlBar
+                model
+            ]
         ]
 
 
