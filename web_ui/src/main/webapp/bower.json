@@ -3,6 +3,8 @@
     "description": "User admin.",
     "version": "0.0.0",
     "dependencies": {
-        "thesett-laf":"https://github.com/rupertlssmith/thesett_laf.git"
+        "thesett-laf": "https://github.com/rupertlssmith/thesett_laf.git",
+        "paper-listbox": "PolymerElements/paper-listbox#^1.1.2",
+        "paper-item": "PolymerElements/paper-item#^1.2.1"
     }
 }

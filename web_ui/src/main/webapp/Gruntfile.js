@@ -54,6 +54,11 @@ module.exports = function(grunt) {
                     cwd: 'src',
                     src: ['index.html'],
                     dest: 'app'
+                }, {
+                    expand: true,
+                    cwd: 'bower_components/',
+                    src: ['**'],
+                    dest: 'app/libs'
                 }],
             }
         },

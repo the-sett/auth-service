@@ -4,6 +4,17 @@
 <head>
     <meta charset="UTF-8">
 
+    <script src="libs/webcomponentsjs/webcomponents-lite.js"></script>
+    <script>
+        window.Polymer = {
+            dom: 'shadow',
+            lazyRegister: true
+        };
+    </script>
+
+    <link rel="import" href="libs/paper-item/paper-item.html">
+    <link rel="import" href="libs/paper-listbox/paper-listbox.html">
+    
     <link rel="stylesheet" href="styles/roboto.css" />
     <link rel="stylesheet" href="styles/material-icons.css" />
     <link rel="stylesheet" href="styles/material.green-indigo.min.css" />
