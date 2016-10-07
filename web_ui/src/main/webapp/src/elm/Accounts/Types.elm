@@ -5,7 +5,6 @@ import Set exposing (..)
 import Array exposing (Array)
 import Maybe
 import Model
-import Http
 import Account.Service
 import Role.Service
 
