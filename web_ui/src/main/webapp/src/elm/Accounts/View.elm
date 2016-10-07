@@ -163,7 +163,7 @@ dialog model =
 accountForm : Model -> Html Msg
 accountForm model =
     Grid.grid []
-        [ Grid.cell [ Grid.size Grid.All 12 ]
+        [ Grid.cell [ Grid.size Grid.All 6 ]
             [ Textfield.render Mdl
                 [ 1 ]
                 model.mdl
@@ -172,9 +172,7 @@ accountForm model =
                 , Textfield.text'
                 , Textfield.onInput UpdateUsername
                 ]
-            ]
-        , Grid.cell [ Grid.size Grid.All 12 ]
-            [ Textfield.render
+            , Textfield.render
                 Mdl
                 [ 2 ]
                 model.mdl
@@ -183,9 +181,7 @@ accountForm model =
                 , Textfield.password
                 , Textfield.onInput UpdatePassword1
                 ]
-            ]
-        , Grid.cell [ Grid.size Grid.All 12 ]
-            [ Textfield.render
+            , Textfield.render
                 Mdl
                 [ 3 ]
                 model.mdl
@@ -199,8 +195,9 @@ accountForm model =
                     Options.nop
                 ]
             ]
-        , Grid.cell [ Grid.size Grid.All 12 ]
-            [ paperListBox
+        , Grid.cell [ Grid.size Grid.All 6 ]
+            [ h4 [] [ text "Roles" ]
+            , paperListBox
                 [ attribute "multi" ""
                 , attribute "attr-for-selected" "value"
                 , on "iron-select" (selectedDecoder |> Decode.map SelectedRole)
