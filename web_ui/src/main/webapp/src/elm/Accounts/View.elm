@@ -2,8 +2,11 @@ module Accounts.View exposing (root, dialog)
 
 import Set as Set
 import Array
+import Dict
 import Html exposing (..)
-import Html.Attributes exposing (title, class, action)
+import Html.Attributes exposing (title, class, action, attribute)
+import Html.Events exposing (on)
+import Json.Decode as Decode
 import Material.Options as Options exposing (Style, cs, when, nop, disabled)
 import Material.Dialog as Dialog
 import Material.Table as Table
@@ -197,27 +200,46 @@ accountForm model =
                 ]
             ]
         , Grid.cell [ Grid.size Grid.All 12 ]
-            [ Textfield.render
-                Mdl
-                [ 4 ]
-                model.mdl
-                [ Textfield.label "Filter Roles"
-                , Textfield.floatingLabel
+            [ paperListBox
+                [ attribute "multi" ""
+                , attribute "attr-for-selected" "value"
+                , on "iron-select" (selectedDecoder |> Decode.map SelectedRole)
+                , on "iron-deselect" (selectedDecoder |> Decode.map DeselectedRole)
                 ]
-            , Chip.button
-                [ Options.css "margin" "5px 5px"
-                  --, Chip.onClick (ChipClick index)
-                  --, Chip.deleteClick (RemoveChip index)
-                ]
-                [ Chip.content []
-                    [ text ("Amazing Chip") ]
-                ]
+                (Dict.toList model.roleLookup |> List.map (dataToPaperItem model))
             ]
         , Grid.cell [ Grid.size Grid.All 12 ]
             [ accountControlBar
                 model
             ]
         ]
+
+
+dataToChip ( idx, value ) =
+    span [ class "mdl-chip mdl-chip__text" ]
+        [ text value ]
+
+
+dataToPaperItem model ( idx, value ) =
+    if Dict.member idx model.selectedRoles then
+        paperItem [ Html.Attributes.value (toString idx), class "iron-selected" ] [ text value ]
+    else
+        paperItem [ Html.Attributes.value (toString idx) ] [ text value ]
+
+
+selectedDecoder : Decode.Decoder String
+selectedDecoder =
+    Decode.at [ "detail", "item", "value" ] Decode.string
+
+
+paperListBox : List (Attribute a) -> List (Html a) -> Html a
+paperListBox =
+    Html.node "paper-listbox"
+
+
+paperItem : List (Attribute a) -> List (Html a) -> Html a
+paperItem =
+    Html.node "paper-item"
 
 
 validateAccount : Model -> Bool

@@ -2,6 +2,7 @@ module Accounts.Types exposing (..)
 
 import Material
 import Set exposing (..)
+import Dict exposing (Dict)
 import Array exposing (Array)
 import Maybe
 import Model
@@ -25,6 +26,8 @@ type alias Model =
     , username : String
     , password1 : String
     , password2 : String
+    , roleLookup : Dict String String
+    , selectedRoles : Dict String String
     }
 
 
@@ -42,3 +45,5 @@ type Msg
     | UpdateUsername String
     | UpdatePassword1 String
     | UpdatePassword2 String
+    | SelectedRole String
+    | DeselectedRole String

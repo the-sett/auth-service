@@ -2,6 +2,7 @@ module Accounts.State exposing (init, update, allSelected, someSelected, key, ch
 
 import Log
 import Set
+import Dict exposing (Dict)
 import Array
 import Maybe
 import Platform.Cmd exposing (Cmd)
@@ -24,6 +25,8 @@ init =
     , username = ""
     , password1 = ""
     , password2 = ""
+    , roleLookup = Dict.empty
+    , selectedRoles = Dict.empty
     }
 
 
@@ -85,7 +88,19 @@ roleCallbacks =
 
 roleList : List Model.Role -> Model -> ( Model, Cmd msg )
 roleList roles model =
-    ( { model | roles = Array.fromList roles }, Cmd.none )
+    ( { model | roles = Array.fromList roles, roleLookup = roleListToDict roles }, Cmd.none )
+
+
+roleListToDict : List Model.Role -> Dict String String
+roleListToDict roles =
+    List.map
+        (\wrapper ->
+            case wrapper of
+                Model.Role role ->
+                    ( role.id, role.name )
+        )
+        roles
+        |> Dict.fromList
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -164,3 +179,14 @@ update' action model =
 
         UpdatePassword2 password ->
             ( { model | password2 = password }, Cmd.none )
+
+        SelectedRole idx ->
+            case (Dict.get idx model.roleLookup) of
+                Just value ->
+                    ( { model | selectedRoles = Dict.insert idx value model.selectedRoles }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        DeselectedRole idx ->
+            ( { model | selectedRoles = Dict.remove idx model.selectedRoles }, Cmd.none )
