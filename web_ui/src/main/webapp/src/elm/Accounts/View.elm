@@ -163,7 +163,11 @@ dialog model =
 accountForm : Model -> Html Msg
 accountForm model =
     Grid.grid []
-        [ Grid.cell [ Grid.size Grid.All 6 ]
+        [ Grid.cell
+            [ Grid.size Grid.Desktop 6
+            , Grid.size Grid.Tablet 4
+            , Grid.size Grid.Phone 4
+            ]
             [ Textfield.render Mdl
                 [ 1 ]
                 model.mdl
@@ -195,7 +199,11 @@ accountForm model =
                     Options.nop
                 ]
             ]
-        , Grid.cell [ Grid.size Grid.All 6 ]
+        , Grid.cell
+            [ Grid.size Grid.Desktop 6
+            , Grid.size Grid.Tablet 4
+            , Grid.size Grid.Phone 4
+            ]
             [ h4 [] [ text "Roles" ]
             , paperListBox
                 [ attribute "multi" ""
