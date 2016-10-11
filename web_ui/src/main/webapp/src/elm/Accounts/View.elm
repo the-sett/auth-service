@@ -20,6 +20,7 @@ import Utils exposing (..)
 import Accounts.Types exposing (..)
 import Accounts.State exposing (..)
 import Model
+import Listbox exposing (counter, onCountChanged, initialCount)
 
 
 root : Model -> Html Msg
@@ -212,6 +213,7 @@ accountForm model =
                 , on "iron-deselect" (selectedDecoder |> Decode.map DeselectedRole)
                 ]
                 (Dict.toList model.roleLookup |> List.map (dataToPaperItem model))
+            , counter [ initialCount 2, onCountChanged CountChanged ]
             ]
         , Grid.cell [ Grid.size Grid.All 12 ]
             [ accountControlBar

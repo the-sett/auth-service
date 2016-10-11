@@ -1,0 +1,44 @@
+<link rel="import" href="libs/polymer/polymer.html" />
+
+<dom-module id="wood-listbox">
+    <template>
+        <div id="embed"></div>
+    </template>
+
+    <script>
+        (function() {
+            var app;
+
+            Polymer({
+                is: "wood-listbox",
+                properties: {
+                    count: {
+                        type: Number,
+                        count: 0,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+
+                    initialCount: {
+                        type: Number
+                    }
+                },
+                attached() {
+                    console.log("attached : initial-count = " + this.initialCount)
+
+                    if (this.initialCount) {
+                      this.count = this.initialCount;
+                    }
+
+                    app = Elm.Listbox.embed(this.$.embed, {
+                        count: this.count
+                    });
+
+                    app.ports.setCount.subscribe(count => {
+                        this.count = count;
+                    });
+                }
+            });
+        })();
+    </script>
+</dom-module>

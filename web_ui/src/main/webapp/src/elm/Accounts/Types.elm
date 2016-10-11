@@ -47,3 +47,4 @@ type Msg
     | UpdatePassword2 String
     | SelectedRole String
     | DeselectedRole String
+    | CountChanged Int
