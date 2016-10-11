@@ -3,7 +3,7 @@ port module Listbox exposing (listbox, initialItems, onSelectedChanged, setSelec
 import Dict exposing (Dict)
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Html exposing (Attribute, Html, text, button, span, div)
+import Html exposing (Attribute, Html, text, button, span, div, ul, li)
 import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (on, onClick)
 import Html.App exposing (programWithFlags)
@@ -62,16 +62,16 @@ init flags =
 
 view : Model -> Html Msg
 view model =
-    div
+    ul
         []
         (Dict.toList model.items |> List.map (itemsToList model))
 
 
 itemsToList model ( idx, value ) =
     if Dict.member idx model.selectedItems then
-        span [ Html.Attributes.value (toString idx), class "selected", Deselect idx |> onClick ] [ text value ]
+        li [ Html.Attributes.value (toString idx), class "selected", Deselect idx |> onClick ] [ text value ]
     else
-        span [ Html.Attributes.value (toString idx), Select idx |> onClick ] [ text value ]
+        li [ Html.Attributes.value (toString idx), Select idx |> onClick ] [ text value ]
 
 
 type Msg
@@ -85,17 +85,25 @@ update msg model =
         Select idx ->
             case (Dict.get idx model.items) of
                 Just value ->
-                    ( { model | selectedItems = Dict.insert idx value model.selectedItems }
-                    , Dict.toList model.selectedItems |> setSelected
-                    )
+                    let
+                        newSelection =
+                            Dict.insert idx value model.selectedItems
+                    in
+                        ( { model | selectedItems = newSelection }
+                        , Dict.toList newSelection |> setSelected
+                        )
 
                 Nothing ->
                     ( model, Cmd.none )
 
         Deselect idx ->
-            ( { model | selectedItems = Dict.remove idx model.selectedItems }
-            , Dict.toList model.selectedItems |> setSelected
-            )
+            let
+                newSelection =
+                    Dict.remove idx model.selectedItems
+            in
+                ( { model | selectedItems = newSelection }
+                , Dict.toList newSelection |> setSelected
+                )
 
 
 main : Program { initialItems : List ( String, String ) }
