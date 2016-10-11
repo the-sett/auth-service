@@ -12,30 +12,31 @@
             Polymer({
                 is: "wood-listbox",
                 properties: {
-                    count: {
-                        type: Number,
-                        count: 0,
+                    selected: {
+                        type: Array,
                         notify: true,
+                        value: [],
                         reflectToAttribute: true
                     },
 
-                    initialCount: {
-                        type: Number
+                    initialItems: {
+                        type: Array,
+                        value: []
+                    },
+
+                    src: {
+                        type: String
                     }
                 },
                 attached() {
-                    console.log("attached : initial-count = " + this.initialCount)
-
-                    if (this.initialCount) {
-                      this.count = this.initialCount;
-                    }
+                    console.log("attached : initial-items = " + this.initialItems)
 
                     app = Elm.Listbox.embed(this.$.embed, {
-                        count: this.count
+                        initialItems: this.initialItems
                     });
 
-                    app.ports.setCount.subscribe(count => {
-                        this.count = count;
+                    app.ports.setSelected.subscribe(items => {
+                        this.selected = items;
                     });
                 }
             });

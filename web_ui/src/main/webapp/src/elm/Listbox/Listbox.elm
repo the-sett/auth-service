@@ -1,8 +1,10 @@
-port module Listbox exposing (counter, initialCount, onCountChanged, setCount)
+port module Listbox exposing (listbox, initialItems, onSelectedChanged, setSelected)
 
+import Dict exposing (Dict)
 import Json.Decode as Decode
+import Json.Encode as Encode
 import Html exposing (Attribute, Html, text, button, span, div)
-import Html.Attributes exposing (attribute)
+import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (on, onClick)
 import Html.App exposing (programWithFlags)
 
@@ -10,27 +12,33 @@ import Html.App exposing (programWithFlags)
 -- The exposed API
 
 
-port setCount : Int -> Cmd msg
+port setSelected : List ( String, String ) -> Cmd msg
 
 
-counter : List (Attribute msg) -> Html msg
-counter attrs =
+listbox : List (Attribute msg) -> Html msg
+listbox attrs =
     Html.node "wood-listbox" attrs []
 
 
-initialCount : Int -> Attribute msg
-initialCount val =
-    attribute "initial-count" (toString val)
+initialItems : Dict String String -> Attribute msg
+initialItems val =
+    attribute "initial-items" <| Encode.encode 0 (encodeItems (Dict.toList val))
 
 
-onCountChanged : (Int -> msg) -> Attribute msg
-onCountChanged tagger =
-    on "count-changed" <| Decode.map tagger detailCount
+onSelectedChanged : (Dict String String -> msg) -> Attribute msg
+onSelectedChanged tagger =
+    on "selected-changed" <| Decode.map tagger <| Decode.map Dict.fromList decodeItems
 
 
-detailCount : Decode.Decoder Int
-detailCount =
-    Decode.at [ "detail", "value" ] Decode.int
+encodeItems : List ( String, String ) -> Encode.Value
+encodeItems items =
+    Encode.list
+        (List.map (\( idx, val ) -> Encode.list [ Encode.string idx, Encode.string val ]) items)
+
+
+decodeItems : Decode.Decoder (List ( String, String ))
+decodeItems =
+    Decode.at [ "detail", "value" ] <| Decode.list <| Decode.tuple2 (,) Decode.string Decode.string
 
 
 
@@ -38,51 +46,59 @@ detailCount =
 
 
 type alias Model =
-    Int
+    { items : Dict String String
+    , selectedItems : Dict String String
+    }
 
 
-init : { a | count : Int } -> ( Model, Cmd Msg )
+init : { a | initialItems : List ( String, String ) } -> ( Model, Cmd Msg )
 init flags =
-    ( flags.count, Cmd.none )
+    ( { items = Dict.fromList flags.initialItems
+      , selectedItems = Dict.empty
+      }
+    , Cmd.none
+    )
 
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ button [ onClick Decrement ] [ text "-" ]
-        , span [] [ text <| toString model ]
-        , button [ onClick Increment ] [ text "+" ]
-        ]
+    div
+        []
+        (Dict.toList model.items |> List.map (itemsToList model))
+
+
+itemsToList model ( idx, value ) =
+    if Dict.member idx model.selectedItems then
+        span [ Html.Attributes.value (toString idx), class "selected", Deselect idx |> onClick ] [ text value ]
+    else
+        span [ Html.Attributes.value (toString idx), Select idx |> onClick ] [ text value ]
 
 
 type Msg
-    = Increment
-    | Decrement
-    | Set Model
+    = Select String
+    | Deselect String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case (Debug.log "Listbox" msg) of
-        Increment ->
-            let
-                new =
-                    model + 1
-            in
-                ( new, setCount new )
+        Select idx ->
+            case (Dict.get idx model.items) of
+                Just value ->
+                    ( { model | selectedItems = Dict.insert idx value model.selectedItems }
+                    , Dict.toList model.selectedItems |> setSelected
+                    )
 
-        Decrement ->
-            let
-                new =
-                    model - 1
-            in
-                ( new, setCount new )
+                Nothing ->
+                    ( model, Cmd.none )
 
-        Set count ->
-            ( count, setCount count )
+        Deselect idx ->
+            ( { model | selectedItems = Dict.remove idx model.selectedItems }
+            , Dict.toList model.selectedItems |> setSelected
+            )
 
 
-main : Program { count : Int }
+main : Program { initialItems : List ( String, String ) }
 main =
     programWithFlags
         { init = init

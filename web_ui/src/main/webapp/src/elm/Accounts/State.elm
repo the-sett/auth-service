@@ -191,5 +191,5 @@ update' action model =
         DeselectedRole idx ->
             ( { model | selectedRoles = Dict.remove idx model.selectedRoles }, Cmd.none )
 
-        CountChanged val ->
+        SelectChanged val ->
             ( model, Cmd.none )
