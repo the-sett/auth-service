@@ -213,6 +213,7 @@ accountForm model =
                 , on "iron-deselect" (selectedDecoder |> Decode.map DeselectedRole)
                 ]
                 (Dict.toList model.roleLookup |> List.map (dataToPaperItem model))
+            , hr [] []
             , listbox [ initialItems (Dict.fromList [ ( "1", "one" ), ( "2", "two" ) ]), onSelectedChanged SelectChanged ]
             ]
         , Grid.cell [ Grid.size Grid.All 12 ]
