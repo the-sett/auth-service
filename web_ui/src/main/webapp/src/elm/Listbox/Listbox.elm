@@ -3,7 +3,7 @@ port module Listbox exposing (listbox, items, onSelectedChanged, setSelected)
 import Dict exposing (Dict)
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Html exposing (Attribute, Html, text, button, span, div, ul, li)
+import Html exposing (Attribute, Html, text, button, span, div, node)
 import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (on, onClick)
 import Html.App exposing (programWithFlags)
@@ -60,18 +60,23 @@ init flags =
     )
 
 
+woodItem : List (Attribute msg) -> List (Html msg) -> Html msg
+woodItem attrs inner =
+    node "wood-item" attrs inner
+
+
 view : Model -> Html Msg
 view model =
-    ul
+    div
         []
         (Dict.toList model.items |> List.map (itemsToList model))
 
 
 itemsToList model ( idx, value ) =
     if Dict.member idx model.selectedItems then
-        li [ Html.Attributes.value (toString idx), class "selected", Deselect idx |> onClick ] [ text value ]
+        woodItem [ Html.Attributes.value (toString idx), class "wood-selected", Deselect idx |> onClick ] [ text value ]
     else
-        li [ Html.Attributes.value (toString idx), Select idx |> onClick ] [ text value ]
+        woodItem [ Html.Attributes.value (toString idx), Select idx |> onClick ] [ text value ]
 
 
 type Msg
