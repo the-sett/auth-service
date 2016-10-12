@@ -20,7 +20,7 @@ import Utils exposing (..)
 import Accounts.Types exposing (..)
 import Accounts.State exposing (..)
 import Model
-import Listbox exposing (listbox, onSelectedChanged, initialItems)
+import Listbox exposing (listbox, onSelectedChanged, items)
 
 
 root : Model -> Html Msg
@@ -214,7 +214,7 @@ accountForm model =
                 ]
                 (Dict.toList model.roleLookup |> List.map (dataToPaperItem model))
             , hr [] []
-            , listbox [ initialItems (Dict.fromList [ ( "1", "one" ), ( "2", "two" ) ]), onSelectedChanged SelectChanged ]
+            , listbox [ items (Dict.fromList [ ( "1", "one" ), ( "2", "two" ) ]), onSelectedChanged SelectChanged ]
             ]
         , Grid.cell [ Grid.size Grid.All 12 ]
             [ accountControlBar

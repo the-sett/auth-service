@@ -15,7 +15,9 @@
           }
         </style>
 
-        <div id="embed"></div>
+        <div id="embed">
+          <content></content>
+        </div>
     </template>
 
     <script>
@@ -32,7 +34,7 @@
                         reflectToAttribute: true
                     },
 
-                    initialItems: {
+                    items: {
                         type: Array,
                         value: []
                     },
@@ -42,10 +44,10 @@
                     }
                 },
                 attached() {
-                    console.log("attached : initial-items = " + this.initialItems)
+                    console.log("attached : items = " + this.items)
 
                     app = Elm.Listbox.embed(this.$.embed, {
-                        initialItems: this.initialItems
+                        items: this.items
                     });
 
                     app.ports.setSelected.subscribe(items => {

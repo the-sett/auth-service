@@ -1,4 +1,4 @@
-port module Listbox exposing (listbox, initialItems, onSelectedChanged, setSelected)
+port module Listbox exposing (listbox, items, onSelectedChanged, setSelected)
 
 import Dict exposing (Dict)
 import Json.Decode as Decode
@@ -20,9 +20,9 @@ listbox attrs =
     Html.node "wood-listbox" attrs []
 
 
-initialItems : Dict String String -> Attribute msg
-initialItems val =
-    attribute "initial-items" <| Encode.encode 0 (encodeItems (Dict.toList val))
+items : Dict String String -> Attribute msg
+items val =
+    attribute "items" <| Encode.encode 0 (encodeItems (Dict.toList val))
 
 
 onSelectedChanged : (Dict String String -> msg) -> Attribute msg
@@ -51,9 +51,9 @@ type alias Model =
     }
 
 
-init : { a | initialItems : List ( String, String ) } -> ( Model, Cmd Msg )
+init : { a | items : List ( String, String ) } -> ( Model, Cmd Msg )
 init flags =
-    ( { items = Dict.fromList flags.initialItems
+    ( { items = Dict.fromList flags.items
       , selectedItems = Dict.empty
       }
     , Cmd.none
@@ -106,7 +106,7 @@ update msg model =
                 )
 
 
-main : Program { initialItems : List ( String, String ) }
+main : Program { items : List ( String, String ) }
 main =
     programWithFlags
         { init = init
