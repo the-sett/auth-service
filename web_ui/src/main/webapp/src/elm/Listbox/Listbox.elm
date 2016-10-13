@@ -7,7 +7,7 @@ import Json.Encode as Encode
 import Html exposing (Attribute, Html, text, button, span, div, node)
 import Html.Attributes exposing (attribute, class, property)
 import Html.Events exposing (on, onClick, onMouseOver, onMouseOut)
-import Html.App exposing (programWithFlags)
+import Html.App exposing (program)
 
 
 -- The exposed API
@@ -66,9 +66,9 @@ type alias Model =
     }
 
 
-init : { a | items : List ( String, String ) } -> ( Model, Cmd Msg )
-init flags =
-    ( { items = Dict.fromList flags.items
+init : ( Model, Cmd Msg )
+init =
+    ( { items = Dict.empty
       , selectedItems = Dict.empty
       , hoverItem = Nothing
       }
@@ -182,9 +182,9 @@ subscriptions model =
     itemsChanged ItemsChanged
 
 
-main : Program { items : List ( String, String ) }
+main : Program Never
 main =
-    programWithFlags
+    program
         { init = init
         , view = view
         , update = update

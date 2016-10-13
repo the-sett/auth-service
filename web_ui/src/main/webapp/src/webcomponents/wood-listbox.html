@@ -47,9 +47,9 @@
                 attached() {
                     console.log("attached : items = " + this.items);
 
-                    app = Elm.Listbox.embed(this, {
-                        items: this.items
-                    });
+                    app = Elm.Listbox.embed(this);
+
+                    this._itemsChanged(this.items, []);
 
                     app.ports.setSelected.subscribe(items => {
                         this.selected = items;
