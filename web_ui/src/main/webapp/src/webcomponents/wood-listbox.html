@@ -23,17 +23,20 @@
             var app;
 
             Polymer({
+                app: null,
                 is: "wood-listbox",
                 properties: {
                     selected: {
                         type: Array,
                         notify: true,
                         value: [],
-                        reflectToAttribute: true
+                        //reflectToAttribute: true
                     },
 
                     items: {
                         type: Array,
+                        notify: true,
+                        observer: '_itemsChanged',
                         value: []
                     },
 
@@ -42,7 +45,7 @@
                     }
                 },
                 attached() {
-                    console.log("attached : items = " + this.items)
+                    console.log("attached : items = " + this.items);
 
                     app = Elm.Listbox.embed(this, {
                         items: this.items
@@ -51,6 +54,14 @@
                     app.ports.setSelected.subscribe(items => {
                         this.selected = items;
                     });
+                },
+
+                _itemsChanged: function(newValue, oldValue) {
+                    console.log("_itemsChanged : items = " + newValue);
+
+                    if (app) {
+                        app.ports.itemsChanged.send(newValue);
+                    }
                 }
             });
         })();
