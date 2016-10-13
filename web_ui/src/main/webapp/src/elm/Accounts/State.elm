@@ -180,16 +180,5 @@ update' action model =
         UpdatePassword2 password ->
             ( { model | password2 = password }, Cmd.none )
 
-        SelectedRole idx ->
-            case (Dict.get idx model.roleLookup) of
-                Just value ->
-                    ( { model | selectedRoles = Dict.insert idx value model.selectedRoles }, Cmd.none )
-
-                Nothing ->
-                    ( model, Cmd.none )
-
-        DeselectedRole idx ->
-            ( { model | selectedRoles = Dict.remove idx model.selectedRoles }, Cmd.none )
-
-        SelectChanged val ->
-            ( model, Cmd.none )
+        SelectChanged roles ->
+            ( { model | selectedRoles = roles }, Cmd.none )

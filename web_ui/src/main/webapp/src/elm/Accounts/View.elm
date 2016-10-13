@@ -206,48 +206,13 @@ accountForm model =
             , Grid.size Grid.Phone 4
             ]
             [ h4 [] [ text "Roles" ]
-            , paperListBox
-                [ attribute "multi" ""
-                , attribute "attr-for-selected" "value"
-                , on "iron-select" (selectedDecoder |> Decode.map SelectedRole)
-                , on "iron-deselect" (selectedDecoder |> Decode.map DeselectedRole)
-                ]
-                (Dict.toList model.roleLookup |> List.map (dataToPaperItem model))
-            , hr [] []
-            , listbox [ items (Dict.fromList [ ( "1", "one" ), ( "2", "two" ) ]), onSelectedChanged SelectChanged ]
+            , listbox [ items model.roleLookup, onSelectedChanged SelectChanged ]
             ]
         , Grid.cell [ Grid.size Grid.All 12 ]
             [ accountControlBar
                 model
             ]
         ]
-
-
-dataToChip ( idx, value ) =
-    span [ class "mdl-chip mdl-chip__text" ]
-        [ text value ]
-
-
-dataToPaperItem model ( idx, value ) =
-    if Dict.member idx model.selectedRoles then
-        paperItem [ Html.Attributes.value (toString idx), class "iron-selected" ] [ text value ]
-    else
-        paperItem [ Html.Attributes.value (toString idx) ] [ text value ]
-
-
-selectedDecoder : Decode.Decoder String
-selectedDecoder =
-    Decode.at [ "detail", "item", "value" ] Decode.string
-
-
-paperListBox : List (Attribute a) -> List (Html a) -> Html a
-paperListBox =
-    Html.node "paper-listbox"
-
-
-paperItem : List (Attribute a) -> List (Html a) -> Html a
-paperItem =
-    Html.node "paper-item"
 
 
 validateAccount : Model -> Bool

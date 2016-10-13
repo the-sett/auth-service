@@ -45,6 +45,4 @@ type Msg
     | UpdateUsername String
     | UpdatePassword1 String
     | UpdatePassword2 String
-    | SelectedRole String
-    | DeselectedRole String
     | SelectChanged (Dict String String)
