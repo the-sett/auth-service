@@ -190,7 +190,7 @@ update' action model =
         SelectChanged roles ->
             ( { model | selectedRoles = roles }, Cmd.none )
 
-        Save ->
+        Create ->
             ( model
             , Account.Service.invokeCreate AccountApi
                 (Model.Account
@@ -201,6 +201,9 @@ update' action model =
                     }
                 )
             )
+
+        Save ->
+            ( model, Cmd.none )
 
 
 toRoleList : Dict String String -> List Model.Role

@@ -47,3 +47,4 @@ type Msg
     | UpdatePassword2 String
     | SelectChanged (Dict String String)
     | Save
+    | Create

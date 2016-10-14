@@ -230,7 +230,15 @@ completeButton label model =
             Button.colored
           else
             Button.disabled
-        , Button.onClick Save
+        , case model.viewState of
+            CreateView ->
+                Button.onClick Create
+
+            EditView ->
+                Button.onClick Save
+
+            ListView ->
+                Button.disabled
         ]
         [ text label ]
 
