@@ -6,6 +6,7 @@ import Dict exposing (Dict)
 import Array
 import Maybe
 import Platform.Cmd exposing (Cmd)
+import Cmd.Extra
 import Material
 import Utils exposing (..)
 import Accounts.Types exposing (..)
@@ -59,9 +60,15 @@ accountCallbacks =
         { default
             | findAll = accountList
             , findByExample = accountList
+            , create = accountCreate
             , retrieve = accountToEdit
             , error = error
         }
+
+
+accountCreate : Model.Account -> Model -> ( Model, Cmd Msg )
+accountCreate account model =
+    ( model, Cmd.Extra.message Init )
 
 
 accountList : List Model.Account -> Model -> ( Model, Cmd msg )
@@ -182,3 +189,29 @@ update' action model =
 
         SelectChanged roles ->
             ( { model | selectedRoles = roles }, Cmd.none )
+
+        Save ->
+            ( model
+            , Account.Service.invokeCreate AccountApi
+                (Model.Account
+                    { id = ""
+                    , username = model.username
+                    , password = model.password1
+                    , roles = Just <| toRoleList model.selectedRoles
+                    }
+                )
+            )
+
+
+toRoleList : Dict String String -> List Model.Role
+toRoleList dict =
+    Dict.toList dict
+        |> List.map
+            (\( id, name ) ->
+                Model.Role
+                    { id = id
+                    , name = name
+                    , accounts = Nothing
+                    , permissions = Nothing
+                    }
+            )

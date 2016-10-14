@@ -230,6 +230,7 @@ completeButton label model =
             Button.colored
           else
             Button.disabled
+        , Button.onClick Save
         ]
         [ text label ]
 
