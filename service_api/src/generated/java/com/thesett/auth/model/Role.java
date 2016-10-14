@@ -41,9 +41,6 @@ public class Role  implements Entity<Long>, Serializable {
     /** Holds the name property. */    
     protected String name;
 
-    /** Holds the accounts property. */    
-    protected Set<Account> accounts;
-
     /** Holds the permissions property. */    
     protected Set<Permission> permissions;
 
@@ -86,18 +83,6 @@ public class Role  implements Entity<Long>, Serializable {
     }
 
     /**
-     * Accepts a new value for the accounts property.
-     *
-     * @param accounts The accounts property.
-     *
-     * @return 'this' (so that fluents can be chained methods).
-     */
-    public Role withAccounts(Set<Account> accounts) {
-        this.accounts = accounts;
-        return this;
-    }
-
-    /**
      * Accepts a new value for the permissions property.
      *
      * @param permissions The permissions property.
@@ -118,15 +103,6 @@ public class Role  implements Entity<Long>, Serializable {
     }
 
     /**
-     * Provides the accounts property.
-     *
-     * @return The accounts property.
-     */
-    public Set<Account> getAccounts() {
-        return accounts;
-    }
-
-    /**
      * Provides the permissions property.
      *
      * @return The permissions property.
@@ -141,15 +117,6 @@ public class Role  implements Entity<Long>, Serializable {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Accepts a new value for the accounts property.
-     *
-     * @param accounts The accounts property.
-     */
-    public void setAccounts(Set<Account> accounts) {
-        this.accounts = accounts;
     }
 
     /**

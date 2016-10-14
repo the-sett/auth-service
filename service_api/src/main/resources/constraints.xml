@@ -40,9 +40,6 @@
         <field name="name">
             <valid/>
         </field>
-        <field name="accounts">
-            <valid/>
-        </field>
         <field name="permissions">
             <valid/>
         </field>

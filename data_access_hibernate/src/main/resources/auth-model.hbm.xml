@@ -11,8 +11,8 @@
     <property name="username" column="username" type="text"/>
     <property name="password" column="password" type="text"/>
 
-    <!--REL: roles -> Role:accounts Many-Many account_role  bi-->
-    <set name="roles" table="account_role">
+    <!--REL: roles -> Role: Many-Many account_role owner uni-->
+    <set name="roles" table="account_role" cascade="all" lazy="false">
       <key column="account_id"/>
       <many-to-many column="role_id" class="Role"/>
     </set>
@@ -26,15 +26,6 @@
       <generator class="native"/>
     </id>
     <property name="name" column="name" type="text"/>
-
-    <!--REL: accounts -> Account:roles Many-Many account_role  bi-->
-    <set name="accounts" table="account_role">
-      <key column="role_id"/>
-      <many-to-many column="account_id" class="Account"/>
-    </set>
-
-
-
 
     <!--REL: permissions -> Permission: Many-Many role_permission owner uni-->
     <set name="permissions" table="role_permission" cascade="all" lazy="false">

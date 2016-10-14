@@ -24,9 +24,9 @@
         <Unique natural_key="true">
             <String name="name"/>
         </Unique>
-        <Set name="accounts">
-            <Component name="account" type="account"/>
-        </Set>
+        <!--<Set name="accounts">-->
+            <!--<Component name="account" type="account"/>-->
+        <!--</Set>-->
         <Set name="permissions">
             <Component name="permission" type="permission"/>
         </Set>
