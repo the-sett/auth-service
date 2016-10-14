@@ -155,7 +155,7 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case (Debug.log "Listbox" msg) of
+    case msg of
         Mdl action' ->
             Material.update action' model
 

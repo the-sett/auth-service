@@ -66,7 +66,7 @@
                 },
 
                 attached() {
-                    console.log("attached : items = " + this.items);
+                    //console.log("attached : items = " + this.items);
 
                     app = Elm.Listbox.embed(this);
 
@@ -78,7 +78,7 @@
                 },
 
                 _itemsChanged: function(newValue, oldValue) {
-                    console.log("_itemsChanged : newValue = " + newValue + ", oldValue = " + oldValue);
+                    //console.log("_itemsChanged : newValue = " + newValue + ", oldValue = " + oldValue);
 
                     if (!arrayOfArraysEqual(newValue, oldValue)) {
                         if (app) {
