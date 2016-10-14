@@ -195,9 +195,9 @@ accountForm model =
                 , Textfield.password
                 , Textfield.onInput UpdatePassword2
                 , if checkPasswordMatch model then
-                    Textfield.error <| "Passwords do not match."
-                  else
                     Options.nop
+                  else
+                    Textfield.error <| "Passwords do not match."
                 ]
             ]
         , Grid.cell
