@@ -176,6 +176,7 @@ accountForm model =
                 , Textfield.floatingLabel
                 , Textfield.text'
                 , Textfield.onInput UpdateUsername
+                , Textfield.value model.username
                 ]
             , Textfield.render
                 Mdl
@@ -185,6 +186,7 @@ accountForm model =
                 , Textfield.floatingLabel
                 , Textfield.password
                 , Textfield.onInput UpdatePassword1
+                , Textfield.value model.password1
                 ]
             , Textfield.render
                 Mdl
@@ -194,6 +196,7 @@ accountForm model =
                 , Textfield.floatingLabel
                 , Textfield.password
                 , Textfield.onInput UpdatePassword2
+                , Textfield.value model.password2
                 , if checkPasswordMatch model then
                     Options.nop
                   else
