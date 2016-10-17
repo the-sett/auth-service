@@ -1,4 +1,4 @@
-port module Listbox exposing (listbox, items, selected, onSelectedChanged)
+port module Listbox exposing (listbox, items, initiallySelected, onSelectedChanged)
 
 import Dict exposing (Dict)
 import Maybe exposing (Maybe)
@@ -25,9 +25,9 @@ items val =
     property "items" <| (encodeItems (Dict.toList val))
 
 
-selected : Dict String String -> Attribute msg
-selected val =
-    property "selected" <| (encodeItems (Dict.toList val))
+initiallySelected : Dict String String -> Attribute msg
+initiallySelected val =
+    property "initiallySelected" <| (encodeItems (Dict.toList val))
 
 
 onItemArrayChanged : String -> (Dict String String -> msg) -> Attribute msg
@@ -64,6 +64,9 @@ port setSelected : List ( String, String ) -> Cmd msg
 
 
 port itemsChanged : (List ( String, String ) -> msg) -> Sub msg
+
+
+port initiallySelectedChanged : (List ( String, String ) -> msg) -> Sub msg
 
 
 type alias Model =
@@ -152,6 +155,7 @@ itemsToList model listIdx ( idx, value ) =
 type Msg
     = Mdl (Material.Msg Msg)
     | ItemsChanged (List ( String, String ))
+    | InitiallySelectedChanged (List ( String, String ))
     | Select String
     | Deselect String
     | MouseOver String
@@ -166,6 +170,9 @@ update msg model =
 
         ItemsChanged items ->
             ( { model | items = Dict.fromList items }, Cmd.none )
+
+        InitiallySelectedChanged items ->
+            ( { model | selectedItems = Dict.fromList items }, Cmd.none )
 
         Select idx ->
             case (Dict.get idx model.items) of
@@ -199,7 +206,10 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    itemsChanged ItemsChanged
+    Sub.batch
+        [ itemsChanged ItemsChanged
+        , initiallySelectedChanged InitiallySelectedChanged
+        ]
 
 
 main : Program Never

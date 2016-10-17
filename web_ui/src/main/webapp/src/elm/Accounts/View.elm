@@ -20,7 +20,7 @@ import Utils exposing (..)
 import Accounts.Types exposing (..)
 import Accounts.State exposing (..)
 import Model
-import Listbox exposing (listbox, onSelectedChanged, items)
+import Listbox exposing (listbox, onSelectedChanged, items, initiallySelected)
 
 
 root : Model -> Html Msg
@@ -212,7 +212,11 @@ accountForm model =
             , Grid.size Grid.Phone 4
             ]
             [ h4 [] [ text "Roles" ]
-            , listbox [ items model.roleLookup, onSelectedChanged SelectChanged ]
+            , listbox
+                [ items model.roleLookup
+                , initiallySelected model.selectedRoles
+                , onSelectedChanged SelectChanged
+                ]
             ]
         , Grid.cell [ Grid.size Grid.All 12 ]
             [ accountControlBar

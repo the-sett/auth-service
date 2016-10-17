@@ -62,15 +62,24 @@
                         notify: true,
                         observer: '_itemsChanged',
                         value: []
+                    },
+
+                    initiallySelected: {
+                        type: Array,
+                        observer: '_initiallySelectedChanged',
+                        value: []
                     }
                 },
 
                 attached() {
-                    //console.log("attached : items = " + this.items);
+                    // console.log("attached : items = " + this.items);
+                    // console.log("attached : initiallySelected = " + this.initiallySelected);
 
                     app = Elm.Listbox.embed(this);
 
                     this._itemsChanged(this.items, []);
+
+                    this._initiallySelectedChanged(this.initiallySelected, []);
 
                     app.ports.setSelected.subscribe(items => {
                         this.selected = items;
@@ -83,6 +92,16 @@
                     if (!arrayOfArraysEqual(newValue, oldValue)) {
                         if (app) {
                             app.ports.itemsChanged.send(newValue);
+                        }
+                    }
+                },
+
+                _initiallySelectedChanged: function(newValue, oldValue) {
+                    //console.log("_initiallySelectedChanged : newValue = " + newValue + ", oldValue = " + oldValue);
+
+                    if (!arrayOfArraysEqual(newValue, oldValue)) {
+                        if (app) {
+                            app.ports.initiallySelectedChanged.send(newValue);
                         }
                     }
                 }
