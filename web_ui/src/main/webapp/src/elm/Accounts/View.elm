@@ -215,11 +215,6 @@ accountForm model =
         ]
 
 
-validateAccount : Model -> Bool
-validateAccount =
-    checkAll [ checkPasswordMatch ]
-
-
 completeButton : String -> Model -> Html Msg
 completeButton label model =
     Button.render Mdl

@@ -1,10 +1,11 @@
-module Accounts.State exposing (init, update, allSelected, someSelected, key, checkPasswordMatch)
+module Accounts.State exposing (..)
 
 import Log
 import Set
 import Dict exposing (Dict)
 import Array
 import Maybe
+import String
 import Platform.Cmd exposing (Cmd)
 import Cmd.Extra
 import Material
@@ -31,9 +32,24 @@ init =
     }
 
 
-checkPasswordMatch : { b | password1 : a, password2 : a } -> Bool
+checkPasswordMatch : Model -> Bool
 checkPasswordMatch model =
     model.password1 == model.password2
+
+
+checkUsernameExists : Model -> Bool
+checkUsernameExists model =
+    String.length model.username > 0
+
+
+checkPasswordExists : Model -> Bool
+checkPasswordExists model =
+    String.length model.password1 > 0
+
+
+validateAccount : Model -> Bool
+validateAccount =
+    checkAll [ checkUsernameExists, checkPasswordExists, checkPasswordMatch ]
 
 
 key : Model.Account -> String
