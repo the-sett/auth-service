@@ -16,6 +16,9 @@ import Account.Service
 import Role.Service
 
 
+-- Model manipulations
+
+
 init : Model
 init =
     { mdl = Material.model
@@ -24,12 +27,41 @@ init =
     , roles = Array.empty
     , accountToEdit = Nothing
     , viewState = ListView
+    , roleLookup = Dict.empty
     , username = ""
     , password1 = ""
     , password2 = ""
-    , roleLookup = Dict.empty
     , selectedRoles = Dict.empty
     }
+
+
+resetAccountForm : Model -> Model
+resetAccountForm model =
+    { model
+        | username = ""
+        , password1 = ""
+        , password2 = ""
+        , selectedRoles = Dict.empty
+    }
+
+
+key : Model.Account -> String
+key (Model.Account account) =
+    account.id
+
+
+allSelected : Model -> Bool
+allSelected model =
+    Set.size model.selected == Array.length model.accounts
+
+
+someSelected : Model -> Bool
+someSelected model =
+    Set.size model.selected > 0
+
+
+
+-- Validations
 
 
 checkPasswordMatch : Model -> Bool
@@ -52,19 +84,8 @@ validateAccount =
     checkAll [ checkUsernameExists, checkPasswordExists, checkPasswordMatch ]
 
 
-key : Model.Account -> String
-key (Model.Account account) =
-    account.id
 
-
-allSelected : Model -> Bool
-allSelected model =
-    Set.size model.selected == Array.length model.accounts
-
-
-someSelected : Model -> Bool
-someSelected model =
-    Set.size model.selected > 0
+-- Account REST API calls
 
 
 accountCallbacks : Account.Service.Callbacks Model Msg
@@ -97,6 +118,10 @@ accountToEdit account model =
     ( { model | viewState = EditView, accountToEdit = Just account }, Cmd.none )
 
 
+
+-- Role REST API calls
+
+
 roleCallbacks : Role.Service.Callbacks Model Msg
 roleCallbacks =
     let
@@ -124,6 +149,20 @@ roleListToDict roles =
         )
         roles
         |> Dict.fromList
+
+
+toRoleList : Dict String String -> List Model.Role
+toRoleList dict =
+    Dict.toList dict
+        |> List.map
+            (\( id, name ) ->
+                Model.Role
+                    { id = id
+                    , name = name
+                    , accounts = Nothing
+                    , permissions = Nothing
+                    }
+            )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -169,7 +208,11 @@ update' action model =
                 ! []
 
         Add ->
-            ( { model | viewState = CreateView }, Role.Service.invokeFindAll RoleApi )
+            let
+                resetModel =
+                    resetAccountForm model
+            in
+                ( { resetModel | viewState = CreateView }, Role.Service.invokeFindAll RoleApi )
 
         Delete ->
             ( model, Cmd.none )
@@ -220,17 +263,3 @@ update' action model =
 
         Save ->
             ( model, Cmd.none )
-
-
-toRoleList : Dict String String -> List Model.Role
-toRoleList dict =
-    Dict.toList dict
-        |> List.map
-            (\( id, name ) ->
-                Model.Role
-                    { id = id
-                    , name = name
-                    , accounts = Nothing
-                    , permissions = Nothing
-                    }
-            )
