@@ -230,12 +230,24 @@ update' action model =
                         ( model, Cmd.none )
 
                     Just (Model.Account account) ->
-                        ( model
-                        , Cmd.batch
-                            [ Account.Service.invokeRetrieve AccountApi account.id
-                            , Role.Service.invokeFindAll RoleApi
-                            ]
-                        )
+                        let
+                            selectedRoles =
+                                case account.roles of
+                                    Nothing ->
+                                        Dict.empty
+
+                                    Just roles ->
+                                        roleListToDict roles
+                        in
+                            ( { model
+                                | username = account.username
+                                , selectedRoles = selectedRoles
+                              }
+                            , Cmd.batch
+                                [ Account.Service.invokeRetrieve AccountApi account.id
+                                , Role.Service.invokeFindAll RoleApi
+                                ]
+                            )
 
         UpdateUsername username ->
             ( { model | username = username }, Cmd.none )
