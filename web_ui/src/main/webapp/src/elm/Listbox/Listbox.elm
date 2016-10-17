@@ -1,4 +1,4 @@
-port module Listbox exposing (listbox, items, onSelectedChanged)
+port module Listbox exposing (listbox, items, selected, onSelectedChanged)
 
 import Dict exposing (Dict)
 import Maybe exposing (Maybe)
@@ -23,6 +23,11 @@ listbox attrs =
 items : Dict String String -> Attribute msg
 items val =
     property "items" <| (encodeItems (Dict.toList val))
+
+
+selected : Dict String String -> Attribute msg
+selected val =
+    property "selected" <| (encodeItems (Dict.toList val))
 
 
 onItemArrayChanged : String -> (Dict String String -> msg) -> Attribute msg
