@@ -1,4 +1,4 @@
-port module Listbox exposing (listbox, items, onSelectedChanged, setSelected)
+port module Listbox exposing (listbox, items, onSelectedChanged)
 
 import Dict exposing (Dict)
 import Maybe exposing (Maybe)
@@ -13,9 +13,6 @@ import Material.Toggles as Toggles
 
 
 -- The exposed API
-
-
-port setSelected : List ( String, String ) -> Cmd msg
 
 
 listbox : List (Attribute msg) -> Html msg
@@ -56,6 +53,9 @@ decodeItems =
 
 
 -- The internals
+
+
+port setSelected : List ( String, String ) -> Cmd msg
 
 
 port itemsChanged : (List ( String, String ) -> msg) -> Sub msg
