@@ -81,7 +81,11 @@ checkPasswordExists model =
 
 validateAccount : Model -> Bool
 validateAccount =
-    checkAll [ checkUsernameExists, checkPasswordExists, checkPasswordMatch ]
+    checkAll
+        [ checkUsernameExists
+        , checkPasswordExists
+        , checkPasswordMatch
+        ]
 
 
 
@@ -115,7 +119,9 @@ accountList accounts model =
 
 accountToEdit : Model.Account -> Model -> ( Model, Cmd msg )
 accountToEdit account model =
-    ( { model | viewState = EditView, accountToEdit = Just account }, Cmd.none )
+    ( { model | viewState = EditView, accountToEdit = Just account }
+    , Cmd.none
+    )
 
 
 
@@ -136,7 +142,12 @@ roleCallbacks =
 
 roleList : List Model.Role -> Model -> ( Model, Cmd msg )
 roleList roles model =
-    ( { model | roles = Array.fromList roles, roleLookup = roleListToDict roles }, Cmd.none )
+    ( { model
+        | roles = Array.fromList roles
+        , roleLookup = roleListToDict roles
+      }
+    , Cmd.none
+    )
 
 
 roleListToDict : List Model.Role -> Dict String String
@@ -193,7 +204,9 @@ update' action model =
                     if allSelected model then
                         Set.empty
                     else
-                        Array.map key model.accounts |> Array.toList |> Set.fromList
+                        Array.map key model.accounts
+                            |> Array.toList
+                            |> Set.fromList
             }
                 ! []
 
@@ -212,7 +225,9 @@ update' action model =
                 resetModel =
                     resetAccountForm model
             in
-                ( { resetModel | viewState = CreateView }, Role.Service.invokeFindAll RoleApi )
+                ( { resetModel | viewState = CreateView }
+                , Role.Service.invokeFindAll RoleApi
+                )
 
         Delete ->
             ( model, Cmd.none )
