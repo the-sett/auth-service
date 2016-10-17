@@ -175,7 +175,10 @@ accountForm model =
                 [ Textfield.label "Username"
                 , Textfield.floatingLabel
                 , Textfield.text'
-                , Textfield.onInput UpdateUsername
+                , if model.viewState == CreateView then
+                    Textfield.onInput UpdateUsername
+                  else
+                    Textfield.disabled
                 , Textfield.value model.username
                 ]
             , Textfield.render
