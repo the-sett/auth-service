@@ -231,6 +231,9 @@ update' action model =
 
                     Just (Model.Account account) ->
                         let
+                            resetModel =
+                                resetAccountForm model
+
                             selectedRoles =
                                 case account.roles of
                                     Nothing ->
@@ -239,7 +242,7 @@ update' action model =
                                     Just roles ->
                                         roleListToDict roles
                         in
-                            ( { model
+                            ( { resetModel
                                 | username = account.username
                                 , selectedRoles = selectedRoles
                               }
