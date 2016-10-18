@@ -102,6 +102,7 @@ type Account =
     {
     username : String
     , password : String
+    , root : Bool
     , roles : Maybe (List Role)
     , id : String
     }
@@ -112,6 +113,7 @@ accountEncoder (Account model) =
         [
         Just ( "username", Encode.string model.username )
         , Just ( "password", Encode.string model.password )
+        , Just ( "root", Encode.bool model.root )
         , case model.roles of
             Just roles -> Just ( "roles", roles |> List.map roleEncoder |> Encode.list )
 
@@ -125,11 +127,12 @@ accountEncoder (Account model) =
 accountDecoder : Decoder Account
 accountDecoder =
     (Decode.succeed
-        (\username password roles id ->
+        (\username password root roles id ->
             Account
                 {
                 username = username
                 ,password = password
+                ,root = root
                 ,roles = roles
                 , id = id
                 }
@@ -137,6 +140,7 @@ accountDecoder =
     )
         |: ("username" := Decode.string)
         |: ("password" := Decode.string)
+        |: ("root" := Decode.bool)
         |: (("roles" := maybeNull (Decode.list roleDecoder)) |> withDefault Nothing)
         |: ("id" := Decode.int |> Decode.map toString)
 
@@ -145,7 +149,6 @@ type Role =
     Role
     {
     name : String
-    , accounts : Maybe (List Account)
     , permissions : Maybe (List Permission)
     , id : String
     }
@@ -155,10 +158,6 @@ roleEncoder : Role -> Encode.Value
 roleEncoder (Role model) =
         [
         Just ( "name", Encode.string model.name )
-        , case model.accounts of
-            Just accounts -> Just ( "accounts", accounts |> List.map accountEncoder |> Encode.list )
-
-            Nothing -> Nothing
         , case model.permissions of
             Just permissions -> Just ( "permissions", permissions |> List.map permissionEncoder |> Encode.list )
 
@@ -172,18 +171,16 @@ roleEncoder (Role model) =
 roleDecoder : Decoder Role
 roleDecoder =
     (Decode.succeed
-        (\name accounts permissions id ->
+        (\name permissions id ->
             Role
                 {
                 name = name
-                ,accounts = accounts
                 ,permissions = permissions
                 , id = id
                 }
         )
     )
         |: ("name" := Decode.string)
-        |: (("accounts" := maybeNull (Decode.list accountDecoder)) |> withDefault Nothing)
         |: (("permissions" := maybeNull (Decode.list permissionDecoder)) |> withDefault Nothing)
         |: ("id" := Decode.int |> Decode.map toString)
 

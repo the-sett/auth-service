@@ -210,7 +210,6 @@ toRoleList dict =
                 Model.Role
                     { id = id
                     , name = name
-                    , accounts = Nothing
                     , permissions = Nothing
                     }
             )
@@ -319,6 +318,7 @@ update action model =
                     { id = ""
                     , username = model.username
                     , password = model.password1
+                    , root = False
                     , roles = Just <| toRoleList model.selectedRoles
                     }
                 )
