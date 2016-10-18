@@ -7,6 +7,7 @@ import Html exposing (..)
 import Html.Attributes exposing (title, class, action, attribute)
 import Html.Events exposing (on)
 import Json.Decode as Decode
+import Material
 import Material.Options as Options exposing (Style, cs, when, nop, disabled)
 import Material.Dialog as Dialog
 import Material.Table as Table
@@ -21,6 +22,7 @@ import Accounts.Types exposing (..)
 import Accounts.State exposing (..)
 import Model
 import Listbox exposing (listbox, onSelectedChanged, items, initiallySelected)
+import ViewUtils
 
 
 root : Model -> Html Msg
@@ -161,6 +163,10 @@ dialog model =
         ]
 
 
+
+-- Different status of the username field depending on view state
+
+
 accountForm : Model -> Html Msg
 accountForm model =
     Grid.grid []
@@ -219,56 +225,14 @@ accountForm model =
                 ]
             ]
         , Grid.cell [ Grid.size Grid.All 12 ]
-            [ accountControlBar
-                model
-            ]
-        ]
-
-
-completeButton : String -> Model -> Html Msg
-completeButton label model =
-    Button.render Mdl
-        [ 0 ]
-        model.mdl
-        [ Button.ripple
-        , if validateAccount model then
-            Button.colored
-          else
-            Button.disabled
-        , case model.viewState of
-            CreateView ->
-                Button.onClick Create
-
-            EditView ->
-                Button.onClick Save
-
-            ListView ->
-                Button.disabled
-        ]
-        [ text label ]
-
-
-accountControlBar : Model -> Html Msg
-accountControlBar model =
-    div [ class "control-bar" ]
-        [ div [ class "control-bar__row" ]
-            [ div [ class "control-bar__left-0" ]
-                [ Button.render Mdl
-                    [ 0 ]
-                    model.mdl
-                    [ Button.ripple
-                    , Button.accent
-                    , Button.onClick Init
-                    ]
-                    [ Icon.i "chevron_left"
-                    , text "Back"
-                    ]
-                ]
-            , div [ class "control-bar__right-0" ]
-                [ if model.viewState == EditView then
-                    completeButton "Save" model
-                  else
-                    completeButton "Create" model
-                ]
+            [ ViewUtils.okCancelControlBar
+                model.mdl
+                Mdl
+                (if model.viewState == EditView then
+                    ViewUtils.completeButton model.mdl Mdl "Save" False Save
+                 else
+                    ViewUtils.completeButton model.mdl Mdl "Create" (validateCreateAccount model) Create
+                )
+                Init
             ]
         ]

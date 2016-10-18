@@ -16,7 +16,7 @@ import Account.Service
 import Role.Service
 
 
--- Model manipulations
+-- Model and its manipulations
 
 
 init : Model
@@ -61,7 +61,7 @@ someSelected model =
 
 
 
--- Validations
+-- Validations on the model
 
 
 checkPasswordMatch : Model -> Bool
@@ -79,11 +79,19 @@ checkPasswordExists model =
     String.length model.password1 > 0
 
 
-validateAccount : Model -> Bool
-validateAccount =
+validateCreateAccount : Model -> Bool
+validateCreateAccount =
     checkAll
         [ checkUsernameExists
         , checkPasswordExists
+        , checkPasswordMatch
+        ]
+
+
+isChangePassword : Model -> Bool
+isChangePassword =
+    checkAll
+        [ checkPasswordExists
         , checkPasswordMatch
         ]
 
