@@ -71,6 +71,31 @@ roleDictFromAccount (Model.Account account) =
             roleListToDict roles
 
 
+roleListToDict : List Model.Role -> Dict String String
+roleListToDict roles =
+    List.map
+        (\wrapper ->
+            case wrapper of
+                Model.Role role ->
+                    ( role.id, role.name )
+        )
+        roles
+        |> Dict.fromList
+
+
+toRoleList : Dict String String -> List Model.Role
+toRoleList dict =
+    Dict.toList dict
+        |> List.map
+            (\( id, name ) ->
+                Model.Role
+                    { id = id
+                    , name = name
+                    , permissions = Nothing
+                    }
+            )
+
+
 
 -- Validations on the model
 
@@ -197,31 +222,6 @@ roleList roles model =
     )
 
 
-roleListToDict : List Model.Role -> Dict String String
-roleListToDict roles =
-    List.map
-        (\wrapper ->
-            case wrapper of
-                Model.Role role ->
-                    ( role.id, role.name )
-        )
-        roles
-        |> Dict.fromList
-
-
-toRoleList : Dict String String -> List Model.Role
-toRoleList dict =
-    Dict.toList dict
-        |> List.map
-            (\( id, name ) ->
-                Model.Role
-                    { id = id
-                    , name = name
-                    , permissions = Nothing
-                    }
-            )
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     case (Log.debug "accounts" action) of
@@ -235,100 +235,25 @@ update action model =
             Role.Service.update roleCallbacks action' model
 
         Init ->
-            ( { model | selected = Set.empty, viewState = ListView }
-            , Account.Service.invokeFindAll AccountApi
-            )
+            updateInit model
 
         ToggleAll ->
-            { model
-                | selected =
-                    if allSelected model then
-                        Set.empty
-                    else
-                        Array.map key model.accounts
-                            |> Array.toList
-                            |> Set.fromList
-            }
-                ! []
+            updateToggleAll model
 
         Toggle k ->
-            { model
-                | selected =
-                    if Set.member k model.selected then
-                        Set.remove k model.selected
-                    else
-                        Set.insert k model.selected
-            }
-                ! []
+            updateToggle k model
 
         Add ->
-            let
-                resetModel =
-                    resetAccountForm model
-            in
-                ( { resetModel | viewState = CreateView }
-                , Role.Service.invokeFindAll RoleApi
-                )
+            updateAdd model
 
         Delete ->
             ( model, Cmd.none )
 
         ConfirmDelete ->
-            let
-                nonRootSelectedAccounts =
-                    Array.filter
-                        (\(Model.Account account) ->
-                            (not account.root)
-                                && (Set.member account.id model.selected)
-                        )
-                        model.accounts
-
-                toDelete =
-                    Array.map
-                        (\(Model.Account account) ->
-                            account.id
-                        )
-                        nonRootSelectedAccounts
-                        |> Array.toList
-            in
-                ( { model | selected = Set.empty }
-                , List.map
-                    (\id ->
-                        Account.Service.invokeDelete AccountApi id
-                    )
-                    (toDelete)
-                    |> Cmd.batch
-                )
+            updateConfirmDelete model
 
         Edit idx ->
-            let
-                item =
-                    Array.get idx model.accounts
-            in
-                case item of
-                    Nothing ->
-                        ( model, Cmd.none )
-
-                    Just accountRec ->
-                        let
-                            (Model.Account account) =
-                                accountRec
-
-                            resetModel =
-                                resetAccountForm model
-
-                            selectedRoles =
-                                roleDictFromAccount accountRec
-                        in
-                            ( { resetModel
-                                | username = account.username
-                                , selectedRoles = selectedRoles
-                              }
-                            , Cmd.batch
-                                [ Account.Service.invokeRetrieve AccountApi account.id
-                                , Role.Service.invokeFindAll RoleApi
-                                ]
-                            )
+            updateEdit idx model
 
         UpdateUsername username ->
             ( { model | username = username }, Cmd.none )
@@ -343,17 +268,127 @@ update action model =
             ( { model | selectedRoles = roles }, Cmd.none )
 
         Create ->
-            ( model
-            , Account.Service.invokeCreate AccountApi
-                (Model.Account
-                    { id = ""
-                    , username = model.username
-                    , password = model.password1
-                    , root = False
-                    , roles = Just <| toRoleList model.selectedRoles
-                    }
-                )
-            )
+            updateCreate model
 
         Save ->
             ( model, Cmd.none )
+
+
+updateInit : Model -> ( Model, Cmd Msg )
+updateInit model =
+    ( { model | selected = Set.empty, viewState = ListView }
+    , Account.Service.invokeFindAll AccountApi
+    )
+
+
+updateToggleAll : Model -> ( Model, Cmd Msg )
+updateToggleAll model =
+    { model
+        | selected =
+            if allSelected model then
+                Set.empty
+            else
+                Array.map key model.accounts
+                    |> Array.toList
+                    |> Set.fromList
+    }
+        ! []
+
+
+updateToggle : String -> Model -> ( Model, Cmd Msg )
+updateToggle k model =
+    { model
+        | selected =
+            if Set.member k model.selected then
+                Set.remove k model.selected
+            else
+                Set.insert k model.selected
+    }
+        ! []
+
+
+updateAdd : Model -> ( Model, Cmd Msg )
+updateAdd model =
+    let
+        resetModel =
+            resetAccountForm model
+    in
+        ( { resetModel | viewState = CreateView }
+        , Role.Service.invokeFindAll RoleApi
+        )
+
+
+updateConfirmDelete : Model -> ( Model, Cmd Msg )
+updateConfirmDelete model =
+    let
+        nonRootSelectedAccounts =
+            Array.filter
+                (\(Model.Account account) ->
+                    (not account.root)
+                        && (Set.member account.id model.selected)
+                )
+                model.accounts
+
+        toDelete =
+            Array.map
+                (\(Model.Account account) ->
+                    account.id
+                )
+                nonRootSelectedAccounts
+                |> Array.toList
+    in
+        ( { model | selected = Set.empty }
+        , List.map
+            (\id ->
+                Account.Service.invokeDelete AccountApi id
+            )
+            (toDelete)
+            |> Cmd.batch
+        )
+
+
+updateEdit : Int -> Model -> ( Model, Cmd Msg )
+updateEdit idx model =
+    let
+        item =
+            Array.get idx model.accounts
+    in
+        case item of
+            Nothing ->
+                ( model, Cmd.none )
+
+            Just accountRec ->
+                let
+                    (Model.Account account) =
+                        accountRec
+
+                    resetModel =
+                        resetAccountForm model
+
+                    selectedRoles =
+                        roleDictFromAccount accountRec
+                in
+                    ( { resetModel
+                        | username = account.username
+                        , selectedRoles = selectedRoles
+                      }
+                    , Cmd.batch
+                        [ Account.Service.invokeRetrieve AccountApi account.id
+                        , Role.Service.invokeFindAll RoleApi
+                        ]
+                    )
+
+
+updateCreate : Model -> ( Model, Cmd Msg )
+updateCreate model =
+    ( model
+    , Account.Service.invokeCreate AccountApi
+        (Model.Account
+            { id = ""
+            , username = model.username
+            , password = model.password1
+            , root = False
+            , roles = Just <| toRoleList model.selectedRoles
+            }
+        )
+    )
