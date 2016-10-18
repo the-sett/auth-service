@@ -216,7 +216,7 @@ editAccountForm model =
             [ ViewUtils.okCancelControlBar
                 model.mdl
                 Mdl
-                (ViewUtils.completeButton model.mdl Mdl "Save" False Save)
+                (ViewUtils.completeButton model.mdl Mdl "Save" (isEditedAndValid model) Save)
                 Init
             ]
         ]

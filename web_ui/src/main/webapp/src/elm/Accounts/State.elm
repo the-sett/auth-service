@@ -60,6 +60,16 @@ someSelected model =
     Set.size model.selected > 0
 
 
+roleDictFromAccount : Model.Account -> Dict String String
+roleDictFromAccount (Model.Account account) =
+    case account.roles of
+        Nothing ->
+            Dict.empty
+
+        Just roles ->
+            roleListToDict roles
+
+
 
 -- Validations on the model
 
@@ -88,12 +98,34 @@ validateCreateAccount =
         ]
 
 
+validateEditAccount : Model -> Bool
+validateEditAccount =
+    checkAll
+        [ checkPasswordMatch ]
+
+
 isChangePassword : Model -> Bool
 isChangePassword =
     checkAll
         [ checkPasswordExists
         , checkPasswordMatch
         ]
+
+
+isChangeRoles : Model -> Bool
+isChangeRoles model =
+    case model.accountToEdit of
+        Nothing ->
+            False
+
+        Just account ->
+            not (Dict.isEmpty (Utils.symDiff (roleDictFromAccount account) (model.selectedRoles)))
+
+
+isEditedAndValid : Model -> Bool
+isEditedAndValid model =
+    (validateEditAccount model)
+        && ((isChangePassword model) || (isChangeRoles model))
 
 
 
@@ -252,18 +284,16 @@ update' action model =
                     Nothing ->
                         ( model, Cmd.none )
 
-                    Just (Model.Account account) ->
+                    Just accountRec ->
                         let
+                            (Model.Account account) =
+                                accountRec
+
                             resetModel =
                                 resetAccountForm model
 
                             selectedRoles =
-                                case account.roles of
-                                    Nothing ->
-                                        Dict.empty
-
-                                    Just roles ->
-                                        roleListToDict roles
+                                roleDictFromAccount accountRec
                         in
                             ( { resetModel
                                 | username = account.username
