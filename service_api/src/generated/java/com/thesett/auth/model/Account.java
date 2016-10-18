@@ -44,6 +44,9 @@ public class Account  implements Entity<Long>, Serializable {
     /** Holds the password property. */    
     protected String password;
 
+    /** Holds the root property. */    
+    protected Boolean root;
+
     /** Holds the roles property. */    
     protected Set<Role> roles;
 
@@ -98,6 +101,18 @@ public class Account  implements Entity<Long>, Serializable {
     }
 
     /**
+     * Accepts a new value for the root property.
+     *
+     * @param root The root property.
+     *
+     * @return 'this' (so that fluents can be chained methods).
+     */
+    public Account withRoot(Boolean root) {
+        this.root = root;
+        return this;
+    }
+
+    /**
      * Accepts a new value for the roles property.
      *
      * @param roles The roles property.
@@ -127,6 +142,15 @@ public class Account  implements Entity<Long>, Serializable {
     }
 
     /**
+     * Provides the root property.
+     *
+     * @return The root property.
+     */
+    public Boolean getRoot() {
+        return root;
+    }
+
+    /**
      * Provides the roles property.
      *
      * @return The roles property.
@@ -150,6 +174,15 @@ public class Account  implements Entity<Long>, Serializable {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * Accepts a new value for the root property.
+     *
+     * @param root The root property.
+     */
+    public void setRoot(Boolean root) {
+        this.root = root;
     }
 
     /**

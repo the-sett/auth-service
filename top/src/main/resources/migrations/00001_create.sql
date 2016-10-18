@@ -3,13 +3,14 @@
         id int8 not null,
         username text,
         password text,
+        root boolean,
         primary key (id)
     );
 
     create table account_role (
         account_id int8 not null,
         role_id int8 not null,
-        primary key (role_id, account_id)
+        primary key (account_id, role_id)
     );
 
     create table external_id (

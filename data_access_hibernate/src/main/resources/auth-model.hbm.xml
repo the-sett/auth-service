@@ -10,6 +10,7 @@
     </id>
     <property name="username" column="username" type="text"/>
     <property name="password" column="password" type="text"/>
+    <property name="root" column="root" type="boolean"/>
 
     <!--REL: roles -> Role: Many-Many account_role owner uni-->
     <set name="roles" table="account_role" cascade="all" lazy="false">

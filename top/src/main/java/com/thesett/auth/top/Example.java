@@ -239,7 +239,7 @@ public class Example
                 Set<Role> roles = new HashSet<>();
                 roles.add(adminRole);
 
-                accountService.create(new Account().withUsername("admin").withPassword("admin").withRoles(roles));
+                accountService.create(new Account().withUsername("admin").withPassword("admin").withRoles(roles).withRoot(true));
             }
             catch (EntityException e)
             {

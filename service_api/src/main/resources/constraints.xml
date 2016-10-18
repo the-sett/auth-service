@@ -30,6 +30,9 @@
         <field name="password">
             <valid/>
         </field>
+        <field name="root">
+            <valid/>
+        </field>
         <field name="roles">
             <valid/>
         </field>
