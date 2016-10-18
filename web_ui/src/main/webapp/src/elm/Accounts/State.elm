@@ -8,6 +8,7 @@ import Maybe
 import String
 import Platform.Cmd exposing (Cmd)
 import Cmd.Extra
+import Http
 import Material
 import Utils exposing (..)
 import Accounts.Types exposing (..)
@@ -143,6 +144,7 @@ accountCallbacks =
             , findByExample = accountList
             , create = accountCreate
             , retrieve = accountToEdit
+            , delete = accountDelete
             , error = error
         }
 
@@ -162,6 +164,11 @@ accountToEdit account model =
     ( { model | viewState = EditView, accountToEdit = Just account }
     , Cmd.none
     )
+
+
+accountDelete : Http.Response -> Model -> ( Model, Cmd Msg )
+accountDelete response model =
+    ( model, Cmd.none )
 
 
 
@@ -267,7 +274,31 @@ update action model =
             ( model, Cmd.none )
 
         ConfirmDelete ->
-            ( model, Cmd.none )
+            let
+                nonRootSelectedAccounts =
+                    Array.filter
+                        (\(Model.Account account) ->
+                            (not account.root)
+                                && (Set.member account.id model.selected)
+                        )
+                        model.accounts
+
+                toDelete =
+                    Array.map
+                        (\(Model.Account account) ->
+                            account.id
+                        )
+                        nonRootSelectedAccounts
+                        |> Array.toList
+            in
+                ( { model | selected = Set.empty }
+                , List.map
+                    (\id ->
+                        Account.Service.invokeDelete AccountApi id
+                    )
+                    (toDelete)
+                    |> Cmd.batch
+                )
 
         Edit idx ->
             let
