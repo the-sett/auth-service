@@ -218,12 +218,7 @@ toRoleList dict =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
-    update' (Log.debug "accounts" action) model
-
-
-update' : Msg -> Model -> ( Model, Cmd Msg )
-update' action model =
-    case action of
+    case (Log.debug "accounts" action) of
         Mdl action' ->
             Material.update action' model
 
