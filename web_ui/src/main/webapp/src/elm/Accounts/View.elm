@@ -29,10 +29,15 @@ root : Model -> Html Msg
 root model =
     div [ class "layout-fixed-width" ]
         [ h4 [] [ text "User Accounts" ]
-        , if model.viewState == ListView then
-            table model
-          else
-            accountForm model
+        , case model.viewState of
+            ListView ->
+                table model
+
+            CreateView ->
+                createAccountForm model
+
+            EditView ->
+                editAccountForm model
         ]
 
 
@@ -163,76 +168,98 @@ dialog model =
         ]
 
 
-
--- Different status of the username field depending on view state
-
-
-accountForm : Model -> Html Msg
-accountForm model =
+createAccountForm : Model -> Html Msg
+createAccountForm model =
     Grid.grid []
-        [ Grid.cell
-            [ Grid.size Grid.Desktop 6
-            , Grid.size Grid.Tablet 4
-            , Grid.size Grid.Phone 4
-            ]
+        [ ViewUtils.column644
             [ Textfield.render Mdl
                 [ 1 ]
                 model.mdl
                 [ Textfield.label "Username"
                 , Textfield.floatingLabel
                 , Textfield.text'
-                , if model.viewState == CreateView then
-                    Textfield.onInput UpdateUsername
-                  else
-                    Textfield.disabled
+                , Textfield.onInput UpdateUsername
                 , Textfield.value model.username
                 ]
-            , Textfield.render
-                Mdl
-                [ 2 ]
-                model.mdl
-                [ Textfield.label "Password"
-                , Textfield.floatingLabel
-                , Textfield.password
-                , Textfield.onInput UpdatePassword1
-                , Textfield.value model.password1
-                ]
-            , Textfield.render
-                Mdl
-                [ 3 ]
-                model.mdl
-                [ Textfield.label "Repeat Password"
-                , Textfield.floatingLabel
-                , Textfield.password
-                , Textfield.onInput UpdatePassword2
-                , Textfield.value model.password2
-                , if checkPasswordMatch model then
-                    Options.nop
-                  else
-                    Textfield.error <| "Passwords do not match."
-                ]
+            , password1Field model
+            , password2Field model
             ]
-        , Grid.cell
-            [ Grid.size Grid.Desktop 6
-            , Grid.size Grid.Tablet 4
-            , Grid.size Grid.Phone 4
-            ]
-            [ h4 [] [ text "Roles" ]
-            , listbox
-                [ items model.roleLookup
-                , initiallySelected model.selectedRoles
-                , onSelectedChanged SelectChanged
-                ]
-            ]
-        , Grid.cell [ Grid.size Grid.All 12 ]
+        , ViewUtils.column644 (roleLookup model)
+        , ViewUtils.columnAll12
             [ ViewUtils.okCancelControlBar
                 model.mdl
                 Mdl
-                (if model.viewState == EditView then
-                    ViewUtils.completeButton model.mdl Mdl "Save" False Save
-                 else
-                    ViewUtils.completeButton model.mdl Mdl "Create" (validateCreateAccount model) Create
-                )
+                (ViewUtils.completeButton model.mdl Mdl "Create" (validateCreateAccount model) Create)
                 Init
             ]
         ]
+
+
+editAccountForm : Model -> Html Msg
+editAccountForm model =
+    Grid.grid []
+        [ ViewUtils.column644
+            [ Textfield.render Mdl
+                [ 1 ]
+                model.mdl
+                [ Textfield.label "Username"
+                , Textfield.floatingLabel
+                , Textfield.text'
+                , Textfield.disabled
+                , Textfield.value model.username
+                ]
+            , password1Field model
+            , password2Field model
+            ]
+        , ViewUtils.column644 (roleLookup model)
+        , ViewUtils.columnAll12
+            [ ViewUtils.okCancelControlBar
+                model.mdl
+                Mdl
+                (ViewUtils.completeButton model.mdl Mdl "Save" False Save)
+                Init
+            ]
+        ]
+
+
+password1Field : Model -> Html Msg
+password1Field model =
+    Textfield.render
+        Mdl
+        [ 2 ]
+        model.mdl
+        [ Textfield.label "Password"
+        , Textfield.floatingLabel
+        , Textfield.password
+        , Textfield.onInput UpdatePassword1
+        , Textfield.value model.password1
+        ]
+
+
+password2Field : Model -> Html Msg
+password2Field model =
+    Textfield.render
+        Mdl
+        [ 3 ]
+        model.mdl
+        [ Textfield.label "Repeat Password"
+        , Textfield.floatingLabel
+        , Textfield.password
+        , Textfield.onInput UpdatePassword2
+        , Textfield.value model.password2
+        , if checkPasswordMatch model then
+            Options.nop
+          else
+            Textfield.error <| "Passwords do not match."
+        ]
+
+
+roleLookup : Model -> List (Html Msg)
+roleLookup model =
+    [ h4 [] [ text "Roles" ]
+    , listbox
+        [ items model.roleLookup
+        , initiallySelected model.selectedRoles
+        , onSelectedChanged SelectChanged
+        ]
+    ]

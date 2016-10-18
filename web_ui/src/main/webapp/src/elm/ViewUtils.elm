@@ -6,6 +6,36 @@ import Material
 import Material.Options as Options exposing (Style, cs, when, nop, disabled)
 import Material.Button as Button
 import Material.Icon as Icon
+import Material.Grid as Grid
+
+
+{-
+   A grid cell that is 6 columns on dektop and 4 on tablet and mobile. This
+   provides a 2 column layout, shrinking to 1 on mobile.
+-}
+
+
+column644 : List (Html msg) -> Grid.Cell msg
+column644 =
+    Grid.cell
+        [ Grid.size Grid.Desktop 6
+        , Grid.size Grid.Tablet 4
+        , Grid.size Grid.Phone 4
+        ]
+
+
+
+{-
+   A grid cell that is full width on all devices.
+-}
+
+
+columnAll12 : List (Html msg) -> Grid.Cell msg
+columnAll12 =
+    Grid.cell
+        [ Grid.size Grid.All 12
+        ]
+
 
 
 {-
