@@ -116,6 +116,7 @@
                                     </config>
                                 </generator>
 
+                                <!--
                                 <generator>
                                     <config>
                                         <type>com.thesett.jenerator.DropWizardTopGenerator</type>
@@ -124,7 +125,8 @@
                                         <outputDir>${topdir}/top/src/generated/java</outputDir>
                                     </config>
                                 </generator>
-
+                                -->
+                                
                                 <generator>
                                     <config>
                                         <type>com.thesett.jenerator.TestStackGenerator</type>

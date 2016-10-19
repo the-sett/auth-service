@@ -189,7 +189,7 @@ public class Main extends Application<AppConfiguration> {
         // Build all of the services on top of the DAOs.
         ReferenceDataResource referenceDataResource = new ReferenceDataResource(refDataSetupBundle.getRefdataTypes());
 
-        AccountResource accountResource = new AccountResource(accountDAO);
+        AccountResource accountResource = new AccountResource(accountDAO, roleDAO);
         RoleResource roleResource = new RoleResource(roleDAO);
         PermissionResource permissionResource = new PermissionResource(permissionDAO);
 

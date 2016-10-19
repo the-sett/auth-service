@@ -210,7 +210,7 @@ public class AppTestSetupController implements TestSetupController<AppConfigurat
         RoleDAO roleDAO = new RoleDAOImpl(sessionFactory, validatorFactory);
         PermissionDAO permissionDAO = new PermissionDAOImpl(sessionFactory, validatorFactory);
     
-        AccountResource accountResource = new AccountResource(accountDAO);
+        AccountResource accountResource = new AccountResource(accountDAO, roleDAO);
         RoleResource roleResource = new RoleResource(roleDAO);
         PermissionResource permissionResource = new PermissionResource(permissionDAO);
 
@@ -229,7 +229,7 @@ public class AppTestSetupController implements TestSetupController<AppConfigurat
         RoleDAO roleDAO = new RoleDAOImpl(sessionFactory, validatorFactory);
         PermissionDAO permissionDAO = new PermissionDAOImpl(sessionFactory, validatorFactory);
     
-        AccountResource accountResource = new AccountResource(accountDAO);
+        AccountResource accountResource = new AccountResource(accountDAO, roleDAO);
         RoleResource roleResource = new RoleResource(roleDAO);
         PermissionResource permissionResource = new PermissionResource(permissionDAO);
 

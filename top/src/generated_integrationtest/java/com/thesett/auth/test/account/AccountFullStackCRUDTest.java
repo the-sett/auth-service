@@ -1,5 +1,6 @@
 package com.thesett.auth.test.account;
 
+import com.thesett.auth.dao.RoleDAOImpl;
 import com.thesett.util.security.shiro.LocalSubject;
 import com.thesett.util.security.shiro.ShiroUtils;
 import org.apache.shiro.subject.Subject;
@@ -28,8 +29,9 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
     protected CRUD<Account, Long> getServiceLayer()
     {
         AccountDAOImpl accountDAO = new AccountDAOImpl(sessionFactory, validatorFactory);
+        RoleDAOImpl roleDAO = new RoleDAOImpl(sessionFactory, validatorFactory);
 
-        AccountResource accountResource = new AccountResource(accountDAO);
+        AccountResource accountResource = new AccountResource(accountDAO, roleDAO);
 
         return HibernateSessionAndDetachProxy.proxy(accountResource, AccountService.class, sessionFactory);
     }

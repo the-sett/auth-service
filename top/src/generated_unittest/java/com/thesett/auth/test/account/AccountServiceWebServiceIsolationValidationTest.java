@@ -3,6 +3,7 @@ package com.thesett.auth.test.account;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
 
+import com.thesett.auth.dao.RoleDAO;
 import org.junit.runners.Parameterized;
 import com.thesett.test.base.WebServiceIsolationValidationTestBase;
 import com.thesett.util.entity.CRUD;
@@ -32,6 +33,10 @@ public class AccountServiceWebServiceIsolationValidationTest
             (AccountDAO) Proxy.newProxyInstance(dao.getClass().getClassLoader(), new Class[] { AccountDAO.class },
                 new DefaultProxy(dao));
 
-        return new AccountResource(accountDAO);
+        RoleDAO roleDAO =
+             (RoleDAO) Proxy.newProxyInstance(dao.getClass().getClassLoader(), new Class[] { RoleDAO.class },
+                new DefaultProxy(dao));
+
+        return new AccountResource(accountDAO, roleDAO);
     }
 }

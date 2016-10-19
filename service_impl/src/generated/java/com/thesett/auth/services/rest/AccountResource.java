@@ -1,7 +1,9 @@
 /* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 package com.thesett.auth.services.rest;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -15,7 +17,9 @@ import javax.ws.rs.core.MediaType;
 
 import com.codahale.metrics.annotation.Timed;
 import com.thesett.auth.dao.AccountDAO;
+import com.thesett.auth.dao.RoleDAO;
 import com.thesett.auth.model.Account;
+import com.thesett.auth.model.Role;
 import com.thesett.auth.services.AccountService;
 import com.thesett.util.entity.EntityException;
 import com.thesett.util.entity.EntityNotExistsException;
@@ -49,14 +53,19 @@ public class AccountResource implements AccountService
     /** The DAO to use for persisting account. */
     private final AccountDAO accountDAO;
 
+    /** The DAO to use for persisting roles. */
+    private final RoleDAO roleDAO;
+
     /**
      * Creates the account RESTful service implementation.
      *
      * @param accountDAO The DAO to use for persisting account.
+     * @param roleDAO    The DAO to use for persisting roles.
      */
-    public AccountResource(AccountDAO accountDAO)
+    public AccountResource(AccountDAO accountDAO, RoleDAO roleDAO)
     {
         this.accountDAO = accountDAO;
+        this.roleDAO = roleDAO;
     }
 
     /** {@inheritDoc} */
@@ -185,6 +194,19 @@ public class AccountResource implements AccountService
 
         // The username cannot be changed
         account.setUsername(accountToModify.getUsername());
+
+        // Find all of the roles requested, and set them on the account.
+        Set<Role> roles = new HashSet<>();
+
+        if (account.getRoles() != null)
+        {
+            for (Role role : account.getRoles())
+            {
+                roles.add(roleDAO.retrieve(role.getId()));
+            }
+
+            account.setRoles(roles);
+        }
 
         return accountDAO.update(id, account);
     }
