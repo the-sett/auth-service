@@ -18,7 +18,9 @@ import com.thesett.auth.dao.AccountDAO;
 import com.thesett.auth.model.Account;
 import com.thesett.auth.services.AccountService;
 import com.thesett.util.entity.EntityException;
+import com.thesett.util.entity.EntityNotExistsException;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
+import com.thesett.util.string.StringUtils;
 import com.thesett.util.validation.core.JsonSchemaUtil;
 import com.thesett.util.validation.model.JsonSchema;
 
@@ -148,7 +150,7 @@ public class AccountResource implements AccountService
     }
 
     /** {@inheritDoc} */
-    @PUT
+    @POST
     @UnitOfWorkWithDetach
     @Path("/{accountId}")
     @ApiOperation(value = "Replaces a Account with an updated version, match by its id.")
@@ -167,6 +169,19 @@ public class AccountResource implements AccountService
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
         subject.checkPermission("admin");
+
+        // Obtain the account to modify and confirm it exists.
+        Account accountToModify = accountDAO.retrieve(id);
+
+        if (accountToModify==null) {
+            throw new EntityNotExistsException();
+        }
+
+        // Copy across the password, if it is not set.
+        if (StringUtils.nullOrEmpty(account.getPassword()))
+        {
+            account.setPassword(accountToModify.getPassword());
+        }
 
         return accountDAO.update(id, account);
     }
