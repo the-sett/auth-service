@@ -517,7 +517,7 @@ generate_relationship_many_to_one_bi_notown(decorator, fieldName, fieldDecorator
 >>
 
 generate_relationship_many_to_one_uni_own(decorator, fieldName, fieldDecorator, relationship) ::= <<
-<many-to-one name="«fieldName; format="cc"»" column="«fieldName; format="cc"»_id" lazy="false" cascade="all" />
+<many-to-one name="«fieldName; format="cc"»" column="«fieldName; format="cc"»_id" lazy="false" cascade="save,persist" />
 >>
 
 generate_relationship_many_to_many_bi_own(decorator, fieldName, fieldDecorator, relationship) ::= <<
@@ -530,7 +530,7 @@ generate_relationship_many_to_many_bi_notown(decorator, fieldName, fieldDecorato
 >>
 
 generate_relationship_many_to_many_uni_own(decorator, fieldName, fieldDecorator, relationship) ::= <<
-«(collectionKindRelTemplateMap.(fieldDecorator.collectionKind))(decorator, fieldName, fieldDecorator, relationship, false, "all", "false")»
+«(collectionKindRelTemplateMap.(fieldDecorator.collectionKind))(decorator, fieldName, fieldDecorator, relationship, false, "save-update", "false")»
   <many-to-many column="«relationship.target; format="cc"»_id" class="«relationship.target; format="ccu"»"/>
 «(collectionKindRelCloseTemplateMap.(fieldDecorator.collectionKind))()»
 >>
