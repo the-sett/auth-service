@@ -20,7 +20,6 @@ type alias Model =
     { mdl : Material.Model
     , selected : Set String
     , accounts : Array Model.Account
-    , roles : Array Model.Role
     , accountToEdit : Maybe Model.Account
     , viewState : ViewState
     , username : String

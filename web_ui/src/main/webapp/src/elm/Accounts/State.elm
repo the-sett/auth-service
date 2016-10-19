@@ -25,7 +25,6 @@ init =
     { mdl = Material.model
     , selected = Set.empty
     , accounts = Array.empty
-    , roles = Array.empty
     , accountToEdit = Nothing
     , viewState = ListView
     , roleLookup = Dict.empty
@@ -233,8 +232,7 @@ roleCallbacks =
 roleList : List Model.Role -> Model -> ( Model, Cmd msg )
 roleList roles model =
     ( { model
-        | roles = Array.fromList roles
-        , roleLookup = roleListToDict roles
+        | roleLookup = roleListToDict roles
       }
     , Cmd.none
     )
