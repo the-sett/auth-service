@@ -199,9 +199,13 @@ accountToEdit account model =
     )
 
 
-accountDelete : Http.Response -> Model -> ( Model, Cmd Msg )
-accountDelete response model =
-    ( model, Cmd.none )
+accountDelete : String -> Model -> ( Model, Cmd Msg )
+accountDelete id model =
+    let
+        newAccounts =
+            Array.filter (\(Model.Account account) -> not (account.id == id)) model.accounts
+    in
+        ( { model | accounts = newAccounts }, Cmd.none )
 
 
 
