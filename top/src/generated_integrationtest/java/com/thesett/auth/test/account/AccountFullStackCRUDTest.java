@@ -34,6 +34,12 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
         return HibernateSessionAndDetachProxy.proxy(accountResource, AccountService.class, sessionFactory);
     }
 
+    @Test
+    public void checkTestDataInitialAndUpdateAreDifferent() {
+        Assert.assertFalse("Non-equal initial and update values should be specified in the test data set.",
+                equality.checkEqualByValue(testData.getInitialValue(), testData.getUpdatedValue()));
+    }
+
     @Before
     public void setupSecurity()
     {

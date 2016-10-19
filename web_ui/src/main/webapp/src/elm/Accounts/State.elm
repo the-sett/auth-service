@@ -177,14 +177,10 @@ accountCallbacks =
             , findByExample = accountList
             , create = accountCreate
             , retrieve = accountToEdit
+            , update = accountSaved
             , delete = accountDelete
             , error = error
         }
-
-
-accountCreate : Model.Account -> Model -> ( Model, Cmd Msg )
-accountCreate account model =
-    ( model, Cmd.Extra.message Init )
 
 
 accountList : List Model.Account -> Model -> ( Model, Cmd msg )
@@ -192,11 +188,21 @@ accountList accounts model =
     ( { model | accounts = Array.fromList accounts }, Cmd.none )
 
 
+accountCreate : Model.Account -> Model -> ( Model, Cmd Msg )
+accountCreate account model =
+    ( model, Cmd.Extra.message Init )
+
+
 accountToEdit : Model.Account -> Model -> ( Model, Cmd msg )
 accountToEdit account model =
     ( { model | viewState = EditView, accountToEdit = Just account }
     , Cmd.none
     )
+
+
+accountSaved : Model.Account -> model -> ( model, Cmd Msg )
+accountSaved account model =
+    ( model, Cmd.Extra.message Init )
 
 
 accountDelete : String -> Model -> ( Model, Cmd Msg )
@@ -283,7 +289,7 @@ update action model =
             updateCreate model
 
         Save ->
-            ( model, Cmd.none )
+            updateSave model
 
 
 updateInit : Model -> ( Model, Cmd Msg )
@@ -404,3 +410,32 @@ updateCreate model =
             }
         )
     )
+
+
+updateSave : Model -> ( Model, Cmd Msg )
+updateSave model =
+    case model.accountToEdit of
+        Nothing ->
+            ( model, Cmd.none )
+
+        Just account ->
+            ( model, Cmd.none )
+
+
+
+-- let
+--     id =
+--         account.id
+-- in
+--     ( model
+--     , Account.Service.invokeUpdate AccountApi
+--         id
+--         (Model.Account
+--             { id = id
+--             , username = model.username
+--             , password = model.password1
+--             , root = False
+--             , roles = Just <| toRoleList model.selectedRoles
+--             }
+--         )
+--     )

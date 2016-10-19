@@ -10,6 +10,8 @@ import com.thesett.util.resource.ResourceUtils;
 import com.thesett.auth.dao.AccountDAO;
 import com.thesett.auth.dao.AccountDAOImpl;
 import com.thesett.auth.model.Account;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class AccountDatabaseCRUDTest extends DatabaseCRUDTestBase<Account, Long>
 {
@@ -31,5 +33,11 @@ public class AccountDatabaseCRUDTest extends DatabaseCRUDTestBase<Account, Long>
         AccountDAO accountDAO = new AccountDAOImpl(sessionFactory, validatorFactory);
 
         return HibernateTransactionalProxy.proxy(accountDAO, AccountDAO.class, sessionFactory);
+    }
+
+    @Test
+    public void checkTestDataInitialAndUpdateAreDifferent() {
+        Assert.assertFalse("Non-equal initial and update values should be specified in the test data set.",
+                equality.checkEqualByValue(testData.getInitialValue(), testData.getUpdatedValue()));
     }
 }

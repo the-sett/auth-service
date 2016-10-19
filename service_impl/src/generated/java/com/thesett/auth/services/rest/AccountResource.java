@@ -183,6 +183,9 @@ public class AccountResource implements AccountService
             account.setPassword(accountToModify.getPassword());
         }
 
+        // The username cannot be changed
+        account.setUsername(accountToModify.getUsername());
+
         return accountDAO.update(id, account);
     }
 

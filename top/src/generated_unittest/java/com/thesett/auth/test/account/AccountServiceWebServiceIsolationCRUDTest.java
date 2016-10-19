@@ -13,7 +13,9 @@ import com.thesett.util.security.shiro.LocalSubject;
 import com.thesett.util.security.shiro.ShiroUtils;
 import org.apache.shiro.subject.Subject;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 
 public class AccountServiceWebServiceIsolationCRUDTest extends WebServiceIsolationCRUDTestBase<Account, Long>
 {
@@ -29,6 +31,12 @@ public class AccountServiceWebServiceIsolationCRUDTest extends WebServiceIsolati
                 new DefaultProxy(dao));
 
         return new AccountResource(accountDAO);
+    }
+
+    @Test
+    public void checkTestDataInitialAndUpdateAreDifferent() {
+        Assert.assertFalse("Non-equal initial and update values should be specified in the test data set.",
+                equality.checkEqualByValue(testData.getInitialValue(), testData.getUpdatedValue()));
     }
 
     @Before
