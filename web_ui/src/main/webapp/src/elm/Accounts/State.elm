@@ -115,19 +115,27 @@ checkPasswordExists model =
     String.length model.password1 > 0
 
 
+checkAtLeastOneRole : Model -> Bool
+checkAtLeastOneRole model =
+    not (Dict.isEmpty model.selectedRoles)
+
+
 validateCreateAccount : Model -> Bool
 validateCreateAccount =
     checkAll
         [ checkUsernameExists
         , checkPasswordExists
         , checkPasswordMatch
+        , checkAtLeastOneRole
         ]
 
 
 validateEditAccount : Model -> Bool
 validateEditAccount =
     checkAll
-        [ checkPasswordMatch ]
+        [ checkPasswordMatch
+        , checkAtLeastOneRole
+        ]
 
 
 isChangePassword : Model -> Bool
