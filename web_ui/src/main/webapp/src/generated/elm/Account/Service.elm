@@ -11,7 +11,6 @@ import Json.Encode as Encode exposing (..)
 import Task exposing (Task)
 import Model exposing (..)
 
-
 type Msg
     = FindAll (Result.Result Http.Error (List Model.Account))
     | FindByExample (Result.Result Http.Error (List Model.Account))
@@ -27,7 +26,6 @@ invokeFindAll msg =
         |> Task.perform (\error -> FindAll (Result.Err error)) (\result -> FindAll (Result.Ok result))
         |> Cmd.map msg
 
-
 invokeFindByExample : (Msg -> msg) -> Model.Account -> Cmd msg
 invokeFindByExample msg example =
     findByExampleTask example
@@ -41,13 +39,11 @@ invokeCreate msg model =
         |> Task.perform (\error -> Create (Result.Err error)) (\result -> Create (Result.Ok result))
         |> Cmd.map msg
 
-
 invokeRetrieve : (Msg -> msg) -> String -> Cmd msg
 invokeRetrieve msg id =
     retrieveTask id
         |> Task.perform (\error -> Retrieve (Result.Err error)) (\result -> Retrieve (Result.Ok result))
         |> Cmd.map msg
-
 
 invokeUpdate : (Msg -> msg) -> String -> Model.Account -> Cmd msg
 invokeUpdate msg id model =
@@ -55,13 +51,11 @@ invokeUpdate msg id model =
         |> Task.perform (\error -> Update (Result.Err error)) (\result -> Update (Result.Ok result))
         |> Cmd.map msg
 
-
 invokeDelete : (Msg -> msg) -> String -> Cmd msg
 invokeDelete msg id =
     deleteTask id
         |> Task.perform (\error -> Delete (Result.Err error)) (\result -> Delete (Result.Ok id))
         |> Cmd.map msg
-
 
 type alias Callbacks model msg =
     { findAll : List (Model.Account) -> model -> ( model, Cmd msg )
@@ -72,7 +66,6 @@ type alias Callbacks model msg =
     , delete : String -> model -> ( model, Cmd msg )
     , error : Http.Error -> model -> ( model, Cmd msg )
     }
-
 
 callbacks : Callbacks model msg
 callbacks =
@@ -148,10 +141,7 @@ update' callbacks action model =
                     callbacks.error httpError model
             )
 
-
-api =
-    "/api/"
-
+api =  "/api/"
 
 routes =
     { findAll = api ++ "account"
@@ -161,7 +151,6 @@ routes =
     , update = api ++ "account/"
     , delete = api ++ "account/"
     }
-
 
 findAllTask : Task Http.Error (List Account)
 findAllTask =
@@ -173,7 +162,6 @@ findAllTask =
         |> Http.send Http.defaultSettings
         |> Http.fromJson (Decode.list accountDecoder)
 
-
 findByExampleTask : Account -> Task Http.Error (List Account)
 findByExampleTask model =
     { verb = "POST"
@@ -183,7 +171,6 @@ findByExampleTask model =
     }
         |> Http.send Http.defaultSettings
         |> Http.fromJson (Decode.list accountDecoder)
-
 
 createTask : Account -> Task Http.Error Account
 createTask model =
@@ -218,22 +205,20 @@ updateTask id model =
         |> Http.fromJson accountDecoder
 
 
+
 deleteTask : String -> Task Http.Error Http.Response
 deleteTask id =
-    { verb = "DELETE"
-    , headers = []
-    , url = routes.delete ++ id
-    , body = Http.empty
-    }
-        |> Http.send Http.defaultSettings
-        |> Task.mapError promoteError
+   { verb = "DELETE"
+   , headers = []
+   , url = routes.delete ++ id
+   , body = Http.empty
+   }
+       |> Http.send Http.defaultSettings
+       |> Task.mapError promoteError
 
 
 promoteError : Http.RawError -> Http.Error
 promoteError rawError =
-    case rawError of
-        Http.RawTimeout ->
-            Http.Timeout
-
-        Http.RawNetworkError ->
-            Http.NetworkError
+   case rawError of
+       Http.RawTimeout -> Http.Timeout
+       Http.RawNetworkError -> Http.NetworkError

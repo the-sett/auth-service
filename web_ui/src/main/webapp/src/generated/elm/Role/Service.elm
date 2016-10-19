@@ -17,7 +17,7 @@ type Msg
     | Create (Result.Result Http.Error Model.Role)
     | Retrieve (Result.Result Http.Error Model.Role)
     | Update (Result.Result Http.Error Model.Role)
-    | Delete (Result.Result Http.Error Http.Response)
+    | Delete (Result.Result Http.Error String)
 
 
 invokeFindAll : (Msg -> msg) -> Cmd msg
@@ -54,7 +54,7 @@ invokeUpdate msg id model =
 invokeDelete : (Msg -> msg) -> String -> Cmd msg
 invokeDelete msg id =
     deleteTask id
-        |> Task.perform (\error -> Delete (Result.Err error)) (\result -> Delete (Result.Ok result))
+        |> Task.perform (\error -> Delete (Result.Err error)) (\result -> Delete (Result.Ok id))
         |> Cmd.map msg
 
 type alias Callbacks model msg =
@@ -63,7 +63,7 @@ type alias Callbacks model msg =
     , create : Model.Role -> model -> ( model, Cmd msg )
     , retrieve : Model.Role -> model -> ( model, Cmd msg )
     , update : Model.Role -> model -> ( model, Cmd msg )
-    , delete : Http.Response -> model -> ( model, Cmd msg )
+    , delete : String -> model -> ( model, Cmd msg )
     , error : Http.Error -> model -> ( model, Cmd msg )
     }
 
