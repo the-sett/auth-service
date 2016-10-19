@@ -1,6 +1,7 @@
 module Utils exposing (..)
 
 import Dict exposing (Dict)
+import List
 import Http
 import Auth
 
@@ -58,3 +59,15 @@ symDiff dict1 dict2 =
             dict
     in
         Dict.merge Dict.insert insertNeither Dict.insert dict1 dict2 Dict.empty
+
+
+
+{-
+   Tranforms a list of entities (records with a String id), into a Dict, with the ids
+   as keys.
+-}
+
+
+dictifyEntities : List { a | id : String } -> Dict String { a | id : String }
+dictifyEntities entities =
+    Dict.fromList <| List.map (\rec -> ( rec.id, rec )) entities
