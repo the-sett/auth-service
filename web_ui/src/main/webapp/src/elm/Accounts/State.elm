@@ -418,24 +418,20 @@ updateSave model =
         Nothing ->
             ( model, Cmd.none )
 
-        Just account ->
-            ( model, Cmd.none )
+        Just (Model.Account account) ->
+            let
+                id =
+                    account.id
 
-
-
--- let
---     id =
---         account.id
--- in
---     ( model
---     , Account.Service.invokeUpdate AccountApi
---         id
---         (Model.Account
---             { id = id
---             , username = model.username
---             , password = model.password1
---             , root = False
---             , roles = Just <| toRoleList model.selectedRoles
---             }
---         )
---     )
+                modifiedAccount =
+                    Model.Account
+                        { id = id
+                        , username = account.username
+                        , password = model.password1
+                        , root = False
+                        , roles = Just <| toRoleList model.selectedRoles
+                        }
+            in
+                ( model
+                , Account.Service.invokeUpdate AccountApi id modifiedAccount
+                )
