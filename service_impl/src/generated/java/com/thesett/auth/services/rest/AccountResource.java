@@ -9,7 +9,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -126,9 +125,14 @@ public class AccountResource implements AccountService
     )
     public Account create(Account account) throws EntityException
     {
+        checkNotNull(account);
+
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
         subject.checkPermission("admin");
+
+        // Find all of the roles requested, and set them on the account.
+        attachRoles(account);
 
         return accountDAO.create(account);
     }
@@ -175,6 +179,8 @@ public class AccountResource implements AccountService
         @PathParam("accountId")
         Long id, Account account) throws EntityException
     {
+        checkNotNull(account);
+
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
         subject.checkPermission("admin");
@@ -196,6 +202,19 @@ public class AccountResource implements AccountService
         account.setUsername(accountToModify.getUsername());
 
         // Find all of the roles requested, and set them on the account.
+        attachRoles(account);
+
+        return accountDAO.update(id, account);
+    }
+
+    /**
+     * Attaches existing roles to an account, instead of propagating the roles supplied with an account
+     * for database update. This allows an account to specify roles by reference, not value.
+     *
+     * @param account The account to attach roles on.
+     */
+    private void attachRoles(Account account)
+    {
         Set<Role> roles = new HashSet<>();
 
         if (account.getRoles() != null)
@@ -207,8 +226,6 @@ public class AccountResource implements AccountService
 
             account.setRoles(roles);
         }
-
-        return accountDAO.update(id, account);
     }
 
     /** {@inheritDoc} */
@@ -227,5 +244,13 @@ public class AccountResource implements AccountService
         subject.checkPermission("admin");
 
         accountDAO.delete(id);
+    }
+
+    protected <O> O checkNotNull(O object) {
+        if (object == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return object;
     }
 }
