@@ -28,10 +28,10 @@ init =
     , accounts = Dict.empty
     , accountToEdit = Nothing
     , viewState = ListView
-    , roleLookup = Dict.empty
     , username = ""
     , password1 = ""
     , password2 = ""
+    , roleLookup = Dict.empty
     , selectedRoles = Dict.empty
     }
 
