@@ -18,7 +18,7 @@ type ViewState
 
 type alias Model =
     { mdl : Material.Model
-    , selected : Set String
+    , selected : Dict String Model.Account
     , accounts : Dict String Model.Account
     , accountToEdit : Maybe Model.Account
     , viewState : ViewState

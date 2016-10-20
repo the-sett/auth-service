@@ -24,7 +24,7 @@ import Role.Service
 init : Model
 init =
     { mdl = Material.model
-    , selected = Set.empty
+    , selected = Dict.empty
     , accounts = Dict.empty
     , accountToEdit = Nothing
     , viewState = ListView
@@ -53,12 +53,12 @@ key (Model.Account account) =
 
 allSelected : Model -> Bool
 allSelected model =
-    Set.size model.selected == Dict.size model.accounts
+    Dict.size model.selected == Dict.size model.accounts
 
 
 someSelected : Model -> Bool
 someSelected model =
-    Set.size model.selected > 0
+    Dict.size model.selected > 0
 
 
 roleDictFromAccount : Model.Account -> Dict String Model.Role
@@ -283,7 +283,7 @@ update action model =
 
 updateInit : Model -> ( Model, Cmd Msg )
 updateInit model =
-    ( { model | selected = Set.empty, viewState = ListView }
+    ( { model | selected = Dict.empty, viewState = ListView }
     , Account.Service.invokeFindAll AccountApi
     )
 
@@ -293,23 +293,32 @@ updateToggleAll model =
     { model
         | selected =
             if allSelected model then
-                Set.empty
+                Dict.empty
             else
-                Utils.keySet model.accounts
+                model.accounts
     }
         ! []
 
 
 updateToggle : String -> Model -> ( Model, Cmd Msg )
 updateToggle k model =
-    { model
-        | selected =
-            if Set.member k model.selected then
-                Set.remove k model.selected
-            else
-                Set.insert k model.selected
-    }
-        ! []
+    let
+        item =
+            Dict.get k model.accounts
+    in
+        case item of
+            Nothing ->
+                ( model, Cmd.none )
+
+            Just item ->
+                { model
+                    | selected =
+                        if Dict.member k model.selected then
+                            Dict.remove k model.selected
+                        else
+                            Dict.insert k item model.selected
+                }
+                    ! []
 
 
 updateAdd : Model -> ( Model, Cmd Msg )
@@ -330,13 +339,13 @@ updateConfirmDelete model =
             \(Model.Account account) -> (not account.root)
 
         selectedAccounts =
-            Dict.Extra.keepOnly model.selected model.accounts
+            Dict.intersect model.accounts model.selected
 
         toDelete =
             Dict.filter (\_ -> nonRootFilter) selectedAccounts
                 |> Dict.keys
     in
-        ( { model | selected = Set.empty }
+        ( { model | selected = Dict.empty }
         , List.map
             (\id ->
                 Account.Service.invokeDelete AccountApi id
