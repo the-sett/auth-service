@@ -62,6 +62,12 @@ symDiff dict1 dict2 =
         Dict.merge Dict.insert insertNeither Dict.insert dict1 dict2 Dict.empty
 
 
+
+{-
+   Computes the key intersection of two dictionaries, keeping the values from the left.
+-}
+
+
 leftIntersect : Dict comparable a -> Dict comparable b -> Dict comparable a
 leftIntersect dict1 dict2 =
     let
@@ -97,10 +103,31 @@ keySet dict =
     Dict.keys dict |> Set.fromList
 
 
+
+{-
+   Performs a right fold on a dictionary, supplying item indexs as the dictionary is iterated.
+-}
+
+
 indexedFoldr : (number -> comparable -> v -> b -> b) -> b -> Dict comparable v -> b
 indexedFoldr fun acc list =
     let
         ( highest, result ) =
             Dict.foldr (\key -> \item -> \( idx, items ) -> ( idx + 1, fun idx key item items )) ( 0, acc ) list
+    in
+        result
+
+
+
+{-
+   Performs a left fold on a dictionary, supplying item indexs as the dictionary is iterated.
+-}
+
+
+indexedFoldl : (number -> comparable -> v -> b -> b) -> b -> Dict comparable v -> b
+indexedFoldl fun acc list =
+    let
+        ( highest, result ) =
+            Dict.foldl (\key -> \item -> \( idx, items ) -> ( idx + 1, fun idx key item items )) ( 0, acc ) list
     in
         result
