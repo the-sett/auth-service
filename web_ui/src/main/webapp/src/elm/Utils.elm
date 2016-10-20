@@ -85,10 +85,6 @@ keySet dict =
     Dict.keys dict |> Set.fromList
 
 
-enumList list =
-    indexedFoldr (\idx -> \key -> \item -> \items -> ( idx, item ) :: items) [] list
-
-
 indexedFoldr : (number -> comparable -> v -> b -> b) -> b -> Dict comparable v -> b
 indexedFoldr fun acc list =
     let
