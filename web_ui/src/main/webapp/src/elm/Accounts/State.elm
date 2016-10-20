@@ -61,7 +61,7 @@ someSelected model =
     Set.size model.selected > 0
 
 
-roleDictFromAccount : Model.Account -> Dict String String
+roleDictFromAccount : Model.Account -> Dict String Model.Role
 roleDictFromAccount (Model.Account account) =
     case account.roles of
         Nothing ->
@@ -71,33 +71,17 @@ roleDictFromAccount (Model.Account account) =
             roleListToDict roles
 
 
-roleListToDict : List Model.Role -> Dict String String
+roleListToDict : List Model.Role -> Dict String Model.Role
 roleListToDict roles =
-    List.map
-        (\wrapper ->
-            case wrapper of
-                Model.Role role ->
-                    ( role.id, role.name )
-        )
-        roles
-        |> Dict.fromList
-
-
-toRoleList : Dict String String -> List Model.Role
-toRoleList dict =
-    Dict.toList dict
-        |> List.map
-            (\( id, name ) ->
-                Model.Role
-                    { id = id
-                    , name = name
-                    , permissions = Nothing
-                    }
-            )
+    Utils.dictifyEntities unwrapRole Model.Role roles
 
 
 unwrapAccount (Model.Account account) =
     account
+
+
+unwrapRole (Model.Role role) =
+    role
 
 
 
@@ -288,7 +272,7 @@ update action model =
             ( { model | password2 = password }, Cmd.none )
 
         SelectChanged roles ->
-            ( { model | selectedRoles = roles }, Cmd.none )
+            ( { model | selectedRoles = Utils.leftIntersect model.roleLookup roles }, Cmd.none )
 
         Create ->
             updateCreate model
@@ -403,7 +387,7 @@ updateCreate model =
             , username = model.username
             , password = model.password1
             , root = False
-            , roles = Just <| toRoleList model.selectedRoles
+            , roles = Just <| Dict.values model.selectedRoles
             }
         )
     )
@@ -426,7 +410,7 @@ updateSave model =
                         , username = account.username
                         , password = model.password1
                         , root = False
-                        , roles = Just <| toRoleList model.selectedRoles
+                        , roles = Just <| Dict.values model.selectedRoles
                         }
             in
                 ( model

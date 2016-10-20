@@ -263,8 +263,8 @@ roleLookup : Model -> List (Html Msg)
 roleLookup model =
     [ h4 [] [ text "Roles" ]
     , listbox
-        [ items model.roleLookup
-        , initiallySelected model.selectedRoles
+        [ items <| Dict.map (\id -> \(Model.Role role) -> role.name) model.roleLookup
+        , initiallySelected <| Dict.map (\id -> \(Model.Role role) -> role.name) model.selectedRoles
         , onSelectedChanged SelectChanged
         ]
     ]

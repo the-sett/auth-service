@@ -62,6 +62,18 @@ symDiff dict1 dict2 =
         Dict.merge Dict.insert insertNeither Dict.insert dict1 dict2 Dict.empty
 
 
+leftIntersect : Dict comparable a -> Dict comparable b -> Dict comparable a
+leftIntersect dict1 dict2 =
+    let
+        insertLeft key leftVal rightVal dict =
+            Dict.insert key leftVal dict
+
+        ignore _ _ dict =
+            dict
+    in
+        Dict.merge ignore insertLeft ignore dict1 dict2 Dict.empty
+
+
 
 {-
    Tranforms a list of entities (records with a String id), into a Dict, with the ids

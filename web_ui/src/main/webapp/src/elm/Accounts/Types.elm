@@ -25,8 +25,8 @@ type alias Model =
     , username : String
     , password1 : String
     , password2 : String
-    , roleLookup : Dict String String
-    , selectedRoles : Dict String String
+    , roleLookup : Dict String Model.Role
+    , selectedRoles : Dict String Model.Role
     }
 
 
