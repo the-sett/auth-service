@@ -1,6 +1,7 @@
 module Utils exposing (..)
 
 import Dict exposing (Dict)
+import Set exposing (Set)
 import List
 import Http
 import Auth
@@ -68,6 +69,30 @@ symDiff dict1 dict2 =
 -}
 
 
-dictifyEntities : List { a | id : String } -> Dict String { a | id : String }
-dictifyEntities entities =
-    Dict.fromList <| List.map (\rec -> ( rec.id, rec )) entities
+dictifyEntities : (b -> { a | id : String }) -> ({ a | id : String } -> b) -> List b -> Dict String b
+dictifyEntities unwrapper wrapper entities =
+    Dict.fromList <| List.map (\rec -> ( rec.id, wrapper rec )) <| List.map unwrapper entities
+
+
+
+{-
+   Extracts the key set from a dict.
+-}
+
+
+keySet : Dict comparable v -> Set comparable
+keySet dict =
+    Dict.keys dict |> Set.fromList
+
+
+enumList list =
+    indexedFoldr (\idx -> \key -> \item -> \items -> ( idx, item ) :: items) [] list
+
+
+indexedFoldr : (number -> comparable -> v -> b -> b) -> b -> Dict comparable v -> b
+indexedFoldr fun acc list =
+    let
+        ( highest, result ) =
+            Dict.foldr (\key -> \item -> \( idx, items ) -> ( idx + 1, fun idx key item items )) ( 0, acc ) list
+    in
+        result

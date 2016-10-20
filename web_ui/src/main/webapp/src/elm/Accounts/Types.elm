@@ -19,7 +19,7 @@ type ViewState
 type alias Model =
     { mdl : Material.Model
     , selected : Set String
-    , accounts : Array Model.Account
+    , accounts : Dict String Model.Account
     , accountToEdit : Maybe Model.Account
     , viewState : ViewState
     , username : String
@@ -40,7 +40,7 @@ type Msg
     | Add
     | Delete
     | ConfirmDelete
-    | Edit Int
+    | Edit String
     | UpdateUsername String
     | UpdatePassword1 String
     | UpdatePassword2 String

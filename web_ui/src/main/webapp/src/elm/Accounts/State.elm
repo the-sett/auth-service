@@ -3,6 +3,7 @@ module Accounts.State exposing (..)
 import Log
 import Set
 import Dict exposing (Dict)
+import Dict.Extra
 import Array
 import Maybe
 import String
@@ -24,7 +25,7 @@ init : Model
 init =
     { mdl = Material.model
     , selected = Set.empty
-    , accounts = Array.empty
+    , accounts = Dict.empty
     , accountToEdit = Nothing
     , viewState = ListView
     , roleLookup = Dict.empty
@@ -52,7 +53,7 @@ key (Model.Account account) =
 
 allSelected : Model -> Bool
 allSelected model =
-    Set.size model.selected == Array.length model.accounts
+    Set.size model.selected == Dict.size model.accounts
 
 
 someSelected : Model -> Bool
@@ -93,6 +94,10 @@ toRoleList dict =
                     , permissions = Nothing
                     }
             )
+
+
+unwrapAccount (Model.Account account) =
+    account
 
 
 
@@ -184,7 +189,9 @@ accountCallbacks =
 
 accountList : List Model.Account -> Model -> ( Model, Cmd msg )
 accountList accounts model =
-    ( { model | accounts = Array.fromList accounts }, Cmd.none )
+    ( { model | accounts = Utils.dictifyEntities unwrapAccount Model.Account accounts }
+    , Cmd.none
+    )
 
 
 accountCreate : Model.Account -> Model -> ( Model, Cmd Msg )
@@ -208,7 +215,7 @@ accountDelete : String -> Model -> ( Model, Cmd Msg )
 accountDelete id model =
     let
         newAccounts =
-            Array.filter (\(Model.Account account) -> not (account.id == id)) model.accounts
+            Dict.remove id model.accounts
     in
         ( { model | accounts = newAccounts }, Cmd.none )
 
@@ -268,8 +275,8 @@ update action model =
         ConfirmDelete ->
             updateConfirmDelete model
 
-        Edit idx ->
-            updateEdit idx model
+        Edit id ->
+            updateEdit id model
 
         UpdateUsername username ->
             ( { model | username = username }, Cmd.none )
@@ -304,9 +311,7 @@ updateToggleAll model =
             if allSelected model then
                 Set.empty
             else
-                Array.map key model.accounts
-                    |> Array.toList
-                    |> Set.fromList
+                Utils.keySet model.accounts
     }
         ! []
 
@@ -337,21 +342,15 @@ updateAdd model =
 updateConfirmDelete : Model -> ( Model, Cmd Msg )
 updateConfirmDelete model =
     let
-        nonRootSelectedAccounts =
-            Array.filter
-                (\(Model.Account account) ->
-                    (not account.root)
-                        && (Set.member account.id model.selected)
-                )
-                model.accounts
+        nonRootFilter =
+            \(Model.Account account) -> (not account.root)
+
+        selectedAccounts =
+            Dict.Extra.keepOnly model.selected model.accounts
 
         toDelete =
-            Array.map
-                (\(Model.Account account) ->
-                    account.id
-                )
-                nonRootSelectedAccounts
-                |> Array.toList
+            Dict.filter (\_ -> nonRootFilter) selectedAccounts
+                |> Dict.keys
     in
         ( { model | selected = Set.empty }
         , List.map
@@ -363,11 +362,11 @@ updateConfirmDelete model =
         )
 
 
-updateEdit : Int -> Model -> ( Model, Cmd Msg )
-updateEdit idx model =
+updateEdit : String -> Model -> ( Model, Cmd Msg )
+updateEdit id model =
     let
         item =
-            Array.get idx model.accounts
+            Dict.get id model.accounts
     in
         case item of
             Nothing ->

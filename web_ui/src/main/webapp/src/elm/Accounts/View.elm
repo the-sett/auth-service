@@ -61,38 +61,43 @@ table model =
                     ]
                 ]
             , Table.tbody []
-                (model.accounts
-                    |> Array.toList
-                    |> List.indexedMap
-                        (\idx ((Model.Account accountRec) as account) ->
-                            Table.tr
-                                [ Table.selected `when` Set.member (key account) model.selected ]
-                                [ Table.td []
-                                    [ Toggles.checkbox Mdl
-                                        [ idx ]
-                                        model.mdl
-                                        [ Toggles.onClick (Toggle <| key account)
-                                        , Toggles.value <| Set.member (key account) model.selected
-                                        ]
-                                        []
-                                    ]
-                                , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text accountRec.username ]
-                                , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
-                                    [ Button.render Mdl
-                                        [ 0, idx ]
-                                        model.mdl
-                                        [ Button.accent
-                                        , Button.ripple
-                                        , Button.onClick (Edit idx)
-                                        ]
-                                        [ text "Edit" ]
-                                    ]
-                                ]
-                        )
-                )
+                (indexedFoldr (accountToRow model) [] model.accounts)
             ]
         , controlBar model
         ]
+
+
+accountToRow : Model -> Int -> String -> Model.Account -> List (Html Msg) -> List (Html Msg)
+accountToRow model idx id account items =
+    let
+        (Model.Account accountRec) =
+            account
+    in
+        (Table.tr
+            [ Table.selected `when` Set.member (key account) model.selected ]
+            [ Table.td []
+                [ Toggles.checkbox Mdl
+                    [ idx ]
+                    model.mdl
+                    [ Toggles.onClick (Toggle <| key account)
+                    , Toggles.value <| Set.member (key account) model.selected
+                    ]
+                    []
+                ]
+            , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text accountRec.username ]
+            , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
+                [ Button.render Mdl
+                    [ 0, idx ]
+                    model.mdl
+                    [ Button.accent
+                    , Button.ripple
+                    , Button.onClick (Edit id)
+                    ]
+                    [ text "Edit" ]
+                ]
+            ]
+        )
+            :: items
 
 
 controlBar : Model -> Html Msg
@@ -101,7 +106,7 @@ controlBar model =
         [ div [ class "control-bar__row" ]
             [ div [ class "control-bar__left-0" ]
                 [ span [ class "mdl-chip mdl-chip__text" ]
-                    [ text (toString (Array.length model.accounts) ++ " items") ]
+                    [ text (toString (Dict.size model.accounts) ++ " items") ]
                 ]
             , div [ class "control-bar__right-0" ]
                 [ Button.render Mdl
