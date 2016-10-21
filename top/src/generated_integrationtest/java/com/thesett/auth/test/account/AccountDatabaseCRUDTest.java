@@ -38,10 +38,10 @@ public class AccountDatabaseCRUDTest extends DatabaseCRUDTestBase<Account, Long>
     }
 
     @Before
-    public void prequisites()
+    public void prerequisites()
     {
-        ((AccountTestData) testData).createPrerequisites(new HibernateTransactionDAOFactory(sessionFactory,
-                validatorFactory));
+        ((AccountTestData) testData).createPrerequisites(
+                testSetupController.getTransactionalReflectiveDAOFactory(sessionFactory, validatorFactory));
     }
 
     @Test

@@ -72,10 +72,10 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
     }
 
     @Before
-    public void prequisites()
+    public void prerequisites()
     {
-        ((AccountTestData) testData).createPrerequisites(new HibernateTransactionDAOFactory(sessionFactory,
-                validatorFactory));
+        ((AccountTestData) testData).createPrerequisites(
+                testSetupController.getTransactionalReflectiveDAOFactory(sessionFactory, validatorFactory));
     }
 
     @Before

@@ -231,18 +231,23 @@ public class AccountResource implements AccountService
         {
             for (Role role : account.getRoles())
             {
+                if (role == null)
+                {
+                    throw new EntityValidationException("Role set on an account must not be null.");
+                }
+
                 Long roleId = role.getId();
 
                 if (roleId == null)
                 {
-                    throw new EntityValidationException("All roles set on an account must have an id.");
+                    throw new EntityValidationException("Role set on an account must have an id.");
                 }
 
                 Role retrievedRole = roleDAO.retrieve(roleId);
 
                 if (retrievedRole == null)
                 {
-                    throw new EntityValidationException("All roles set on an account must exist.");
+                    throw new EntityValidationException("Role set on an account must exist.");
                 }
 
                 roles.add(retrievedRole);

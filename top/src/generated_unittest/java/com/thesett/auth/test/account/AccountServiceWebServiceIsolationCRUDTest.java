@@ -53,7 +53,7 @@ public class AccountServiceWebServiceIsolationCRUDTest extends WebServiceIsolati
     }
 
     @Before
-    public void prequisites()
+    public void prerequisites()
     {
         ((AccountTestData) testData).createPrerequisites(new GenericDAOFactory(genericDao));
     }
