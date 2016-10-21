@@ -192,32 +192,39 @@ public class Example
     {
         RoleService roleService = serviceFactory.getRoleService();
 
-        if (roleService.findAll().isEmpty())
-        {
-            try
-            {
-                Set<Permission> permissions;
-                Role role;
+         try
+         {
+             Set<Permission> permissions;
+             Role role;
 
-                // Create the admin role.
-                permissions = new HashSet<>();
-                permissions.add(new Permission().withName("admin"));
+             // Create the admin role.
+             permissions = new HashSet<>();
+             permissions.add(new Permission().withName("admin"));
 
-                role = new Role().withName("admin").withPermissions(permissions);
-                roleService.create(role);
+             role = new Role().withName("admin").withPermissions(permissions);
+             createRoleIfNotExists(roleService, role);
 
-                // Create the user role.
-                permissions = new HashSet<>();
-                permissions.add(new Permission().withName("user"));
+             // Create the user role.
+             permissions = new HashSet<>();
+             permissions.add(new Permission().withName("user"));
 
-                role = new Role().withName("user").withPermissions(permissions);
-                roleService.create(role);
-            }
-            catch (EntityException e)
-            {
-                throw new IllegalStateException(e);
-            }
+             role = new Role().withName("user").withPermissions(permissions);
+             createRoleIfNotExists(roleService, role);
+         }
+         catch (EntityException e)
+         {
+             throw new IllegalStateException(e);
+         }
+    }
+
+    private Role createRoleIfNotExists(RoleService roleService, Role role) throws EntityException {
+        Role check = CollectionUtil.first(roleService.findByExample(new Role().withName(role.getName())));
+
+        if (check == null) {
+            return roleService.create(role);
         }
+
+        return check;
     }
 
     /**
