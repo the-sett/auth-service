@@ -4,6 +4,7 @@ import java.lang.reflect.Proxy;
 
 import com.thesett.auth.dao.RoleDAO;
 import com.thesett.test.base.WebServiceIsolationCRUDTestBase;
+import com.thesett.test.controllers.GenericDAOFactory;
 import com.thesett.util.entity.CRUD;
 import com.thesett.util.proxies.DefaultProxy;
 
@@ -49,6 +50,12 @@ public class AccountServiceWebServiceIsolationCRUDTest extends WebServiceIsolati
     {
         Subject subject = new LocalSubject().withPermission("admin");
         ShiroUtils.setSubject(subject);
+    }
+
+    @Before
+    public void prequisites()
+    {
+        ((AccountTestData) testData).createPrerequisites(new GenericDAOFactory(genericDao));
     }
 
     @After

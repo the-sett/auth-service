@@ -22,6 +22,7 @@ import com.thesett.auth.model.Role;
 import com.thesett.auth.services.AccountService;
 import com.thesett.util.entity.EntityException;
 import com.thesett.util.entity.EntityNotExistsException;
+import com.thesett.util.entity.EntityValidationException;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
 import com.thesett.util.string.StringUtils;
 import com.thesett.util.validation.core.JsonSchemaUtil;
@@ -131,10 +132,14 @@ public class AccountResource implements AccountService
         Subject subject = SecurityUtils.getSubject();
         subject.checkPermission("admin");
 
+        // Ensure that at least one role is set on the account.
+        checkAtLeastOneRole(account);
+
         // Find all of the roles requested, and set them on the account.
         attachRoles(account);
 
-        return accountDAO.create(account);
+        Account result = accountDAO.create(account);
+        return result;
     }
 
     /** {@inheritDoc} */
@@ -159,7 +164,8 @@ public class AccountResource implements AccountService
         Subject subject = SecurityUtils.getSubject();
         subject.checkPermission("admin");
 
-        return accountDAO.retrieve(id);
+        Account result = accountDAO.retrieve(id);
+        return result;
     }
 
     /** {@inheritDoc} */
@@ -188,7 +194,7 @@ public class AccountResource implements AccountService
         // Obtain the account to modify and confirm it exists.
         Account accountToModify = accountDAO.retrieve(id);
 
-        if (accountToModify==null) {
+        if (accountToModify == null) {
             throw new EntityNotExistsException();
         }
 
@@ -201,10 +207,14 @@ public class AccountResource implements AccountService
         // The username cannot be changed
         account.setUsername(accountToModify.getUsername());
 
+        // Ensure that at least one role is set on the account.
+        checkAtLeastOneRole(account);
+
         // Find all of the roles requested, and set them on the account.
         attachRoles(account);
 
-        return accountDAO.update(id, account);
+        Account result = accountDAO.update(id, account);
+        return result;
     }
 
     /**
@@ -213,7 +223,7 @@ public class AccountResource implements AccountService
      *
      * @param account The account to attach roles on.
      */
-    private void attachRoles(Account account)
+    private void attachRoles(Account account) throws EntityValidationException
     {
         Set<Role> roles = new HashSet<>();
 
@@ -221,7 +231,21 @@ public class AccountResource implements AccountService
         {
             for (Role role : account.getRoles())
             {
-                roles.add(roleDAO.retrieve(role.getId()));
+                Long roleId = role.getId();
+
+                if (roleId == null)
+                {
+                    throw new EntityValidationException("All roles set on an account must have an id.");
+                }
+
+                Role retrievedRole = roleDAO.retrieve(roleId);
+
+                if (retrievedRole == null)
+                {
+                    throw new EntityValidationException("All roles set on an account must exist.");
+                }
+
+                roles.add(retrievedRole);
             }
 
             account.setRoles(roles);
@@ -244,6 +268,35 @@ public class AccountResource implements AccountService
         subject.checkPermission("admin");
 
         accountDAO.delete(id);
+    }
+
+    /**
+     * Checks that at least one role is set on an account.
+     *
+     * @param account The account to check.
+     *
+     * @throws EntityValidationException Iff less than one role is set on the account.
+     */
+    private void checkAtLeastOneRole(Account account) throws EntityValidationException
+    {
+        if (account.getRoles() == null || account.getRoles().size() == 0)
+        {
+            throw new EntityValidationException("At least one role must be set on the account.");
+        }
+    }
+
+    /**
+     * Clears the password from an account. Accounts returned should not expose the password.
+     *
+     * @param account The account to clean.
+     *
+     * @return The account with the password nulled out.
+     */
+    private Account hidePassword(Account account)
+    {
+        account.setPassword(null);
+
+        return account;
     }
 
     protected <O> O checkNotNull(O object) {
