@@ -84,7 +84,7 @@ accountToRow model idx id account items =
                     ]
                     []
                 ]
-            , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text accountRec.username ]
+            , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| Utils.valOrEmpty accountRec.username ]
             , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
                 [ Button.render Mdl
                     [ 0, idx ]
@@ -184,7 +184,7 @@ createAccountForm model =
                 , Textfield.floatingLabel
                 , Textfield.text'
                 , Textfield.onInput UpdateUsername
-                , Textfield.value model.username
+                , Textfield.value <| Utils.valOrEmpty model.username
                 ]
             , password1Field model
             , password2Field model
@@ -211,7 +211,7 @@ editAccountForm model =
                 , Textfield.floatingLabel
                 , Textfield.text'
                 , Textfield.disabled
-                , Textfield.value model.username
+                , Textfield.value <| Utils.valOrEmpty model.username
                 ]
             , password1Field model
             , password2Field model
@@ -237,7 +237,7 @@ password1Field model =
         , Textfield.floatingLabel
         , Textfield.password
         , Textfield.onInput UpdatePassword1
-        , Textfield.value model.password1
+        , Textfield.value <| Utils.valOrEmpty model.password1
         ]
 
 
@@ -251,7 +251,7 @@ password2Field model =
         , Textfield.floatingLabel
         , Textfield.password
         , Textfield.onInput UpdatePassword2
-        , Textfield.value model.password2
+        , Textfield.value <| Utils.valOrEmpty model.password2
         , if checkPasswordMatch model then
             Options.nop
           else
@@ -263,8 +263,8 @@ roleLookup : Model -> List (Html Msg)
 roleLookup model =
     [ h4 [] [ text "Roles" ]
     , listbox
-        [ items <| Dict.map (\id -> \(Model.Role role) -> role.name) model.roleLookup
-        , initiallySelected <| Dict.map (\id -> \(Model.Role role) -> role.name) model.selectedRoles
+        [ items <| Dict.map (\id -> \(Model.Role role) -> Utils.valOrEmpty role.name) model.roleLookup
+        , initiallySelected <| Dict.map (\id -> \(Model.Role role) -> Utils.valOrEmpty role.name) model.selectedRoles
         , onSelectedChanged SelectChanged
         ]
     ]

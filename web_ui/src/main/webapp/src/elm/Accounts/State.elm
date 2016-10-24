@@ -28,9 +28,9 @@ init =
     , accounts = Dict.empty
     , accountToEdit = Nothing
     , viewState = ListView
-    , username = ""
-    , password1 = ""
-    , password2 = ""
+    , username = Nothing
+    , password1 = Nothing
+    , password2 = Nothing
     , roleLookup = Dict.empty
     , selectedRoles = Dict.empty
     }
@@ -39,9 +39,9 @@ init =
 resetAccountForm : Model -> Model
 resetAccountForm model =
     { model
-        | username = ""
-        , password1 = ""
-        , password2 = ""
+        | username = Nothing
+        , password1 = Nothing
+        , password2 = Nothing
         , selectedRoles = Dict.empty
     }
 
@@ -76,6 +76,15 @@ roleListToDict roles =
     Utils.dictifyEntities unwrapRole Model.Role roles
 
 
+isAccountRoot (Model.Account account) =
+    case account.root of
+        Nothing ->
+            False
+
+        Just root ->
+            root
+
+
 unwrapAccount (Model.Account account) =
     account
 
@@ -95,12 +104,22 @@ checkPasswordMatch model =
 
 checkUsernameExists : Model -> Bool
 checkUsernameExists model =
-    String.length model.username > 0
+    case model.username of
+        Nothing ->
+            False
+
+        Just username ->
+            String.length username > 0
 
 
 checkPasswordExists : Model -> Bool
 checkPasswordExists model =
-    String.length model.password1 > 0
+    case model.password1 of
+        Nothing ->
+            False
+
+        Just password ->
+            String.length password > 0
 
 
 checkAtLeastOneRole : Model -> Bool
@@ -263,13 +282,13 @@ update action model =
             updateEdit id model
 
         UpdateUsername username ->
-            ( { model | username = username }, Cmd.none )
+            ( { model | username = Utils.cleanString username }, Cmd.none )
 
         UpdatePassword1 password ->
-            ( { model | password1 = password }, Cmd.none )
+            ( { model | password1 = Utils.cleanString password }, Cmd.none )
 
         UpdatePassword2 password ->
-            ( { model | password2 = password }, Cmd.none )
+            ( { model | password2 = Utils.cleanString password }, Cmd.none )
 
         SelectChanged roles ->
             ( { model | selectedRoles = Utils.leftIntersect model.roleLookup roles }, Cmd.none )
@@ -336,7 +355,7 @@ updateConfirmDelete : Model -> ( Model, Cmd Msg )
 updateConfirmDelete model =
     let
         nonRootFilter =
-            \(Model.Account account) -> (not account.root)
+            \account -> not (isAccountRoot account)
 
         selectedAccounts =
             Dict.intersect model.accounts model.selected
@@ -395,7 +414,7 @@ updateCreate model =
             { id = ""
             , username = model.username
             , password = model.password1
-            , root = False
+            , root = Just False
             , roles = Just <| Dict.values model.selectedRoles
             }
         )
@@ -418,7 +437,7 @@ updateSave model =
                         { id = id
                         , username = account.username
                         , password = model.password1
-                        , root = False
+                        , root = Just False
                         , roles = Just <| Dict.values model.selectedRoles
                         }
             in

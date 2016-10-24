@@ -11,7 +11,7 @@ import Model
 
 init : Model
 init =
-    { token = ""
+    { token = Nothing
     , errorMsg = ""
     , authState =
         { loggedIn = False
@@ -73,22 +73,27 @@ refresh response model =
 
 logout : Http.Response -> Model -> ( Model, Cmd Msg )
 logout response model =
-    ( { model | token = "", authState = authStateFromToken "" }
+    ( { model | token = Nothing, authState = authStateFromToken Nothing }
     , Cmd.batch [ removeStorage model, Navigation.newUrl model.logoutLocation ]
     )
 
 
-authStateFromToken : String -> AuthState
-authStateFromToken token =
-    if token == "" then
-        { loggedIn = False, permissions = [] }
-    else
-        { loggedIn = True, permissions = [] }
+authStateFromToken : Maybe String -> AuthState
+authStateFromToken maybeToken =
+    case maybeToken of
+        Nothing ->
+            { loggedIn = False, permissions = [] }
+
+        Just token ->
+            { loggedIn = True, permissions = [] }
 
 
 authRequestFromCredentials : Credentials -> Model.AuthRequest
 authRequestFromCredentials credentials =
-    Model.AuthRequest { username = credentials.username, password = credentials.password }
+    Model.AuthRequest
+        { username = Just credentials.username
+        , password = Just credentials.password
+        }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -109,6 +114,6 @@ update' msg model =
             ( model, Auth.Service.invokeLogout AuthApi )
 
         NotAuthed ->
-            ( { model | token = "", authState = authStateFromToken "" }
+            ( { model | token = Nothing, authState = authStateFromToken Nothing }
             , Cmd.batch [ removeStorage model, Navigation.newUrl model.logoutLocation ]
             )

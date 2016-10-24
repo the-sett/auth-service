@@ -131,3 +131,33 @@ indexedFoldl fun acc list =
             Dict.foldl (\key -> \item -> \( idx, items ) -> ( idx + 1, fun idx key item items )) ( 0, acc ) list
     in
         result
+
+
+
+{-
+   Cleans string input to a maybe.
+-}
+
+
+cleanString : String -> Maybe String
+cleanString val =
+    if "" == val then
+        Nothing
+    else
+        Just val
+
+
+
+{-
+   Converts a maybe String to "" in the case that it is Nothing.
+-}
+
+
+valOrEmpty : Maybe String -> String
+valOrEmpty maybeVal =
+    case maybeVal of
+        Nothing ->
+            ""
+
+        Just val ->
+            val

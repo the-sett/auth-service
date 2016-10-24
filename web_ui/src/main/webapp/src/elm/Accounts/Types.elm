@@ -22,9 +22,9 @@ type alias Model =
     , accounts : Dict String Model.Account
     , accountToEdit : Maybe Model.Account
     , viewState : ViewState
-    , username : String
-    , password1 : String
-    , password2 : String
+    , username : Maybe String
+    , password1 : Maybe String
+    , password2 : Maybe String
     , roleLookup : Dict String Model.Role
     , selectedRoles : Dict String Model.Role
     }
