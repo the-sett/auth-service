@@ -48,7 +48,7 @@ resetAccountForm model =
 
 key : Model.Account -> String
 key (Model.Account account) =
-    account.id
+    Maybe.withDefault "" account.id
 
 
 allSelected : Model -> Bool
@@ -400,7 +400,7 @@ updateEdit id model =
                         , selectedRoles = selectedRoles
                       }
                     , Cmd.batch
-                        [ Account.Service.invokeRetrieve AccountApi account.id
+                        [ Account.Service.invokeRetrieve AccountApi id
                         , Role.Service.invokeFindAll RoleApi
                         ]
                     )
@@ -411,7 +411,7 @@ updateCreate model =
     ( model
     , Account.Service.invokeCreate AccountApi
         (Model.Account
-            { id = ""
+            { id = Nothing
             , username = model.username
             , password = model.password1
             , root = Just False
@@ -430,11 +430,12 @@ updateSave model =
         Just (Model.Account account) ->
             let
                 id =
-                    account.id
+                    Maybe.withDefault ""
+                        account.id
 
                 modifiedAccount =
                     Model.Account
-                        { id = id
+                        { id = Just id
                         , username = account.username
                         , password = model.password1
                         , root = Just False

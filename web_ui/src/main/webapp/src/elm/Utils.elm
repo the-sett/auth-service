@@ -2,6 +2,8 @@ module Utils exposing (..)
 
 import Dict exposing (Dict)
 import Set exposing (Set)
+import Maybe
+import Maybe.Extra exposing (isJust)
 import List
 import Http
 import Auth
@@ -84,12 +86,17 @@ leftIntersect dict1 dict2 =
 {-
    Tranforms a list of entities (records with a String id), into a Dict, with the ids
    as keys.
+
+   Any entities with missing ids are not included in the output.
 -}
 
 
-dictifyEntities : (b -> { a | id : String }) -> ({ a | id : String } -> b) -> List b -> Dict String b
+dictifyEntities : (b -> { a | id : Maybe String }) -> ({ a | id : Maybe String } -> b) -> List b -> Dict String b
 dictifyEntities unwrapper wrapper entities =
-    Dict.fromList <| List.map (\rec -> ( rec.id, wrapper rec )) <| List.map unwrapper entities
+    Dict.fromList <|
+        List.map (\rec -> ( Maybe.withDefault "" rec.id, wrapper rec )) <|
+            List.filter (\rec -> isJust rec.id) <|
+                List.map unwrapper entities
 
 
 
