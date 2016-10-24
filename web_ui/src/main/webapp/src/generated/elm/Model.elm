@@ -104,7 +104,7 @@ type Account =
     , password : Maybe String
     , root : Maybe Bool
     , roles : Maybe (List Role)
-    , id : String
+    , id : Maybe String
     }
 
 
@@ -115,7 +115,7 @@ accountEncoder (Account model) =
         , Maybe.map (\password -> ( "password", Encode.string password )) model.password
         , Maybe.map (\root -> ( "root", Encode.bool root )) model.root
         , Maybe.map (\roles -> ( "roles", roles |> List.map roleEncoder |> Encode.list )) model.roles
-        , Just ( "id", Encode.string model.id )
+        , Maybe.map (\id -> ( "id", Encode.string id )) model.id
         ]
           |> catMaybes
           |> Encode.object
@@ -139,7 +139,7 @@ accountDecoder =
         |: Decode.maybe ("password" := Decode.string)
         |: Decode.maybe ("root" := Decode.bool)
         |: (("roles" := maybeNull (Decode.list roleDecoder)) |> withDefault Nothing)
-        |: ("id" := Decode.int |> Decode.map toString)
+        |: Decode.maybe ("id" := Decode.int |> Decode.map toString)
 
 
 type Role =
@@ -147,7 +147,7 @@ type Role =
     {
     name : Maybe String
     , permissions : Maybe (List Permission)
-    , id : String
+    , id : Maybe String
     }
 
 
@@ -156,7 +156,7 @@ roleEncoder (Role model) =
         [
         Maybe.map (\name -> ( "name", Encode.string name )) model.name
         , Maybe.map (\permissions -> ( "permissions", permissions |> List.map permissionEncoder |> Encode.list )) model.permissions
-        , Just ( "id", Encode.string model.id )
+        , Maybe.map (\id -> ( "id", Encode.string id )) model.id
         ]
           |> catMaybes
           |> Encode.object
@@ -176,14 +176,14 @@ roleDecoder =
     )
         |: Decode.maybe ("name" := Decode.string)
         |: (("permissions" := maybeNull (Decode.list permissionDecoder)) |> withDefault Nothing)
-        |: ("id" := Decode.int |> Decode.map toString)
+        |: Decode.maybe ("id" := Decode.int |> Decode.map toString)
 
 
 type Permission =
     Permission
     {
     name : Maybe String
-    , id : String
+    , id : Maybe String
     }
 
 
@@ -191,7 +191,7 @@ permissionEncoder : Permission -> Encode.Value
 permissionEncoder (Permission model) =
         [
         Maybe.map (\name -> ( "name", Encode.string name )) model.name
-        , Just ( "id", Encode.string model.id )
+        , Maybe.map (\id -> ( "id", Encode.string id )) model.id
         ]
           |> catMaybes
           |> Encode.object
@@ -209,6 +209,6 @@ permissionDecoder =
         )
     )
         |: Decode.maybe ("name" := Decode.string)
-        |: ("id" := Decode.int |> Decode.map toString)
+        |: Decode.maybe ("id" := Decode.int |> Decode.map toString)
 
 
