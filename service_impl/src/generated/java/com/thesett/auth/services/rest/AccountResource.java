@@ -88,7 +88,15 @@ public class AccountResource implements AccountService
         Subject subject = SecurityUtils.getSubject();
         subject.checkPermission("admin");
 
-        return accountDAO.browse();
+        List<Account> results = accountDAO.browse();
+
+        for (Account account : results)
+        {
+            account = accountDAO.detach(account);
+            hidePassword(account);
+        }
+
+        return results;
     }
 
     /** {@inheritDoc} */
@@ -102,7 +110,15 @@ public class AccountResource implements AccountService
         Subject subject = SecurityUtils.getSubject();
         subject.checkPermission("admin");
 
-        return accountDAO.findByExample(example);
+        List<Account> results = accountDAO.findByExample(example);
+
+        for (Account account : results)
+        {
+            account = accountDAO.detach(account);
+            hidePassword(account);
+        }
+
+        return results;
     }
 
     /** {@inheritDoc} */

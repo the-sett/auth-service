@@ -25,6 +25,7 @@ import com.thesett.auth.services.AccountService;
 import com.thesett.auth.services.rest.AccountResource;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Long>
@@ -139,6 +140,32 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
     }
 
     @Test
+    public void testFindAllDoesNotExposePassword() throws Exception {
+        testFindAllNotEmpty("findAll");
+
+        AccountService accountService = (AccountService) getServiceLayer();
+        List<Account> accounts = accountService.findAll();
+
+        for (Account account : accounts)
+        {
+            Assert.assertNull("Password should not be returned.", account.getPassword());
+        }
+    }
+
+    @Test
+    public void testFindByExampleDoesNotExposePassword() throws Exception {
+        testFindByExampleNotEmpty("findByExample");
+
+        AccountService accountService = (AccountService) getServiceLayer();
+        List<Account> accounts = accountService.findByExample(new Account());
+
+        for (Account account : accounts)
+        {
+            Assert.assertNull("Password should not be returned.", account.getPassword());
+        }
+    }
+
+    @Test
     public void testCreatedAccountDoesNotExposePassword() throws Exception {
         AccountService accountService = (AccountService) getServiceLayer();
 
@@ -177,6 +204,7 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
         AccountService accountService = (AccountService) getServiceLayer();
 
         Account account = new Account().withUsername("test").withPassword("password");
+        account = accountService.create(account);
     }
 
     @Test(expected = EntityException.class)
