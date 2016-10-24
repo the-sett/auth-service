@@ -81,12 +81,10 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
     @Before
     public void createRole() throws Exception
     {
-        if (fireOnceRule.shouldFireRule()) {
-            RoleService roleService = getRoleService();
+        RoleService roleService = getRoleService();
 
-            testRoles = new HashSet<>();
-            testRoles.add(roleService.create(new Role().withName("testRole")));
-        }
+        testRoles = new HashSet<>();
+        testRoles.add(roleService.create(new Role().withName("testRole")));
     }
 
     @After

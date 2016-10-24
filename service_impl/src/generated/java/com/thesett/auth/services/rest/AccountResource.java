@@ -139,6 +139,11 @@ public class AccountResource implements AccountService
         attachRoles(account);
 
         Account result = accountDAO.create(account);
+
+        // Null out the password.
+        result = accountDAO.detach(result);
+        result = hidePassword(result);
+
         return result;
     }
 
@@ -165,6 +170,14 @@ public class AccountResource implements AccountService
         subject.checkPermission("admin");
 
         Account result = accountDAO.retrieve(id);
+
+        // Null out the password.
+        if (result != null)
+        {
+            result = accountDAO.detach(result);
+            result = hidePassword(result);
+        }
+
         return result;
     }
 
@@ -214,6 +227,11 @@ public class AccountResource implements AccountService
         attachRoles(account);
 
         Account result = accountDAO.update(id, account);
+
+        // Null out the password.
+        result = accountDAO.detach(result);
+        result = hidePassword(result);
+
         return result;
     }
 
