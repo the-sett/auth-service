@@ -32,7 +32,7 @@ namedRefDecoder =
                 }
         )
     )
-        |: ("name" := Decode.maybe Decode.string)
+        |: Decode.maybe ("name" := Decode.string)
 
 
 type AuthRequest =
@@ -64,8 +64,8 @@ authRequestDecoder =
                 }
         )
     )
-        |: ("username" := Decode.maybe Decode.string)
-        |: ("password" := Decode.maybe Decode.string)
+        |: Decode.maybe ("username" := Decode.string)
+        |: Decode.maybe ("password" := Decode.string)
 
 
 type AuthResponse =
@@ -94,7 +94,7 @@ authResponseDecoder =
                 }
         )
     )
-        |: ("token" := Decode.maybe Decode.string)
+        |: Decode.maybe ("token" := Decode.string)
 
 
 type Account =
@@ -135,9 +135,9 @@ accountDecoder =
                 }
         )
     )
-        |: ("username" := Decode.maybe Decode.string)
-        |: ("password" := Decode.maybe Decode.string)
-        |: ("root" := Decode.maybe Decode.bool)
+        |: Decode.maybe ("username" := Decode.string)
+        |: Decode.maybe ("password" := Decode.string)
+        |: Decode.maybe ("root" := Decode.bool)
         |: (("roles" := maybeNull (Decode.list roleDecoder)) |> withDefault Nothing)
         |: ("id" := Decode.int |> Decode.map toString)
 
@@ -174,7 +174,7 @@ roleDecoder =
                 }
         )
     )
-        |: ("name" := Decode.maybe Decode.string)
+        |: Decode.maybe ("name" := Decode.string)
         |: (("permissions" := maybeNull (Decode.list permissionDecoder)) |> withDefault Nothing)
         |: ("id" := Decode.int |> Decode.map toString)
 
@@ -208,7 +208,7 @@ permissionDecoder =
                 }
         )
     )
-        |: ("name" := Decode.maybe Decode.string)
+        |: Decode.maybe ("name" := Decode.string)
         |: ("id" := Decode.int |> Decode.map toString)
 
 
