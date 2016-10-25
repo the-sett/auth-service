@@ -140,7 +140,7 @@ update action model =
             Permission.Service.update permissionCallbacks action' model
 
         Init ->
-            ( model
+            ( { model | roleToEdit = None }
             , Cmd.batch
                 [ Role.Service.invokeFindAll RoleApi
                 , Permission.Service.invokeFindAll PermissionApi
@@ -230,6 +230,7 @@ updateEdit id model =
                     ( { model
                         | roleName = role.name
                         , selectedPermissions = selectedPermissions
+                        , roleToEdit = WithId id
                       }
                     , Cmd.none
                     )

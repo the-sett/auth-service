@@ -45,6 +45,7 @@ table model =
                             []
                         ]
                     , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Role" ]
+                    , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Permissions" ]
                     , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Actions" ]
                     ]
                 ]
@@ -74,18 +75,31 @@ roleToRow model idx id role items =
                 ]
             , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| Utils.valOrEmpty roleRec.name ]
             , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
+                (List.foldr permissionToChip [] <| Maybe.withDefault [] roleRec.permissions)
+            , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
                 [ Button.render Mdl
                     [ 0, idx ]
                     model.mdl
                     [ Button.accent
-                    , Button.ripple
-                      --, Button.onClick (Edit id)
+                    , if model.roleToEdit /= None then
+                        Button.disabled
+                      else
+                        Button.ripple
+                    , Button.onClick (Edit id)
                     ]
                     [ text "Edit" ]
                 ]
             ]
         )
             :: items
+
+
+permissionToChip : Model.Permission -> List (Html Msg) -> List (Html Msg)
+permissionToChip (Model.Permission permission) items =
+    (span [ class "mdl-chip mdl-chip__text" ]
+        [ text <| Utils.valOrEmpty permission.name ]
+    )
+        :: items
 
 
 controlBar : Model -> Html Msg
@@ -102,7 +116,10 @@ controlBar model =
                     model.mdl
                     [ Button.fab
                     , Button.colored
-                    , Button.ripple
+                    , if model.roleToEdit /= None then
+                        Button.disabled
+                      else
+                        Button.ripple
                     , Button.onClick Add
                     ]
                     [ Icon.i "add" ]
