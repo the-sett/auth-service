@@ -297,7 +297,11 @@ update action model =
 
 updateInit : Model -> ( Model, Cmd Msg )
 updateInit model =
-    ( { model | selected = Dict.empty, viewState = ListView }
+    ( { model
+        | selected = Dict.empty
+        , viewState = ListView
+        , accountToEdit = Nothing
+      }
     , Account.Service.invokeFindAll AccountApi
     )
 
@@ -423,20 +427,21 @@ updateSave model =
             ( model, Cmd.none )
 
         Just (Model.Account account) ->
-            let
-                id =
-                    Maybe.withDefault ""
-                        account.id
+            case account.id of
+                Nothing ->
+                    ( model, Cmd.none )
 
-                modifiedAccount =
-                    Model.Account
-                        { id = Just id
-                        , username = account.username
-                        , password = model.password1
-                        , root = Just False
-                        , roles = Just <| Dict.values model.selectedRoles
-                        }
-            in
-                ( model
-                , Account.Service.invokeUpdate AccountApi id modifiedAccount
-                )
+                Just id ->
+                    let
+                        modifiedAccount =
+                            Model.Account
+                                { id = Just id
+                                , username = account.username
+                                , password = model.password1
+                                , root = Just False
+                                , roles = Just <| Dict.values model.selectedRoles
+                                }
+                    in
+                        ( model
+                        , Account.Service.invokeUpdate AccountApi id modifiedAccount
+                        )
