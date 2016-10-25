@@ -1,4 +1,4 @@
-module Permissions.State exposing (init, update)
+module Permissions.State exposing (..)
 
 import Log
 import Dict exposing (Dict)
@@ -27,6 +27,11 @@ init =
 allSelected : Model -> Bool
 allSelected model =
     Dict.size model.selected == Dict.size model.roles
+
+
+someSelected : Model -> Bool
+someSelected model =
+    Dict.size model.selected > 0
 
 
 permissionListToDict : List Model.Permission -> Dict String Model.Permission
