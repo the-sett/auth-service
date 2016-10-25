@@ -1,4 +1,4 @@
-module Roles.View exposing (root)
+module Roles.View exposing (root, dialog)
 
 import Dict
 import Html exposing (..)
