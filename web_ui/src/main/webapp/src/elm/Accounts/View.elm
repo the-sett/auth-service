@@ -137,40 +137,8 @@ controlBar model =
         ]
 
 
-dialog : Model -> Html Msg
 dialog model =
-    Dialog.view
-        []
-        [ Dialog.title [] [ h4 [ class "mdl-dialog__title-text" ] [ text "Delete" ] ]
-        , Dialog.content []
-            [ p [] [ text "Are you sure?" ]
-            ]
-        , Dialog.actions []
-            [ div [ class "control-bar" ]
-                [ div [ class "control-bar__row" ]
-                    [ div [ class "control-bar__left-0" ]
-                        [ Button.render Mdl
-                            [ 1 ]
-                            model.mdl
-                            [ Dialog.closeOn "click"
-                            , Button.accent
-                            ]
-                            [ text "Cancel" ]
-                        ]
-                    , div [ class "control-bar__right-0" ]
-                        [ Button.render Mdl
-                            [ 0 ]
-                            model.mdl
-                            [ Dialog.closeOn "click"
-                            , Button.colored
-                            , Button.onClick ConfirmDelete
-                            ]
-                            [ text "Confirm" ]
-                        ]
-                    ]
-                ]
-            ]
-        ]
+    ViewUtils.confirmDialog model "Delete" Mdl ConfirmDelete
 
 
 createAccountForm : Model -> Html Msg

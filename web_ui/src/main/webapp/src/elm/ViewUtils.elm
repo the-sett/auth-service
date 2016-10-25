@@ -7,6 +7,7 @@ import Material.Options as Options exposing (Style, cs, when, nop, disabled)
 import Material.Button as Button
 import Material.Icon as Icon
 import Material.Grid as Grid
+import Material.Dialog as Dialog
 
 
 {-
@@ -88,5 +89,46 @@ okCancelControlBar model mdl button cancelMsg =
                 ]
             , div [ class "control-bar__right-0" ]
                 [ button ]
+            ]
+        ]
+
+
+confirmDialog :
+    { a | mdl : Material.Model }
+    -> String
+    -> (Material.Msg msg -> msg)
+    -> msg
+    -> Html msg
+confirmDialog model title mdlAction action =
+    Dialog.view
+        []
+        [ Dialog.title [] [ h4 [ class "mdl-dialog__title-text" ] [ text title ] ]
+        , Dialog.content []
+            [ p [] [ text "Are you sure?" ]
+            ]
+        , Dialog.actions []
+            [ div [ class "control-bar" ]
+                [ div [ class "control-bar__row" ]
+                    [ div [ class "control-bar__left-0" ]
+                        [ Button.render mdlAction
+                            [ 1 ]
+                            model.mdl
+                            [ Dialog.closeOn "click"
+                            , Button.accent
+                            ]
+                            [ text "Cancel" ]
+                        ]
+                    , div [ class "control-bar__right-0" ]
+                        [ Button.render mdlAction
+                            [ 0 ]
+                            model.mdl
+                            [ Dialog.closeOn "click"
+                            , Button.colored
+                            , Button.onClick action
+                            ]
+                            [ text "Confirm" ]
+                        ]
+                    ]
+                ]
             ]
         ]
