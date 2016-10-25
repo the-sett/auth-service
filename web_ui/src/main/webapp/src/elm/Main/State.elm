@@ -19,6 +19,7 @@ import Menu.State
 import Accounts.State
 import Accounts.Types
 import Roles.State
+import Roles.Types
 import Permissions.State
 import Main.Types exposing (..)
 import Main.View
@@ -149,6 +150,9 @@ selectLocation model location =
                 case location of
                     "accounts" ->
                         Cmd.Extra.message (AccountsMsg Accounts.Types.Init) |> Just
+
+                    "roles" ->
+                        Cmd.Extra.message (RolesMsg Roles.Types.Init) |> Just
 
                     x ->
                         Nothing
