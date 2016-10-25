@@ -74,13 +74,13 @@ accountToRow model idx id account items =
             account
     in
         (Table.tr
-            [ Table.selected `when` Dict.member (key account) model.selected ]
+            [ Table.selected `when` Dict.member id model.selected ]
             [ Table.td []
                 [ Toggles.checkbox Mdl
                     [ idx ]
                     model.mdl
-                    [ Toggles.onClick (Toggle <| key account)
-                    , Toggles.value <| Dict.member (key account) model.selected
+                    [ Toggles.onClick (Toggle id)
+                    , Toggles.value <| Dict.member id model.selected
                     ]
                     []
                 ]

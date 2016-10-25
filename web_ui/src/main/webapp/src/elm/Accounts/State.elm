@@ -46,11 +46,6 @@ resetAccountForm model =
     }
 
 
-key : Model.Account -> String
-key (Model.Account account) =
-    Maybe.withDefault "" account.id
-
-
 allSelected : Model -> Bool
 allSelected model =
     Dict.size model.selected == Dict.size model.accounts
