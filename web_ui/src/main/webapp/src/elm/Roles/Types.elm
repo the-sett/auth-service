@@ -34,6 +34,7 @@ type Msg
     | ToggleAll
     | UpdateRoleName String
     | Add
+    | Edit String
     | Delete
     | ConfirmDelete
     | Save

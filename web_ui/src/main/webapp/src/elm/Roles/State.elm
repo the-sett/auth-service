@@ -34,6 +34,16 @@ someSelected model =
     Dict.size model.selected > 0
 
 
+permissionDictFromRole : Model.Role -> Dict String Model.Permission
+permissionDictFromRole (Model.Role role) =
+    case role.permissions of
+        Nothing ->
+            Dict.empty
+
+        Just permissions ->
+            permissionListToDict permissions
+
+
 permissionListToDict : List Model.Permission -> Dict String Model.Permission
 permissionListToDict permissions =
     Utils.dictifyEntities unwrapPermission Model.Permission permissions
@@ -140,14 +150,17 @@ update action model =
         ToggleAll ->
             updateToggleAll model
 
-        Toggle k ->
-            updateToggle k model
+        Toggle id ->
+            updateToggle id model
 
         UpdateRoleName roleName ->
             ( { model | roleName = Utils.cleanString roleName }, Cmd.none )
 
         Add ->
             updateAdd model
+
+        Edit id ->
+            updateEdit id model
 
         Delete ->
             ( model, Cmd.none )
@@ -193,7 +206,33 @@ updateToggle id model =
 
 
 updateAdd model =
-    ( model, Cmd.none )
+    ( { model | roleToEdit = New }, Cmd.none )
+
+
+updateEdit : String -> Model -> ( Model, Cmd Msg )
+updateEdit id model =
+    let
+        item =
+            Dict.get id model.roles
+    in
+        case item of
+            Nothing ->
+                ( model, Cmd.none )
+
+            Just roleRec ->
+                let
+                    (Model.Role role) =
+                        roleRec
+
+                    selectedPermissions =
+                        permissionDictFromRole roleRec
+                in
+                    ( { model
+                        | roleName = role.name
+                        , selectedPermissions = selectedPermissions
+                      }
+                    , Cmd.none
+                    )
 
 
 updateConfirmDelete model =
