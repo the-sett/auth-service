@@ -8,6 +8,12 @@ import Role.Service
 import Permission.Service
 
 
+type ItemToEdit
+    = None
+    | WithId String
+    | New
+
+
 type alias Model =
     { mdl : Material.Model
     , selected : Dict String Model.Role
@@ -15,7 +21,7 @@ type alias Model =
     , roleName : Maybe String
     , permissionLookup : Dict String Model.Permission
     , selectedPermissions : Dict String Model.Permission
-    , roleIdToEdit : Maybe String
+    , roleToEdit : ItemToEdit
     }
 
 
@@ -31,4 +37,3 @@ type Msg
     | Delete
     | ConfirmDelete
     | Save
-    | Create

@@ -20,7 +20,7 @@ init =
     , roleName = Nothing
     , permissionLookup = Dict.empty
     , selectedPermissions = Dict.empty
-    , roleIdToEdit = Nothing
+    , roleToEdit = None
     }
 
 
@@ -155,9 +155,6 @@ update action model =
         ConfirmDelete ->
             updateConfirmDelete model
 
-        Create ->
-            updateCreate model
-
         Save ->
             updateSave model
 
@@ -210,24 +207,12 @@ updateConfirmDelete model =
     )
 
 
-updateCreate model =
-    ( model
-    , Role.Service.invokeCreate RoleApi
-        (Model.Role
-            { id = Nothing
-            , name = model.roleName
-            , permissions = Just <| Dict.values model.selectedPermissions
-            }
-        )
-    )
-
-
 updateSave model =
-    case model.roleIdToEdit of
-        Nothing ->
+    case model.roleToEdit of
+        None ->
             ( model, Cmd.none )
 
-        Just id ->
+        WithId id ->
             let
                 modifiedRole =
                     Model.Role
@@ -239,3 +224,14 @@ updateSave model =
                 ( model
                 , Role.Service.invokeUpdate RoleApi id modifiedRole
                 )
+
+        New ->
+            ( model
+            , Role.Service.invokeCreate RoleApi
+                (Model.Role
+                    { id = Nothing
+                    , name = model.roleName
+                    , permissions = Just <| Dict.values model.selectedPermissions
+                    }
+                )
+            )
