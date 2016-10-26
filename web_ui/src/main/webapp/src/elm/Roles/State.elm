@@ -103,7 +103,7 @@ isChangeRoleName model =
             False
 
         WithId _ (Model.Role role) ->
-            role.name == model.roleName
+            role.name /= model.roleName
 
 
 isChangePermissions : Model -> Bool
