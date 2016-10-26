@@ -171,6 +171,9 @@ update action model =
         Save ->
             updateSave model
 
+        Cancel ->
+            ( { model | roleToEdit = None }, Cmd.none )
+
 
 updateToggleAll : Model -> ( Model, Cmd Msg )
 updateToggleAll model =

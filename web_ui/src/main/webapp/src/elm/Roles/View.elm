@@ -50,48 +50,101 @@ table model =
                     ]
                 ]
             , Table.tbody []
-                (indexedFoldr (roleToRow model) [] model.roles)
+                (if model.roleToEdit == New then
+                    (indexedFoldr (roleToRow model) [ addRow model ] model.roles)
+                 else
+                    (indexedFoldr (roleToRow model) [] model.roles)
+                )
             ]
         , controlBar model
         ]
 
 
+saveButton model =
+    Button.render Mdl
+        [ 1, 0 ]
+        model.mdl
+        [ Button.colored
+        , Button.ripple
+        , Button.onClick Cancel
+        ]
+        [ text "Save" ]
+
+
+cancelButton model =
+    Button.render Mdl
+        [ 1, 1 ]
+        model.mdl
+        [ Button.accent
+        , Button.ripple
+        , Button.onClick Cancel
+        ]
+        [ text "Cancel" ]
+
+
+addRow : Model -> Html Msg
+addRow model =
+    Table.tr []
+        [ Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text "add" ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text "add" ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text "add" ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
+            [ saveButton model, cancelButton model ]
+        ]
+
+
+editRow : Model -> Int -> String -> Model.Role -> Html Msg
+editRow model idx id (Model.Role role) =
+    Table.tr []
+        [ Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text "edit" ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text "edit" ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text "edit" ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
+            [ saveButton model, cancelButton model ]
+        ]
+
+
+viewRow : Model -> Int -> String -> Model.Role -> Html Msg
+viewRow model idx id (Model.Role role) =
+    (Table.tr
+        [ Table.selected `when` Dict.member id model.selected ]
+        [ Table.td []
+            [ Toggles.checkbox Mdl
+                [ idx ]
+                model.mdl
+                [ Toggles.onClick (Toggle id)
+                , Toggles.value <| Dict.member id model.selected
+                ]
+                []
+            ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| Utils.valOrEmpty role.name ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
+            (List.foldr permissionToChip [] <| Maybe.withDefault [] role.permissions)
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
+            [ Button.render Mdl
+                [ 0, idx ]
+                model.mdl
+                [ Button.accent
+                , if model.roleToEdit /= None then
+                    Button.disabled
+                  else
+                    Button.ripple
+                , Button.onClick (Edit id)
+                ]
+                [ text "Edit" ]
+            ]
+        ]
+    )
+
+
 roleToRow : Model -> Int -> String -> Model.Role -> List (Html Msg) -> List (Html Msg)
 roleToRow model idx id role items =
-    let
-        (Model.Role roleRec) =
-            role
-    in
-        (Table.tr
-            [ Table.selected `when` Dict.member id model.selected ]
-            [ Table.td []
-                [ Toggles.checkbox Mdl
-                    [ idx ]
-                    model.mdl
-                    [ Toggles.onClick (Toggle id)
-                    , Toggles.value <| Dict.member id model.selected
-                    ]
-                    []
-                ]
-            , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| Utils.valOrEmpty roleRec.name ]
-            , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
-                (List.foldr permissionToChip [] <| Maybe.withDefault [] roleRec.permissions)
-            , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
-                [ Button.render Mdl
-                    [ 0, idx ]
-                    model.mdl
-                    [ Button.accent
-                    , if model.roleToEdit /= None then
-                        Button.disabled
-                      else
-                        Button.ripple
-                    , Button.onClick (Edit id)
-                    ]
-                    [ text "Edit" ]
-                ]
-            ]
-        )
-            :: items
+    (if model.roleToEdit == (WithId id) then
+        (editRow model idx id role)
+     else
+        (viewRow model idx id role)
+    )
+        :: items
 
 
 permissionToChip : Model.Permission -> List (Html Msg) -> List (Html Msg)
