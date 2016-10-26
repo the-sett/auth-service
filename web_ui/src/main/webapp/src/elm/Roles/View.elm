@@ -91,7 +91,7 @@ roleForm model isValid completeText =
             [ ViewUtils.okCancelControlBar
                 model.mdl
                 Mdl
-                (ViewUtils.completeButton model.mdl Mdl completeText (isValid) Cancel)
+                (ViewUtils.completeButton model.mdl Mdl completeText (isValid) Save)
                 (ViewUtils.cancelButton model.mdl Mdl "Cancel" Cancel)
             ]
         ]
