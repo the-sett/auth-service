@@ -2,10 +2,10 @@ module Roles.View exposing (root, dialog)
 
 import Dict
 import Html exposing (..)
-import Html.Attributes exposing (title, class, action, attribute)
+import Html.Attributes exposing (title, class, action, colspan)
 import Platform.Cmd exposing (Cmd)
 import String
-import Material.Options as Options exposing (Style, cs, when, nop, disabled)
+import Material.Options as Options exposing (Style, cs, when, nop, disabled, attribute)
 import Material.Dialog as Dialog
 import Material.Table as Table
 import Material.Button as Button
@@ -19,6 +19,7 @@ import ViewUtils
 import Roles.Types exposing (..)
 import Roles.State exposing (..)
 import Model
+import Listbox exposing (listbox, onSelectedChanged, items, initiallySelected)
 
 
 root : Model -> Html Msg
@@ -82,12 +83,32 @@ cancelButton model =
         [ text "Cancel" ]
 
 
+permissionLookup : Model -> List (Html Msg)
+permissionLookup model =
+    [ listbox
+        [ items <| Dict.map (\id -> \(Model.Permission permission) -> Utils.valOrEmpty permission.name) model.permissionLookup
+        , initiallySelected <| Dict.map (\id -> \(Model.Permission permission) -> Utils.valOrEmpty permission.name) model.selectedPermissions
+        , onSelectedChanged SelectChanged
+        ]
+    ]
+
+
 addRow : Model -> Html Msg
 addRow model =
     Table.tr []
         [ Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text "add" ]
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text "add" ]
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text "add" ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
+            [ Textfield.render Mdl
+                [ 1 ]
+                model.mdl
+                [ Textfield.label "Role"
+                , Textfield.floatingLabel
+                , Textfield.onInput UpdateRoleName
+                , Textfield.value <| Utils.valOrEmpty model.roleName
+                ]
+            ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
+            (permissionLookup model)
         , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
             [ saveButton model, cancelButton model ]
         ]
@@ -96,9 +117,7 @@ addRow model =
 editRow : Model -> Int -> String -> Model.Role -> Html Msg
 editRow model idx id (Model.Role role) =
     Table.tr []
-        [ Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text "edit" ]
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text "edit" ]
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text "edit" ]
+        [ Html.td [ colspan 3 ] [ text "edit" ]
         , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
             [ saveButton model, cancelButton model ]
         ]

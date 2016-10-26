@@ -33,6 +33,7 @@ type Msg
     | Toggle (String)
     | ToggleAll
     | UpdateRoleName String
+    | SelectChanged (Dict String String)
     | Add
     | Edit String
     | Delete

@@ -156,6 +156,9 @@ update action model =
         UpdateRoleName roleName ->
             ( { model | roleName = Utils.cleanString roleName }, Cmd.none )
 
+        SelectChanged permissions ->
+            ( { model | selectedPermissions = Utils.leftIntersect model.permissionLookup permissions }, Cmd.none )
+
         Add ->
             updateAdd model
 
