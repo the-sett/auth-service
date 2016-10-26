@@ -72,8 +72,8 @@ permissionLookup model =
     ]
 
 
-roleForm : Model -> Html Msg
-roleForm model =
+roleForm : Model -> Bool -> String -> Html Msg
+roleForm model isValid completeText =
     Grid.grid []
         [ ViewUtils.column644
             [ Textfield.render Mdl
@@ -91,8 +91,8 @@ roleForm model =
             [ ViewUtils.okCancelControlBar
                 model.mdl
                 Mdl
-                (ViewUtils.completeButton model.mdl Mdl "Save" (True) Cancel)
-                Init
+                (ViewUtils.completeButton model.mdl Mdl completeText (isValid) Cancel)
+                (ViewUtils.cancelButton model.mdl Mdl "Cancel" Cancel)
             ]
         ]
 
@@ -101,7 +101,7 @@ addRow : Model -> Html Msg
 addRow model =
     Table.tr []
         [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric" ]
-            [ roleForm model
+            [ roleForm model (False) "Create"
             ]
         ]
 
@@ -110,7 +110,7 @@ editRow : Model -> Int -> String -> Model.Role -> Html Msg
 editRow model idx id (Model.Role role) =
     Table.tr []
         [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric" ]
-            [ roleForm model
+            [ roleForm model (False) "Save"
             ]
         ]
 

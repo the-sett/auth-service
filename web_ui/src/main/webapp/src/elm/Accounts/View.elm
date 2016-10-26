@@ -163,7 +163,7 @@ createAccountForm model =
                 model.mdl
                 Mdl
                 (ViewUtils.completeButton model.mdl Mdl "Create" (validateCreateAccount model) Create)
-                Init
+                (ViewUtils.cancelButton model.mdl Mdl "Back" Init)
             ]
         ]
 
@@ -190,7 +190,7 @@ editAccountForm model =
                 model.mdl
                 Mdl
                 (ViewUtils.completeButton model.mdl Mdl "Save" (isEditedAndValid model) Save)
-                Init
+                (ViewUtils.cancelButton model.mdl Mdl "Back" Init)
             ]
         ]
 
