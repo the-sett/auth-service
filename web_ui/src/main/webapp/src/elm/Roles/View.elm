@@ -61,31 +61,10 @@ table model =
         ]
 
 
-saveButton model =
-    Button.render Mdl
-        [ 1, 0 ]
-        model.mdl
-        [ Button.colored
-        , Button.ripple
-        , Button.onClick Cancel
-        ]
-        [ text "Save" ]
-
-
-cancelButton model =
-    Button.render Mdl
-        [ 1, 1 ]
-        model.mdl
-        [ Button.accent
-        , Button.ripple
-        , Button.onClick Cancel
-        ]
-        [ text "Cancel" ]
-
-
 permissionLookup : Model -> List (Html Msg)
 permissionLookup model =
-    [ listbox
+    [ h4 [] [ text "Permissions" ]
+    , listbox
         [ items <| Dict.map (\id -> \(Model.Permission permission) -> Utils.valOrEmpty permission.name) model.permissionLookup
         , initiallySelected <| Dict.map (\id -> \(Model.Permission permission) -> Utils.valOrEmpty permission.name) model.selectedPermissions
         , onSelectedChanged SelectChanged
@@ -93,33 +72,46 @@ permissionLookup model =
     ]
 
 
-addRow : Model -> Html Msg
-addRow model =
-    Table.tr []
-        [ Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text "add" ]
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
+roleForm : Model -> Html Msg
+roleForm model =
+    Grid.grid []
+        [ ViewUtils.column644
             [ Textfield.render Mdl
                 [ 1 ]
                 model.mdl
                 [ Textfield.label "Role"
                 , Textfield.floatingLabel
+                , Textfield.text'
                 , Textfield.onInput UpdateRoleName
                 , Textfield.value <| Utils.valOrEmpty model.roleName
                 ]
             ]
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
-            (permissionLookup model)
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
-            [ saveButton model, cancelButton model ]
+        , ViewUtils.column644 (permissionLookup model)
+        , ViewUtils.columnAll12
+            [ ViewUtils.okCancelControlBar
+                model.mdl
+                Mdl
+                (ViewUtils.completeButton model.mdl Mdl "Save" (True) Cancel)
+                Init
+            ]
+        ]
+
+
+addRow : Model -> Html Msg
+addRow model =
+    Table.tr []
+        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric" ]
+            [ roleForm model
+            ]
         ]
 
 
 editRow : Model -> Int -> String -> Model.Role -> Html Msg
 editRow model idx id (Model.Role role) =
     Table.tr []
-        [ Html.td [ colspan 3 ] [ text "edit" ]
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
-            [ saveButton model, cancelButton model ]
+        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric" ]
+            [ roleForm model
+            ]
         ]
 
 
