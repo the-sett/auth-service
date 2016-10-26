@@ -42,6 +42,7 @@ table model =
                             model.mdl
                             [ Toggles.onClick ToggleAll
                             , Toggles.value (allSelected model)
+                            , Toggles.disabled `when` (model.roleToEdit /= None)
                             ]
                             []
                         ]
@@ -125,6 +126,7 @@ viewRow model idx id (Model.Role role) =
                 model.mdl
                 [ Toggles.onClick (Toggle id)
                 , Toggles.value <| Dict.member id model.selected
+                , Toggles.disabled `when` (model.roleToEdit /= None)
                 ]
                 []
             ]
@@ -150,20 +152,27 @@ viewRow model idx id (Model.Role role) =
 
 roleToRow : Model -> Int -> String -> Model.Role -> List (Html Msg) -> List (Html Msg)
 roleToRow model idx id role items =
-    (case model.roleToEdit of
-        WithId editId _ ->
-            if (editId == id) then
-                editRow model idx id role
-            else
-                viewRow model idx id role
+    let
+        showAsEdit =
+            editRow model idx id role
 
-        New ->
+        showAsView =
             viewRow model idx id role
+    in
+        (case model.roleToEdit of
+            WithId editId _ ->
+                if (editId == id) then
+                    showAsEdit
+                else
+                    showAsView
 
-        None ->
-            viewRow model idx id role
-    )
-        :: items
+            New ->
+                showAsView
+
+            None ->
+                showAsView
+        )
+            :: items
 
 
 permissionToChip : Model.Permission -> List (Html Msg) -> List (Html Msg)
