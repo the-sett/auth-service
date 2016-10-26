@@ -280,7 +280,13 @@ updateToggle id model =
 
 
 updateAdd model =
-    ( { model | roleToEdit = New }, Cmd.none )
+    ( { model
+        | roleToEdit = New
+        , roleName = Nothing
+        , selectedPermissions = Dict.empty
+      }
+    , Cmd.none
+    )
 
 
 updateEdit : String -> Model -> ( Model, Cmd Msg )
