@@ -1,6 +1,7 @@
 module Roles.State exposing (..)
 
 import Log
+import String
 import Dict exposing (Dict)
 import Platform.Cmd exposing (Cmd)
 import Cmd.Extra
@@ -55,6 +56,73 @@ unwrapRole (Model.Role role) =
 
 unwrapPermission (Model.Permission permission) =
     permission
+
+
+
+-- Validations on the model
+
+
+checkRoleNameExists : Model -> Bool
+checkRoleNameExists model =
+    case model.roleName of
+        Nothing ->
+            False
+
+        Just roleName ->
+            String.length roleName > 0
+
+
+checkAtLeastOnePermission : Model -> Bool
+checkAtLeastOnePermission model =
+    not (Dict.isEmpty model.selectedPermissions)
+
+
+validateCreateRole : Model -> Bool
+validateCreateRole =
+    checkAll
+        [ checkRoleNameExists
+        , checkAtLeastOnePermission
+        ]
+
+
+validateEditAccount : Model -> Bool
+validateEditAccount =
+    checkAll
+        [ checkRoleNameExists
+        , checkAtLeastOnePermission
+        ]
+
+
+isChangeRoleName : Model -> Bool
+isChangeRoleName model =
+    case model.roleToEdit of
+        None ->
+            False
+
+        New ->
+            False
+
+        WithId _ (Model.Role role) ->
+            role.name == model.roleName
+
+
+isChangePermissions : Model -> Bool
+isChangePermissions model =
+    case model.roleToEdit of
+        None ->
+            False
+
+        New ->
+            False
+
+        WithId _ role ->
+            not (Dict.isEmpty (Utils.symDiff (permissionDictFromRole role) (model.selectedPermissions)))
+
+
+isEditedAndValid : Model -> Bool
+isEditedAndValid model =
+    (validateEditAccount model)
+        && ((isChangeRoleName model) || (isChangePermissions model))
 
 
 
@@ -236,7 +304,7 @@ updateEdit id model =
                     ( { model
                         | roleName = role.name
                         , selectedPermissions = selectedPermissions
-                        , roleToEdit = WithId id
+                        , roleToEdit = WithId id roleRec
                       }
                     , Cmd.none
                     )
@@ -258,7 +326,7 @@ updateSave model =
         None ->
             ( model, Cmd.none )
 
-        WithId id ->
+        WithId id _ ->
             let
                 modifiedRole =
                     Model.Role

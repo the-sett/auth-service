@@ -101,7 +101,7 @@ addRow : Model -> Html Msg
 addRow model =
     Table.tr []
         [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric" ]
-            [ roleForm model (False) "Create"
+            [ roleForm model (validateCreateRole model) "Create"
             ]
         ]
 
@@ -110,7 +110,7 @@ editRow : Model -> Int -> String -> Model.Role -> Html Msg
 editRow model idx id (Model.Role role) =
     Table.tr []
         [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric" ]
-            [ roleForm model (False) "Save"
+            [ roleForm model (isEditedAndValid model) "Save"
             ]
         ]
 
@@ -150,10 +150,18 @@ viewRow model idx id (Model.Role role) =
 
 roleToRow : Model -> Int -> String -> Model.Role -> List (Html Msg) -> List (Html Msg)
 roleToRow model idx id role items =
-    (if model.roleToEdit == (WithId id) then
-        (editRow model idx id role)
-     else
-        (viewRow model idx id role)
+    (case model.roleToEdit of
+        WithId editId _ ->
+            if (editId == id) then
+                editRow model idx id role
+            else
+                viewRow model idx id role
+
+        New ->
+            viewRow model idx id role
+
+        None ->
+            viewRow model idx id role
     )
         :: items
 

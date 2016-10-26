@@ -10,7 +10,7 @@ import Permission.Service
 
 type ItemToEdit
     = None
-    | WithId String
+    | WithId String (Model.Role)
     | New
 
 
