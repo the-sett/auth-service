@@ -1,6 +1,7 @@
 module Permissions.State exposing (..)
 
 import Log
+import String
 import Dict exposing (Dict)
 import Platform.Cmd exposing (Cmd)
 import Cmd.Extra
@@ -8,7 +9,6 @@ import Material
 import Permissions.Types exposing (..)
 import Utils exposing (..)
 import Model
-import Role.Service
 import Permission.Service
 
 
@@ -16,17 +16,15 @@ init : Model
 init =
     { mdl = Material.model
     , selected = Dict.empty
-    , roles = Dict.empty
-    , roleName = Nothing
-    , permissionLookup = Dict.empty
-    , selectedPermissions = Dict.empty
-    , roleIdToEdit = Nothing
+    , permissions = Dict.empty
+    , permissionName = Nothing
+    , permissionToEdit = None
     }
 
 
 allSelected : Model -> Bool
 allSelected model =
-    Dict.size model.selected == Dict.size model.roles
+    Dict.size model.selected == Dict.size model.permissions
 
 
 someSelected : Model -> Bool
@@ -39,57 +37,54 @@ permissionListToDict permissions =
     Utils.dictifyEntities unwrapPermission Model.Permission permissions
 
 
-unwrapRole (Model.Role role) =
-    role
-
-
 unwrapPermission (Model.Permission permission) =
     permission
 
 
 
--- Role REST API calls
+-- Validations on the model
 
 
-roleCallbacks : Role.Service.Callbacks Model Msg
-roleCallbacks =
-    let
-        default =
-            Role.Service.callbacks
-    in
-        { default
-            | findAll = roleList
-            , create = roleCreate
-            , update = roleSaved
-            , delete = roleDelete
-            , error = error
-        }
+checkPermissionNameExists : Model -> Bool
+checkPermissionNameExists model =
+    case model.permissionName of
+        Nothing ->
+            False
+
+        Just permissionName ->
+            String.length permissionName > 0
 
 
-roleList : List Model.Role -> Model -> ( Model, Cmd msg )
-roleList roles model =
-    ( { model | roles = Utils.dictifyEntities unwrapRole Model.Role roles }
-    , Cmd.none
-    )
+validateCreatePermission : Model -> Bool
+validateCreatePermission =
+    checkAll
+        [ checkPermissionNameExists
+        ]
 
 
-roleCreate : Model.Role -> Model -> ( Model, Cmd Msg )
-roleCreate role model =
-    ( model, Cmd.Extra.message Init )
+validateEditAccount : Model -> Bool
+validateEditAccount =
+    checkAll
+        [ checkPermissionNameExists
+        ]
 
 
-roleSaved : Model.Role -> model -> ( model, Cmd Msg )
-roleSaved role model =
-    ( model, Cmd.Extra.message Init )
+isChangePermissionName : Model -> Bool
+isChangePermissionName model =
+    case model.permissionToEdit of
+        None ->
+            False
+
+        New ->
+            False
+
+        WithId _ (Model.Permission permission) ->
+            permission.name /= model.permissionName
 
 
-roleDelete : String -> Model -> ( Model, Cmd Msg )
-roleDelete id model =
-    let
-        newRoles =
-            Dict.remove id model.roles
-    in
-        ( { model | roles = newRoles }, Cmd.none )
+isEditedAndValid : Model -> Bool
+isEditedAndValid model =
+    (validateEditAccount model) && (isChangePermissionName model)
 
 
 
@@ -104,17 +99,37 @@ permissionCallbacks =
     in
         { default
             | findAll = permissionList
+            , create = permissionCreate
+            , update = permissionSaved
+            , delete = permissionDelete
             , error = error
         }
 
 
 permissionList : List Model.Permission -> Model -> ( Model, Cmd msg )
 permissionList permissions model =
-    ( { model
-        | permissionLookup = permissionListToDict permissions
-      }
+    ( { model | permissions = Utils.dictifyEntities unwrapPermission Model.Permission permissions }
     , Cmd.none
     )
+
+
+permissionCreate : Model.Permission -> Model -> ( Model, Cmd Msg )
+permissionCreate permission model =
+    ( model, Cmd.Extra.message Init )
+
+
+permissionSaved : Model.Permission -> model -> ( model, Cmd Msg )
+permissionSaved permission model =
+    ( model, Cmd.Extra.message Init )
+
+
+permissionDelete : String -> Model -> ( Model, Cmd Msg )
+permissionDelete id model =
+    let
+        newPermissions =
+            Dict.remove id model.permissions
+    in
+        ( { model | permissions = newPermissions }, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -123,16 +138,13 @@ update action model =
         Mdl action' ->
             Material.update action' model
 
-        RoleApi action' ->
-            Role.Service.update roleCallbacks action' model
-
         PermissionApi action' ->
             Permission.Service.update permissionCallbacks action' model
 
         Init ->
-            ( model
+            ( { model | permissionToEdit = None }
             , Cmd.batch
-                [ Role.Service.invokeFindAll RoleApi
+                [ Permission.Service.invokeFindAll PermissionApi
                 , Permission.Service.invokeFindAll PermissionApi
                 ]
             )
@@ -140,14 +152,17 @@ update action model =
         ToggleAll ->
             updateToggleAll model
 
-        Toggle k ->
-            updateToggle k model
+        Toggle id ->
+            updateToggle id model
 
-        UpdateRoleName roleName ->
-            ( { model | roleName = Utils.cleanString roleName }, Cmd.none )
+        UpdatePermissionName permissionName ->
+            ( { model | permissionName = Utils.cleanString permissionName }, Cmd.none )
 
         Add ->
             updateAdd model
+
+        Edit id ->
+            updateEdit id model
 
         Delete ->
             ( model, Cmd.none )
@@ -155,11 +170,11 @@ update action model =
         ConfirmDelete ->
             updateConfirmDelete model
 
-        Create ->
-            updateCreate model
-
         Save ->
             updateSave model
+
+        Cancel ->
+            ( { model | permissionToEdit = None }, Cmd.none )
 
 
 updateToggleAll : Model -> ( Model, Cmd Msg )
@@ -169,7 +184,7 @@ updateToggleAll model =
             if allSelected model then
                 Dict.empty
             else
-                model.roles
+                model.permissions
     }
         ! []
 
@@ -178,7 +193,7 @@ updateToggle : String -> Model -> ( Model, Cmd Msg )
 updateToggle id model =
     let
         item =
-            Dict.get id model.roles
+            Dict.get id model.permissions
     in
         case item of
             Nothing ->
@@ -196,46 +211,71 @@ updateToggle id model =
 
 
 updateAdd model =
-    ( model, Cmd.none )
+    ( { model
+        | permissionToEdit = New
+        , permissionName = Nothing
+      }
+    , Cmd.none
+    )
+
+
+updateEdit : String -> Model -> ( Model, Cmd Msg )
+updateEdit id model =
+    let
+        item =
+            Dict.get id model.permissions
+    in
+        case item of
+            Nothing ->
+                ( model, Cmd.none )
+
+            Just permissionRec ->
+                let
+                    (Model.Permission permission) =
+                        permissionRec
+                in
+                    ( { model
+                        | permissionName = permission.name
+                        , permissionToEdit = WithId id permissionRec
+                      }
+                    , Cmd.none
+                    )
 
 
 updateConfirmDelete model =
     ( { model | selected = Dict.empty }
     , List.map
         (\id ->
-            Role.Service.invokeDelete RoleApi id
+            Permission.Service.invokeDelete PermissionApi id
         )
-        (Dict.keys <| Dict.intersect model.roles model.selected)
+        (Dict.keys <| Dict.intersect model.permissions model.selected)
         |> Cmd.batch
     )
 
 
-updateCreate model =
-    ( model
-    , Role.Service.invokeCreate RoleApi
-        (Model.Role
-            { id = Nothing
-            , name = model.roleName
-            , permissions = Just <| Dict.values model.selectedPermissions
-            }
-        )
-    )
-
-
 updateSave model =
-    case model.roleIdToEdit of
-        Nothing ->
+    case model.permissionToEdit of
+        None ->
             ( model, Cmd.none )
 
-        Just id ->
+        WithId id _ ->
             let
-                modifiedRole =
-                    Model.Role
+                modifiedPermission =
+                    Model.Permission
                         { id = Just id
-                        , name = model.roleName
-                        , permissions = Just <| Dict.values model.selectedPermissions
+                        , name = model.permissionName
                         }
             in
                 ( model
-                , Role.Service.invokeUpdate RoleApi id modifiedRole
+                , Permission.Service.invokeUpdate PermissionApi id modifiedPermission
                 )
+
+        New ->
+            ( model
+            , Permission.Service.invokeCreate PermissionApi
+                (Model.Permission
+                    { id = Nothing
+                    , name = model.permissionName
+                    }
+                )
+            )

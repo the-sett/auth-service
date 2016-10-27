@@ -4,31 +4,34 @@ import Material
 import Dict exposing (Dict)
 import Maybe
 import Model
-import Role.Service
 import Permission.Service
+
+
+type ItemToEdit
+    = None
+    | WithId String (Model.Permission)
+    | New
 
 
 type alias Model =
     { mdl : Material.Model
-    , selected : Dict String Model.Role
-    , roles : Dict String Model.Role
-    , roleName : Maybe String
-    , permissionLookup : Dict String Model.Permission
-    , selectedPermissions : Dict String Model.Permission
-    , roleIdToEdit : Maybe String
+    , selected : Dict String Model.Permission
+    , permissions : Dict String Model.Permission
+    , permissionName : Maybe String
+    , permissionToEdit : ItemToEdit
     }
 
 
 type Msg
     = Mdl (Material.Msg Msg)
-    | RoleApi (Role.Service.Msg)
     | PermissionApi (Permission.Service.Msg)
     | Init
     | Toggle (String)
     | ToggleAll
-    | UpdateRoleName String
+    | UpdatePermissionName String
     | Add
+    | Edit String
     | Delete
     | ConfirmDelete
     | Save
-    | Create
+    | Cancel
