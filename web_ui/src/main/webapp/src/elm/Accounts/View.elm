@@ -28,8 +28,7 @@ import ViewUtils
 root : Model -> Html Msg
 root model =
     div [ class "layout-fixed-width" ]
-        [ h4 [] [ text "User Accounts" ]
-        , case model.viewState of
+        [ case model.viewState of
             ListView ->
                 table model
 
