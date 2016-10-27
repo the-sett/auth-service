@@ -35,7 +35,7 @@ table model =
     div [ class "data-table__apron mdl-shadow--2dp" ]
         [ Table.table [ cs "mdl-data-table mdl-js-data-table mdl-data-table--selectable" ]
             [ Table.thead []
-                [ Table.tr []
+                [ Table.tr [ cs "data-table__inactive-row" `when` (model.roleToEdit /= None) ]
                     [ Table.th []
                         [ Toggles.checkbox Mdl
                             [ -1 ]
@@ -101,7 +101,7 @@ roleForm model isValid completeText =
 addRow : Model -> Html Msg
 addRow model =
     Table.tr []
-        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric" ]
+        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric data-table__active-row" ]
             [ roleForm model (validateCreateRole model) "Create"
             ]
         ]
@@ -110,7 +110,7 @@ addRow model =
 editRow : Model -> Int -> String -> Model.Role -> Html Msg
 editRow model idx id (Model.Role role) =
     Table.tr []
-        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric" ]
+        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric data-table__active-row" ]
             [ roleForm model (isEditedAndValid model) "Save"
             ]
         ]
@@ -119,7 +119,9 @@ editRow model idx id (Model.Role role) =
 viewRow : Model -> Int -> String -> Model.Role -> Html Msg
 viewRow model idx id (Model.Role role) =
     (Table.tr
-        [ Table.selected `when` Dict.member id model.selected ]
+        [ Table.selected `when` Dict.member id model.selected
+        , cs "data-table__inactive-row" `when` (model.roleToEdit /= None)
+        ]
         [ Table.td []
             [ Toggles.checkbox Mdl
                 [ idx ]

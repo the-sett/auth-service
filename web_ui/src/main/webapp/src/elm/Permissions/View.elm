@@ -34,7 +34,7 @@ table : Model -> Html Msg
 table model =
     div [ class "data-table__apron mdl-shadow--2dp" ]
         [ Table.table [ cs "mdl-data-table mdl-js-data-table mdl-data-table--selectable" ]
-            [ Table.thead []
+            [ Table.thead [ cs "data-table__inactive-row" `when` (model.permissionToEdit /= None) ]
                 [ Table.tr []
                     [ Table.th []
                         [ Toggles.checkbox Mdl
@@ -88,7 +88,7 @@ permissionForm model isValid completeText =
 addRow : Model -> Html Msg
 addRow model =
     Table.tr []
-        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric" ]
+        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric data-table__active-row" ]
             [ permissionForm model (validateCreatePermission model) "Create"
             ]
         ]
@@ -97,7 +97,7 @@ addRow model =
 editRow : Model -> Int -> String -> Model.Permission -> Html Msg
 editRow model idx id (Model.Permission permission) =
     Table.tr []
-        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric" ]
+        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric data-table__active-row" ]
             [ permissionForm model (isEditedAndValid model) "Save"
             ]
         ]
@@ -106,7 +106,9 @@ editRow model idx id (Model.Permission permission) =
 viewRow : Model -> Int -> String -> Model.Permission -> Html Msg
 viewRow model idx id (Model.Permission permission) =
     (Table.tr
-        [ Table.selected `when` Dict.member id model.selected ]
+        [ Table.selected `when` Dict.member id model.selected
+        , cs "data-table__inactive-row" `when` (model.permissionToEdit /= None)
+        ]
         [ Table.td []
             [ Toggles.checkbox Mdl
                 [ idx ]
