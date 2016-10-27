@@ -57,6 +57,7 @@ table model =
                             []
                         ]
                     , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Username" ]
+                    , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Roles" ]
                     , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Actions" ]
                     ]
                 ]
@@ -67,48 +68,54 @@ table model =
         ]
 
 
+roleToChip : Model.Role -> List (Html Msg) -> List (Html Msg)
+roleToChip (Model.Role role) items =
+    (span [ class "mdl-chip mdl-chip__text" ]
+        [ text <| Utils.valOrEmpty role.name ]
+    )
+        :: items
+
+
 accountToRow : Model -> Int -> String -> Model.Account -> List (Html Msg) -> List (Html Msg)
-accountToRow model idx id account items =
-    let
-        (Model.Account accountRec) =
-            account
-    in
-        (Table.tr
-            [ Table.selected `when` Dict.member id model.selected ]
-            [ Table.td []
-                [ Toggles.checkbox Mdl
-                    [ idx ]
-                    model.mdl
-                    [ Toggles.onClick (Toggle id)
-                    , Toggles.value <| Dict.member id model.selected
-                    ]
-                    []
+accountToRow model idx id (Model.Account account) items =
+    (Table.tr
+        [ Table.selected `when` Dict.member id model.selected ]
+        [ Table.td []
+            [ Toggles.checkbox Mdl
+                [ idx ]
+                model.mdl
+                [ Toggles.onClick (Toggle id)
+                , Toggles.value <| Dict.member id model.selected
                 ]
-            , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| Utils.valOrEmpty accountRec.username ]
-            , Table.td
-                [ cs "mdl-data-table__cell--non-numeric"
-                , css "width" "20%"
-                ]
-                [ Button.render Mdl
-                    [ 0, idx ]
-                    model.mdl
-                    [ Button.accent
-                    , Button.ripple
-                    , Button.onClick (Edit id)
-                    ]
-                    [ text "Edit" ]
-                , Button.render Mdl
-                    [ 0, 1, idx ]
-                    model.mdl
-                    [ --Button.colored
-                      Button.ripple
-                      --, Button.onClick (Edit id)
-                    ]
-                    [ Icon.i "expand_more" ]
-                ]
+                []
             ]
-        )
-            :: items
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| Utils.valOrEmpty account.username ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
+            (List.foldr roleToChip [] <| Maybe.withDefault [] account.roles)
+        , Table.td
+            [ cs "mdl-data-table__cell--non-numeric"
+            , css "width" "20%"
+            ]
+            [ Button.render Mdl
+                [ 0, idx ]
+                model.mdl
+                [ Button.accent
+                , Button.ripple
+                , Button.onClick (Edit id)
+                ]
+                [ text "Edit" ]
+            , Button.render Mdl
+                [ 0, 1, idx ]
+                model.mdl
+                [ --Button.colored
+                  Button.ripple
+                  --, Button.onClick (Edit id)
+                ]
+                [ Icon.i "expand_more" ]
+            ]
+        ]
+    )
+        :: items
 
 
 controlBar : Model -> Html Msg
