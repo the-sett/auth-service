@@ -213,7 +213,7 @@ controlBar model =
                     [ 1, 1 ]
                     model.mdl
                     [ cs "mdl-button--warn"
-                    , if someSelected model then
+                    , if (someSelected model) && (model.roleToEdit == None) then
                         Button.ripple
                       else
                         Button.disabled
