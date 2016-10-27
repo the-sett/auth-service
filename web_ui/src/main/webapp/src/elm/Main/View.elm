@@ -85,6 +85,9 @@ framing model contents =
             Just ( "Roles", _, _ ) ->
                 App.map RolesMsg (Roles.View.dialog model.roles)
 
+            Just ( "Permissions", _, _ ) ->
+                App.map PermissionsMsg (Permissions.View.dialog model.permissions)
+
             _ ->
                 div [] []
         ]

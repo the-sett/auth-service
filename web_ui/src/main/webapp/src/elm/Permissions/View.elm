@@ -47,7 +47,6 @@ table model =
                             []
                         ]
                     , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Permission" ]
-                    , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Permissions" ]
                     , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Actions" ]
                     ]
                 ]

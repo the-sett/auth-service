@@ -21,6 +21,7 @@ import Accounts.Types
 import Roles.State
 import Roles.Types
 import Permissions.State
+import Permissions.Types
 import Main.Types exposing (..)
 import Main.View
 
@@ -153,6 +154,9 @@ selectLocation model location =
 
                     "roles" ->
                         Cmd.Extra.message (RolesMsg Roles.Types.Init) |> Just
+
+                    "permissions" ->
+                        Cmd.Extra.message (PermissionsMsg Permissions.Types.Init) |> Just
 
                     x ->
                         Nothing
