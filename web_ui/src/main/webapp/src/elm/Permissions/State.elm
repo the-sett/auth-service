@@ -173,9 +173,6 @@ update action model =
         Save ->
             updateSave model
 
-        Cancel ->
-            ( { model | permissionToEdit = None }, Cmd.none )
-
 
 updateToggleAll : Model -> ( Model, Cmd Msg )
 updateToggleAll model =

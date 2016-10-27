@@ -80,7 +80,7 @@ permissionForm model isValid completeText =
                 model.mdl
                 Mdl
                 (ViewUtils.completeButton model.mdl Mdl completeText (isValid) Save)
-                (ViewUtils.cancelButton model.mdl Mdl "Cancel" Cancel)
+                (ViewUtils.cancelButton model.mdl Mdl "Cancel" Init)
             ]
         ]
 

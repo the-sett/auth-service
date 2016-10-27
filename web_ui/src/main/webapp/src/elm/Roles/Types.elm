@@ -39,4 +39,3 @@ type Msg
     | Delete
     | ConfirmDelete
     | Save
-    | Cancel
