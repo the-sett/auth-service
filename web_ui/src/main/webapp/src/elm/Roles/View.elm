@@ -5,7 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (title, class, action, colspan)
 import Platform.Cmd exposing (Cmd)
 import String
-import Material.Options as Options exposing (Style, cs, when, nop, disabled, attribute)
+import Material.Options as Options exposing (Style, cs, css, when, nop, disabled, attribute)
 import Material.Dialog as Dialog
 import Material.Table as Table
 import Material.Button as Button
@@ -133,7 +133,10 @@ viewRow model idx id (Model.Role role) =
         , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| Utils.valOrEmpty role.name ]
         , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
             (List.foldr permissionToChip [] <| Maybe.withDefault [] role.permissions)
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
+        , Table.td
+            [ cs "mdl-data-table__cell--non-numeric"
+            , css "width" "20%"
+            ]
             [ Button.render Mdl
                 [ 0, idx ]
                 model.mdl
