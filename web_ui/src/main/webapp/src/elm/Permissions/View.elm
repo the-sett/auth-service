@@ -25,7 +25,9 @@ import Listbox exposing (listbox, onSelectedChanged, items, initiallySelected)
 root : Model -> Html Msg
 root model =
     div [ class "layout-fixed-width" ]
-        [ table model ]
+        [ ViewUtils.rhythm1SpacerDiv
+        , table model
+        ]
 
 
 table : Model -> Html Msg

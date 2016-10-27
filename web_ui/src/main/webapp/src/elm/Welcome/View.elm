@@ -7,6 +7,7 @@ import Material.Button as Button
 import Material.Icon as Icon
 import Material.Textfield as Textfield
 import Welcome.Types exposing (..)
+import ViewUtils
 
 
 root : Model -> Html Msg
@@ -18,7 +19,8 @@ root' : Model -> Html Msg
 root' model =
     div []
         [ div [ class "layout-fixed-width--one-card" ]
-            [ div [ class "mdl-grid" ]
+            [ ViewUtils.rhythm1SpacerDiv
+            , div [ class "mdl-grid" ]
                 [ div [ class "mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp" ]
                     [ div [ class "mdl-card__media" ]
                         [ img [ src "images/data_center-large.png" ]

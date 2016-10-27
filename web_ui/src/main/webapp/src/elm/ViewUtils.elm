@@ -145,3 +145,8 @@ confirmDialog model title mdlAction action =
                 ]
             ]
         ]
+
+
+rhythm1SpacerDiv : Html msg
+rhythm1SpacerDiv =
+    div [ class "layout-spacer" ] []

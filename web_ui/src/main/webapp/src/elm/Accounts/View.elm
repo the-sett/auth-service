@@ -28,7 +28,8 @@ import ViewUtils
 root : Model -> Html Msg
 root model =
     div [ class "layout-fixed-width" ]
-        [ case model.viewState of
+        [ ViewUtils.rhythm1SpacerDiv
+        , case model.viewState of
             ListView ->
                 table model
 
