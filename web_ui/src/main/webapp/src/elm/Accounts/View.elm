@@ -76,8 +76,8 @@ roleToChip (Model.Role role) items =
         :: items
 
 
-accountToRow : Model -> Int -> String -> Model.Account -> List (Html Msg) -> List (Html Msg)
-accountToRow model idx id (Model.Account account) items =
+viewRow : Model -> Int -> String -> Model.Account -> Html Msg
+viewRow model idx id (Model.Account account) =
     (Table.tr
         [ Table.selected `when` Dict.member id model.selected ]
         [ Table.td []
@@ -118,6 +118,11 @@ accountToRow model idx id (Model.Account account) items =
             ]
         ]
     )
+
+
+accountToRow : Model -> Int -> String -> Model.Account -> List (Html Msg) -> List (Html Msg)
+accountToRow model idx id account items =
+    (viewRow model idx id account)
         :: items
 
 
