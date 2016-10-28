@@ -59,22 +59,34 @@ invokeDelete msg id =
 
 type alias Callbacks model msg =
     { findAll : List (Model.Account) -> model -> ( model, Cmd msg )
+    , findAllError : Http.Error -> model -> ( model, Cmd msg )
     , findByExample : List (Model.Account) -> model -> ( model, Cmd msg )
+    , findByExampleError : Http.Error -> model -> ( model, Cmd msg )
     , create : Model.Account -> model -> ( model, Cmd msg )
+    , createError : Http.Error -> model -> ( model, Cmd msg )
     , retrieve : Model.Account -> model -> ( model, Cmd msg )
+    , retrieveError : Http.Error -> model -> ( model, Cmd msg )
     , update : Model.Account -> model -> ( model, Cmd msg )
+    , updateError : Http.Error -> model -> ( model, Cmd msg )
     , delete : String -> model -> ( model, Cmd msg )
+    , deleteError : Http.Error -> model -> ( model, Cmd msg )
     , error : Http.Error -> model -> ( model, Cmd msg )
     }
 
 callbacks : Callbacks model msg
 callbacks =
     { findAll = \_ -> \model -> ( model, Cmd.none )
+    , findAllError = \_ -> \model -> ( model, Cmd.none )
     , findByExample = \_ -> \model -> ( model, Cmd.none )
+    , findByExampleError = \_ -> \model -> ( model, Cmd.none )
     , create = \_ -> \model -> ( model, Cmd.none )
+    , createError = \_ -> \model -> ( model, Cmd.none )
     , retrieve = \_ -> \model -> ( model, Cmd.none )
+    , retrieveError = \_ -> \model -> ( model, Cmd.none )
     , update = \_ -> \model -> ( model, Cmd.none )
+    , updateError = \_ -> \model -> ( model, Cmd.none )
     , delete = \_ -> \model -> ( model, Cmd.none )
+    , deleteError = \_ -> \model -> ( model, Cmd.none )
     , error = \_ -> \model -> ( model, Cmd.none )
     }
 
@@ -93,7 +105,11 @@ update' callbacks action model =
                     callbacks.findAll account model
 
                 Err httpError ->
-                    callbacks.error httpError model
+                  let
+                    (modelSpecific, cmdSpecific) = callbacks.findAllError httpError model
+                    (modelGeneral, cmdGeneral) = callbacks.error httpError modelSpecific
+                  in
+                    (modelGeneral, Cmd.batch [cmdSpecific, cmdGeneral])
             )
 
         FindByExample result ->
@@ -102,7 +118,11 @@ update' callbacks action model =
                     callbacks.findByExample account model
 
                 Err httpError ->
-                    callbacks.error httpError model
+                    let
+                      (modelSpecific, cmdSpecific) = callbacks.findByExampleError httpError model
+                      (modelGeneral, cmdGeneral) = callbacks.error httpError modelSpecific
+                    in
+                      (modelGeneral, Cmd.batch [cmdSpecific, cmdGeneral])
             )
 
         Create result ->
@@ -111,7 +131,11 @@ update' callbacks action model =
                     callbacks.create account model
 
                 Err httpError ->
-                    callbacks.error httpError model
+                    let
+                      (modelSpecific, cmdSpecific) = callbacks.createError httpError model
+                      (modelGeneral, cmdGeneral) = callbacks.error httpError modelSpecific
+                    in
+                      (modelGeneral, Cmd.batch [cmdSpecific, cmdGeneral])
             )
 
         Retrieve result ->
@@ -120,7 +144,11 @@ update' callbacks action model =
                     callbacks.retrieve account model
 
                 Err httpError ->
-                    callbacks.error httpError model
+                    let
+                      (modelSpecific, cmdSpecific) = callbacks.retrieveError httpError model
+                      (modelGeneral, cmdGeneral) = callbacks.error httpError modelSpecific
+                    in
+                      (modelGeneral, Cmd.batch [cmdSpecific, cmdGeneral])
             )
 
         Update result ->
@@ -129,7 +157,11 @@ update' callbacks action model =
                     callbacks.update account model
 
                 Err httpError ->
-                    callbacks.error httpError model
+                    let
+                      (modelSpecific, cmdSpecific) = callbacks.updateError httpError model
+                      (modelGeneral, cmdGeneral) = callbacks.error httpError modelSpecific
+                    in
+                      (modelGeneral, Cmd.batch [cmdSpecific, cmdGeneral])
             )
 
         Delete result ->
@@ -138,7 +170,11 @@ update' callbacks action model =
                     callbacks.delete response model
 
                 Err httpError ->
-                    callbacks.error httpError model
+                    let
+                      (modelSpecific, cmdSpecific) = callbacks.deleteError httpError model
+                      (modelGeneral, cmdGeneral) = callbacks.error httpError modelSpecific
+                    in
+                      (modelGeneral, Cmd.batch [cmdSpecific, cmdGeneral])
             )
 
 api =  "/api/"
@@ -196,7 +232,7 @@ retrieveTask id =
 
 updateTask : String -> Account -> Task Http.Error Account
 updateTask id model =
-    { verb = "POST"
+    { verb = "PUT"
     , headers = [ ( "Content-Type", "application/json" ) ]
     , url = routes.update ++ id
     , body = Http.string <| Encode.encode 0 <| accountEncoder model
