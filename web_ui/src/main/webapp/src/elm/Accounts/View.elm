@@ -4,7 +4,7 @@ import Set as Set
 import Array
 import Dict
 import Html exposing (..)
-import Html.Attributes exposing (title, class, action, attribute)
+import Html.Attributes exposing (title, class, action, attribute, colspan)
 import Html.Events exposing (on)
 import Json.Decode as Decode
 import Material
@@ -76,6 +76,14 @@ roleToChip (Model.Role role) items =
         :: items
 
 
+permissionToChip : Model.Permission -> List (Html Msg) -> List (Html Msg)
+permissionToChip (Model.Permission permission) items =
+    (span [ class "mdl-chip mdl-chip__text" ]
+        [ text <| Utils.valOrEmpty permission.name ]
+    )
+        :: items
+
+
 viewRow : Model -> Int -> String -> Model.Account -> Html Msg
 viewRow model idx id (Model.Account account) =
     (Table.tr
@@ -120,10 +128,29 @@ viewRow model idx id (Model.Account account) =
     )
 
 
+moreRow : Model -> Int -> String -> Model.Account -> Html Msg
+moreRow model idx id (Model.Account account) =
+    Table.tr []
+        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric data-table__active-row" ]
+            ((text "Permissions: ")
+                :: (List.foldr permissionToChip [] <| conflatePermissions (Model.Account account))
+            )
+        ]
+
+
 accountToRow : Model -> Int -> String -> Model.Account -> List (Html Msg) -> List (Html Msg)
 accountToRow model idx id account items =
-    (viewRow model idx id account)
-        :: items
+    let
+        more =
+            moreRow model idx id account
+    in
+        if moreSelected id model then
+            (viewRow model idx id account)
+                :: more
+                :: items
+        else
+            (viewRow model idx id account)
+                :: items
 
 
 controlBar : Model -> Html Msg

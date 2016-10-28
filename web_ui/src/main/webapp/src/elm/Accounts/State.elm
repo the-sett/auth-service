@@ -9,7 +9,9 @@ import Maybe
 import String
 import Platform.Cmd exposing (Cmd)
 import Cmd.Extra
+import List.Extra
 import Http
+import Exts.Maybe exposing (catMaybes)
 import Material
 import Utils exposing (..)
 import Accounts.Types exposing (..)
@@ -90,9 +92,33 @@ unwrapRole (Model.Role role) =
     role
 
 
+unwrapPermission (Model.Permission permission) =
+    permission
+
+
 moreSelected : String -> Model -> Bool
 moreSelected id model =
     Set.member id model.moreStatus
+
+
+conflatePermissions : Model.Account -> List (Model.Permission)
+conflatePermissions (Model.Account account) =
+    let
+        conflateRoles (Model.Role role) =
+            case role.permissions of
+                Nothing ->
+                    []
+
+                Just permissions ->
+                    permissions
+    in
+        case account.roles of
+            Nothing ->
+                []
+
+            Just roles ->
+                List.concatMap conflateRoles roles
+                    |> List.Extra.uniqueBy (unwrapPermission >> .id >> (Maybe.withDefault ""))
 
 
 
@@ -334,6 +360,7 @@ updateInit model =
         | selected = Dict.empty
         , viewState = ListView
         , accountToEdit = Nothing
+        , moreStatus = Set.empty
       }
     , Account.Service.invokeFindAll AccountApi
     )
