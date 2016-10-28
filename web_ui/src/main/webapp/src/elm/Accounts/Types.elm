@@ -27,6 +27,7 @@ type alias Model =
     , password2 : Maybe String
     , roleLookup : Dict String Model.Role
     , selectedRoles : Dict String Model.Role
+    , numToDelete : Int
     }
 
 

@@ -33,6 +33,7 @@ init =
     , password2 = Nothing
     , roleLookup = Dict.empty
     , selectedRoles = Dict.empty
+    , numToDelete = 0
     }
 
 
@@ -181,6 +182,7 @@ accountCallbacks =
             , retrieve = accountToEdit
             , update = accountSaved
             , delete = accountDelete
+            , deleteError = accountDeleteError
             , error = error
         }
 
@@ -214,8 +216,30 @@ accountDelete id model =
     let
         newAccounts =
             Dict.remove id model.accounts
+
+        numToDelete =
+            model.numToDelete - 1
     in
-        ( { model | accounts = newAccounts }, Cmd.none )
+        ( { model | accounts = newAccounts, numToDelete = numToDelete }
+        , if numToDelete == 0 then
+            Cmd.Extra.message Init
+          else
+            Cmd.none
+        )
+
+
+accountDeleteError : Http.Error -> Model -> ( Model, Cmd Msg )
+accountDeleteError error model =
+    let
+        numToDelete =
+            model.numToDelete - 1
+    in
+        ( { model | numToDelete = numToDelete }
+        , if numToDelete == 0 then
+            Cmd.Extra.message Init
+          else
+            Cmd.none
+        )
 
 
 
@@ -363,7 +387,7 @@ updateConfirmDelete model =
             Dict.filter (\_ -> nonRootFilter) selectedAccounts
                 |> Dict.keys
     in
-        ( { model | selected = Dict.empty }
+        ( { model | selected = Dict.empty, numToDelete = List.length toDelete }
         , List.map
             (\id ->
                 Account.Service.invokeDelete AccountApi id
