@@ -34,6 +34,7 @@ init =
     , roleLookup = Dict.empty
     , selectedRoles = Dict.empty
     , numToDelete = 0
+    , moreStatus = Set.empty
     }
 
 
@@ -87,6 +88,11 @@ unwrapAccount (Model.Account account) =
 
 unwrapRole (Model.Role role) =
     role
+
+
+moreSelected : String -> Model -> Bool
+moreSelected id model =
+    Set.member id model.moreStatus
 
 
 
@@ -287,6 +293,9 @@ update action model =
 
         Toggle k ->
             updateToggle k model
+
+        ToggleMore id ->
+            ( { model | moreStatus = Utils.toggleSet id model.moreStatus }, Cmd.none )
 
         Add ->
             updateAdd model

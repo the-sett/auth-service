@@ -107,11 +107,14 @@ accountToRow model idx id (Model.Account account) items =
             , Button.render Mdl
                 [ 0, 1, idx ]
                 model.mdl
-                [ --Button.colored
-                  Button.ripple
-                  --, Button.onClick (Edit id)
+                [ Button.ripple
+                , Button.onClick (ToggleMore id)
                 ]
-                [ Icon.i "expand_more" ]
+                [ if moreSelected id model then
+                    Icon.i "expand_less"
+                  else
+                    Icon.i "expand_more"
+                ]
             ]
         ]
     )

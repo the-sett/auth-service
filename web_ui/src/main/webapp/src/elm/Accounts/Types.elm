@@ -28,6 +28,7 @@ type alias Model =
     , roleLookup : Dict String Model.Role
     , selectedRoles : Dict String Model.Role
     , numToDelete : Int
+    , moreStatus : Set String
     }
 
 
@@ -38,6 +39,7 @@ type Msg
     | Init
     | Toggle (String)
     | ToggleAll
+    | ToggleMore (String)
     | Add
     | Delete
     | ConfirmDelete

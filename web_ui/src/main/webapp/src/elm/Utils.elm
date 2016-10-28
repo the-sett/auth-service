@@ -168,3 +168,18 @@ valOrEmpty maybeVal =
 
         Just val ->
             val
+
+
+
+{-
+   Toggles a value in a set. If the value is present, it is removed, if it is
+   not present it is inserted.
+-}
+
+
+toggleSet : comparable -> Set comparable -> Set comparable
+toggleSet key set =
+    if Set.member key set then
+        Set.remove key set
+    else
+        Set.insert key set
