@@ -5,6 +5,7 @@ import String
 import Dict exposing (Dict)
 import Platform.Cmd exposing (Cmd)
 import Cmd.Extra
+import Http
 import Material
 import Roles.Types exposing (..)
 import Utils exposing (..)
@@ -22,6 +23,7 @@ init =
     , permissionLookup = Dict.empty
     , selectedPermissions = Dict.empty
     , roleToEdit = None
+    , numToDelete = 0
     }
 
 
@@ -140,6 +142,7 @@ roleCallbacks =
             , create = roleCreate
             , update = roleSaved
             , delete = roleDelete
+            , deleteError = roleDeleteError
             , error = error
         }
 
@@ -166,8 +169,30 @@ roleDelete id model =
     let
         newRoles =
             Dict.remove id model.roles
+
+        numToDelete =
+            model.numToDelete - 1
     in
-        ( { model | roles = newRoles }, Cmd.none )
+        ( { model | roles = newRoles }
+        , if numToDelete == 0 then
+            Cmd.Extra.message Init
+          else
+            Cmd.none
+        )
+
+
+roleDeleteError : Http.Error -> Model -> ( Model, Cmd Msg )
+roleDeleteError error model =
+    let
+        numToDelete =
+            model.numToDelete - 1
+    in
+        ( { model | numToDelete = numToDelete }
+        , if numToDelete == 0 then
+            Cmd.Extra.message Init
+          else
+            Cmd.none
+        )
 
 
 
@@ -314,14 +339,21 @@ updateEdit id model =
 
 
 updateConfirmDelete model =
-    ( { model | selected = Dict.empty }
-    , List.map
-        (\id ->
-            Role.Service.invokeDelete RoleApi id
+    let
+        toDelete =
+            (Dict.keys <| Dict.intersect model.roles model.selected)
+    in
+        ( { model
+            | selected = Dict.empty
+            , numToDelete = model.numToDelete + List.length toDelete
+          }
+        , List.map
+            (\id ->
+                Role.Service.invokeDelete RoleApi id
+            )
+            toDelete
+            |> Cmd.batch
         )
-        (Dict.keys <| Dict.intersect model.roles model.selected)
-        |> Cmd.batch
-    )
 
 
 updateSave model =

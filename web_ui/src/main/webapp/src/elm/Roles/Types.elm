@@ -22,6 +22,7 @@ type alias Model =
     , permissionLookup : Dict String Model.Permission
     , selectedPermissions : Dict String Model.Permission
     , roleToEdit : ItemToEdit
+    , numToDelete : Int
     }
 
 

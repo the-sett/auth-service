@@ -387,7 +387,10 @@ updateConfirmDelete model =
             Dict.filter (\_ -> nonRootFilter) selectedAccounts
                 |> Dict.keys
     in
-        ( { model | selected = Dict.empty, numToDelete = List.length toDelete }
+        ( { model
+            | selected = Dict.empty
+            , numToDelete = model.numToDelete + List.length toDelete
+          }
         , List.map
             (\id ->
                 Account.Service.invokeDelete AccountApi id

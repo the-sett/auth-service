@@ -5,6 +5,7 @@ import String
 import Dict exposing (Dict)
 import Platform.Cmd exposing (Cmd)
 import Cmd.Extra
+import Http
 import Material
 import Permissions.Types exposing (..)
 import Utils exposing (..)
@@ -19,6 +20,7 @@ init =
     , permissions = Dict.empty
     , permissionName = Nothing
     , permissionToEdit = None
+    , numToDelete = 0
     }
 
 
@@ -102,6 +104,7 @@ permissionCallbacks =
             , create = permissionCreate
             , update = permissionSaved
             , delete = permissionDelete
+            , deleteError = permissionDeleteError
             , error = error
         }
 
@@ -128,8 +131,30 @@ permissionDelete id model =
     let
         newPermissions =
             Dict.remove id model.permissions
+
+        numToDelete =
+            model.numToDelete - 1
     in
-        ( { model | permissions = newPermissions }, Cmd.none )
+        ( { model | permissions = newPermissions }
+        , if numToDelete == 0 then
+            Cmd.Extra.message Init
+          else
+            Cmd.none
+        )
+
+
+permissionDeleteError : Http.Error -> Model -> ( Model, Cmd Msg )
+permissionDeleteError error model =
+    let
+        numToDelete =
+            model.numToDelete - 1
+    in
+        ( { model | numToDelete = numToDelete }
+        , if numToDelete == 0 then
+            Cmd.Extra.message Init
+          else
+            Cmd.none
+        )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -240,14 +265,21 @@ updateEdit id model =
 
 
 updateConfirmDelete model =
-    ( { model | selected = Dict.empty }
-    , List.map
-        (\id ->
-            Permission.Service.invokeDelete PermissionApi id
+    let
+        toDelete =
+            (Dict.keys <| Dict.intersect model.permissions model.selected)
+    in
+        ( { model
+            | selected = Dict.empty
+            , numToDelete = model.numToDelete + List.length toDelete
+          }
+        , List.map
+            (\id ->
+                Permission.Service.invokeDelete PermissionApi id
+            )
+            toDelete
+            |> Cmd.batch
         )
-        (Dict.keys <| Dict.intersect model.permissions model.selected)
-        |> Cmd.batch
-    )
 
 
 updateSave model =

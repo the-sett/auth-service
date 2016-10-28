@@ -19,6 +19,7 @@ type alias Model =
     , permissions : Dict String Model.Permission
     , permissionName : Maybe String
     , permissionToEdit : ItemToEdit
+    , numToDelete : Int
     }
 
 
