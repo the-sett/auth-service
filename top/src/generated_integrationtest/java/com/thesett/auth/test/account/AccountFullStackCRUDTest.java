@@ -7,6 +7,7 @@ import com.thesett.auth.services.rest.RoleResource;
 import com.thesett.test.controllers.GenericDAOFactory;
 import com.thesett.test.controllers.HibernateTransactionDAOFactory;
 import com.thesett.util.entity.EntityAlreadyExistsException;
+import com.thesett.util.entity.EntityDeletionException;
 import com.thesett.util.security.shiro.LocalSubject;
 import com.thesett.util.security.shiro.ShiroUtils;
 import org.apache.shiro.subject.Subject;
@@ -115,6 +116,29 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
         account = accountService.update(account.getId(), account);
 
         Assert.assertEquals("The username should not be able to be changed.", "test", account.getUsername());
+    }
+
+    @Test
+    public void testUpdateRootStatusCannotBeChanged() throws Exception {
+        AccountService accountService = (AccountService) getServiceLayer();
+
+        Account account = new Account().withUsername("test").withPassword("password").withRoot(true).withRoles(testRoles);
+        account = accountService.create(account);
+
+        account.setRoot(false);
+        account = accountService.update(account.getId(), account);
+
+        Assert.assertTrue("The root status shout not be able to be changed.", account.getRoot());
+    }
+
+    @Test(expected = EntityDeletionException.class)
+    public void testRootAccountCannotBeDeleted() throws Exception {
+        AccountService accountService = (AccountService) getServiceLayer();
+
+        Account account = new Account().withUsername("test").withPassword("password").withRoot(true).withRoles(testRoles);
+        account = accountService.create(account);
+
+        accountService.delete(account.getId());
     }
 
     @Test

@@ -42,7 +42,7 @@ public class AccountTestData extends TestDataSupplierLongKey<Account>
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(role);
 
-        initialValue = new Account().withUsername("user1").withPassword("password").withRoot(true).withRoles(roleSet);
+        initialValue = new Account().withUsername("user1").withPassword("password").withRoot(false).withRoles(roleSet);
         updatedValue = new Account().withUsername("user1").withRoot(false).withRoles(roleSet);
     }
 

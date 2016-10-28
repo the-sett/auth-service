@@ -20,6 +20,7 @@ import com.thesett.auth.dao.RoleDAO;
 import com.thesett.auth.model.Account;
 import com.thesett.auth.model.Role;
 import com.thesett.auth.services.AccountService;
+import com.thesett.util.entity.EntityDeletionException;
 import com.thesett.util.entity.EntityException;
 import com.thesett.util.entity.EntityNotExistsException;
 import com.thesett.util.entity.EntityValidationException;
@@ -236,6 +237,9 @@ public class AccountResource implements AccountService
         // The username cannot be changed
         account.setUsername(accountToModify.getUsername());
 
+        // The root status cannot be changed
+        account.setRoot(accountToModify.getRoot());
+
         // Ensure that at least one role is set on the account.
         checkAtLeastOneRole(account);
 
@@ -305,6 +309,18 @@ public class AccountResource implements AccountService
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
         subject.checkPermission("admin");
+
+        // Obtain the account to modify and silently failt if there is no account to delete.
+        Account accountToModify = accountDAO.retrieve(id);
+
+        if (accountToModify == null) {
+            return;
+        }
+
+        // Accounts with 'root' status cannot be deleted.
+        if (accountToModify.getRoot()) {
+            throw new EntityDeletionException("Accounts with 'root' status cannot be deleted.");
+        }
 
         accountDAO.delete(id);
     }
