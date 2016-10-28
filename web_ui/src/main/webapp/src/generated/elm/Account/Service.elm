@@ -232,7 +232,7 @@ retrieveTask id =
 
 updateTask : String -> Account -> Task Http.Error Account
 updateTask id model =
-    { verb = "PUT"
+    { verb = "POST"
     , headers = [ ( "Content-Type", "application/json" ) ]
     , url = routes.update ++ id
     , body = Http.string <| Encode.encode 0 <| accountEncoder model
