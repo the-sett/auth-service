@@ -4,6 +4,10 @@
 
     <Package name="com.thesett.auth.model"/>
 
+    <StringPattern name="username" regexp="^[a-zA-Z0-9]{4,30}$"/>
+    <StringPattern name="roleName" regexp="^[a-zA-Z0-9]{4,30}$"/>
+    <StringPattern name="permissionName" regexp="^[a-zA-Z0-9]{4,30}$"/>
+    
     <!-- For providing references to records (also used for simple summary queries) -->
     <ViewDef name="namedRef">
         <String name="name"/>
@@ -12,7 +16,7 @@
     <!-- === Security: Users, Roles and Permissions. === -->
     <EntityDef name="account">
         <Unique natural_key="true">
-            <String name="username"/>
+            <String name="username" type="username"/>
         </Unique>
         <String name="password"/>
         <Boolean name="root"/>
@@ -23,11 +27,8 @@
 
     <EntityDef name="role">
         <Unique natural_key="true">
-            <String name="name"/>
+            <String name="name" type="roleName"/>
         </Unique>
-        <!--<Set name="accounts">-->
-            <!--<Component name="account" type="account"/>-->
-        <!--</Set>-->
         <Set name="permissions">
             <Component name="permission" type="permission"/>
         </Set>
@@ -35,7 +36,7 @@
 
     <EntityDef name="permission">
         <Unique natural_key="true">
-            <String name="name"/>
+            <String name="name" type="permissionName"/>
         </Unique>
     </EntityDef>
 

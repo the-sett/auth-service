@@ -25,7 +25,9 @@
 
     <bean class="Account" ignore-annotations="true">
         <field name="username">
-            <valid/>
+            <constraint annotation="javax.validation.constraints.Pattern">
+                <element name="regexp">^[a-zA-Z0-9]{4,30}$</element>
+            </constraint>
         </field>
         <field name="password">
             <valid/>
@@ -41,7 +43,9 @@
 
     <bean class="Role" ignore-annotations="true">
         <field name="name">
-            <valid/>
+            <constraint annotation="javax.validation.constraints.Pattern">
+                <element name="regexp">^[a-zA-Z0-9]{4,30}$</element>
+            </constraint>
         </field>
         <field name="permissions">
             <valid/>
@@ -51,7 +55,9 @@
 
     <bean class="Permission" ignore-annotations="true">
         <field name="name">
-            <valid/>
+            <constraint annotation="javax.validation.constraints.Pattern">
+                <element name="regexp">^[a-zA-Z0-9]{4,30}$</element>
+            </constraint>
         </field>
     </bean>
 
