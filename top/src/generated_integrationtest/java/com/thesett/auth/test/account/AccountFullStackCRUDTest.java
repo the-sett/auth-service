@@ -86,7 +86,7 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
         RoleService roleService = getRoleService();
 
         testRoles = new HashSet<>();
-        testRoles.add(roleService.create(new Role().withName("testRole")));
+        testRoles.add(roleService.create(new Role().withName("someRole")));
     }
 
     @After
