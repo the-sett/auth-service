@@ -213,7 +213,15 @@ hibernate_config_class(catalogue, decorator, name, fields, templateMap, domain=f
   <id name="id" column="id" type="long">
     <generator class="native"/>
   </id>
-  «fields.keys:{it|«(templateMap.(fields.(it).kind))(it, decorator, fields.(it), false)»}; separator="\n"»
+  «decorator.propertiesByUniqueGrouping.keys:{groupName|«\\»
+«if(!groupName.empty)»«\\»
+<properties name="«name; format="ccu"»«groupName»" unique="true">
+«endif»«\\»
+  «decorator.propertiesByUniqueGrouping.(groupName):{it|«(templateMap.(fields.(it).kind))(it, decorator, fields.(it), false)»}; separator="\n"»
+«if(!groupName.empty)»«\\»
+</properties>
+«endif»«\\»
+  }»«\\»
   «if(decorator.externalId)»  <many-to-one name="externalId" column="externalId" not-null="false" lazy="false" unique="true"/>«endif»
 </class>
 >>

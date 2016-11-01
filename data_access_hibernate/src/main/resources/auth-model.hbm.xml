@@ -8,7 +8,6 @@
     <id name="id" column="id" type="long">
       <generator class="native"/>
     </id>
-    <property name="username" column="username" type="text"/>
     <property name="password" column="password" type="text"/>
     <property name="root" column="root" type="boolean"/>
 
@@ -20,14 +19,16 @@
 
 
 
+    <properties name="Account2" unique="true">
+    <property name="username" column="username" type="text"/>
+    </properties>
+
   </class>
 
   <class name="Role" table="role"  lazy="true">
     <id name="id" column="id" type="long">
       <generator class="native"/>
     </id>
-    <property name="name" column="name" type="text"/>
-
     <!--REL: permissions -> Permission: Many-Many role_permission owner uni-->
     <set name="permissions" table="role_permission" cascade="save-update" lazy="false">
       <key column="role_id"/>
@@ -36,13 +37,20 @@
 
 
 
+    <properties name="Role2" unique="true">
+    <property name="name" column="name" type="text"/>
+    </properties>
+
   </class>
 
   <class name="Permission" table="permission"  lazy="true">
     <id name="id" column="id" type="long">
       <generator class="native"/>
     </id>
+    <properties name="Permission2" unique="true">
     <property name="name" column="name" type="text"/>
+    </properties>
+
   </class>
 
   <class name="com.thesett.catalogue.model.ExternalId" table="external_id">

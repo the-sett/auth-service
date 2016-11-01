@@ -1,9 +1,9 @@
 
     create table account (
         id int8 not null,
-        username text,
         password text,
         root boolean,
+        username text,
         primary key (id)
     );
 
@@ -36,6 +36,15 @@
         permission_id int8 not null,
         primary key (role_id, permission_id)
     );
+
+    alter table account 
+        add constraint UK_gex1lmaqpg0ir5g1f5eftyaa1  unique (username);
+
+    alter table permission 
+        add constraint UK_2ojme20jpga3r4r79tdso17gi  unique (name);
+
+    alter table role 
+        add constraint UK_8sewwnpamngi6b1dwaa88askk  unique (name);
 
     alter table account_role 
         add constraint FK_p2jpuvn8yll7x96rae4hvw3sj 
