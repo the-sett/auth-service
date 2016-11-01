@@ -57,6 +57,9 @@ public class AccountResource implements AccountService
     /** The DAO to use for persisting roles. */
     private final RoleDAO roleDAO;
 
+    /** The password hasher. */
+    private final PasswordHasherSha256 passwordHasher = new PasswordHasherSha256(1000);
+
     /**
      * Creates the account RESTful service implementation.
      *
@@ -155,6 +158,9 @@ public class AccountResource implements AccountService
         // Find all of the roles requested, and set them on the account.
         attachRoles(account);
 
+        // Ensure the password is hashed.
+        hashPassword(account);
+
         Account result = accountDAO.create(account);
 
         // Null out the password.
@@ -228,10 +234,15 @@ public class AccountResource implements AccountService
             throw new EntityNotExistsException();
         }
 
-        // Copy across the password, if it is not set.
+        // Copy across the password, if it is not set or ensure the password is hashed if a new
+        // one is being set.
         if (StringUtils.nullOrEmpty(account.getPassword()))
         {
             account.setPassword(accountToModify.getPassword());
+        }
+        else
+        {
+            hashPassword(account);
         }
 
         // The username cannot be changed
@@ -352,6 +363,22 @@ public class AccountResource implements AccountService
         account.setPassword(null);
 
         return account;
+    }
+
+    /**
+     * Hashes the password on an account.
+     *
+     * @param account The account to hash the password of.
+     *
+     * @return The account with its password hashed.
+     */
+    private Account hashPassword(Account account)
+    {
+        String hash = passwordHasher.hash(account.getPassword());
+        account.setPassword(hash);
+
+        return account;
+
     }
 
     protected <O> O checkNotNull(O object) {
