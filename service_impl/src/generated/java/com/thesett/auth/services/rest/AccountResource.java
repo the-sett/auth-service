@@ -238,6 +238,7 @@ public class AccountResource implements AccountService
         if (StringUtils.nullOrEmpty(account.getPassword()))
         {
             account.setPassword(accountToModify.getPassword());
+            account.setSalt(accountToModify.getSalt());
         }
         else
         {
