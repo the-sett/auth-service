@@ -41,5 +41,5 @@ type alias Token =
     , exp : Maybe String
     , iat : Maybe String
     , jti : Maybe String
-    , permissions : List String
+    , scopes : List String
     }
