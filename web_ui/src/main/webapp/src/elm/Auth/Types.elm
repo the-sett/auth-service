@@ -26,8 +26,15 @@ type alias AuthState =
 
 type alias Model =
     { token : Maybe String
+    , decodedToken : Maybe Token
     , errorMsg : String
     , authState : AuthState
     , forwardLocation : String
     , logoutLocation : String
+    }
+
+
+type alias Token =
+    { subject : String
+    , permissions : List String
     }

@@ -3,6 +3,9 @@ port module Auth.State exposing (update, subscriptions, init)
 import Log
 import Navigation
 import Http
+import Json.Decode as Decode exposing (Decoder, (:=))
+import Json.Decode.Extra exposing ((|:))
+import Jwt
 import Utils exposing (..)
 import Auth.Types exposing (..)
 import Auth.Service
@@ -12,6 +15,7 @@ import Model
 init : Model
 init =
     { token = Nothing
+    , decodedToken = Nothing
     , errorMsg = ""
     , authState =
         { loggedIn = False
@@ -20,6 +24,23 @@ init =
     , forwardLocation = ""
     , logoutLocation = ""
     }
+
+
+tokenDecoder : Decoder Token
+tokenDecoder =
+    (Decode.succeed
+        (\subject permissions ->
+            { subject = subject
+            , permissions = permissions
+            }
+        )
+    )
+        |: ("sub" := Decode.string)
+        |: ("permissions" := Decode.list Decode.string)
+
+
+
+-- Private interface for authentication functions, and storage of auth state.
 
 
 subscriptions : Model -> Sub Msg
@@ -44,6 +65,10 @@ port receiveLogout : (() -> msg) -> Sub msg
 
 
 port receiveUnauthed : (() -> msg) -> Sub msg
+
+
+
+-- Auth REST API calls.
 
 
 callbacks : Auth.Service.Callbacks Model Msg
@@ -85,7 +110,14 @@ authStateFromToken maybeToken =
             { loggedIn = False, permissions = [] }
 
         Just token ->
-            { loggedIn = True, permissions = [] }
+            let
+                decodedToken =
+                    Jwt.decodeToken tokenDecoder token
+
+                d =
+                    Log.debug "auth" decodedToken
+            in
+                { loggedIn = True, permissions = [] }
 
 
 authRequestFromCredentials : Credentials -> Model.AuthRequest
