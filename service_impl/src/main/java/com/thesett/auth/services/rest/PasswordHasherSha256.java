@@ -1,12 +1,16 @@
 /* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 package com.thesett.auth.services.rest;
 
+import java.io.IOException;
+
 import com.thesett.common.util.Pair;
 
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.util.ByteSource;
+
+import sun.misc.BASE64Decoder;
 
 /**
  * PasswordHasherSha256 salts and hashes a password using SHA-256 for a defined number of iterations.
@@ -42,7 +46,7 @@ public class PasswordHasherSha256
      *
      * @param  password The password to hash.
      *
-     * @return The hashed password.
+     * @return The hashed password and its randomly chosen salt.
      */
     public Pair<String, String> hash(String password)
     {
@@ -50,5 +54,33 @@ public class PasswordHasherSha256
         String result = new Sha256Hash(password, salt, hashIterations).toBase64();
 
         return new Pair<>(result, salt.toBase64());
+    }
+
+    /**
+     * Checks a password against a hash and its salt.
+     *
+     * @param  password The password to check.
+     * @param  hash     The password hash.
+     * @param  salt     The salt to use when hashing the password.
+     *
+     * @return <tt>true</tt> iff the password matches the hash, when hashed with the supplied salt.
+     */
+    public boolean checkHash(String password, String hash, String salt)
+    {
+        BASE64Decoder decoder = new BASE64Decoder();
+        byte[] saltBytes = new byte[0];
+
+        try
+        {
+            saltBytes = decoder.decodeBuffer(salt);
+        }
+        catch (IOException e)
+        {
+            throw new IllegalStateException("The salt does not contain base64 data.", e);
+        }
+
+        String result = new Sha256Hash(password, saltBytes, hashIterations).toBase64();
+
+        return hash.equals(result);
     }
 }

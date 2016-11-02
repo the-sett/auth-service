@@ -56,6 +56,9 @@ public class AuthResource
     /** The account DAO for verifying logins against. */
     private final AccountDAO accountDAO;
 
+    /** The password hasher. */
+    private final PasswordHasherSha256 passwordHasher = new PasswordHasherSha256(1000);
+
     /**
      * Creates a set of authentication end-points, against the accounts accessible through the specified accounts DAO.
      *
@@ -102,7 +105,7 @@ public class AuthResource
             return UNAUTHORIZED;
         }
 
-        if (!account.getPassword().equals(authRequest.getPassword()))
+        if (!passwordHasher.checkHash(authRequest.getPassword(), account.getPassword(), account.getSalt()))
         {
             return UNAUTHORIZED;
         }
