@@ -29,9 +29,10 @@ init =
 tokenDecoder : Decoder Token
 tokenDecoder =
     (Decode.succeed
-        (\sub iss exp iat jti permissions ->
+        (\sub iss aud exp iat jti permissions ->
             { sub = sub
             , iss = iss
+            , aud = aud
             , exp = exp
             , iat = iat
             , jti = jti
@@ -41,6 +42,7 @@ tokenDecoder =
     )
         |: ("sub" := Decode.string)
         |: Decode.maybe ("iss" := Decode.string)
+        |: Decode.maybe ("aud" := Decode.string)
         |: Decode.maybe ("exp" := Decode.string)
         |: Decode.maybe ("iat" := Decode.string)
         |: Decode.maybe ("jti" := Decode.string)

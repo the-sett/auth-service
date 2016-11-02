@@ -37,6 +37,7 @@ type alias Model =
 type alias Token =
     { sub : String
     , iss : Maybe String
+    , aud : Maybe String
     , exp : Maybe String
     , iat : Maybe String
     , jti : Maybe String
