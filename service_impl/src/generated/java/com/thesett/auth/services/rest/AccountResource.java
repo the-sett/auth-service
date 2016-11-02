@@ -20,6 +20,7 @@ import com.thesett.auth.dao.RoleDAO;
 import com.thesett.auth.model.Account;
 import com.thesett.auth.model.Role;
 import com.thesett.auth.services.AccountService;
+import com.thesett.common.util.Pair;
 import com.thesett.util.entity.EntityDeletionException;
 import com.thesett.util.entity.EntityException;
 import com.thesett.util.entity.EntityNotExistsException;
@@ -361,6 +362,7 @@ public class AccountResource implements AccountService
     private Account hidePassword(Account account)
     {
         account.setPassword(null);
+        account.setSalt(null);
 
         return account;
     }
@@ -374,8 +376,9 @@ public class AccountResource implements AccountService
      */
     private Account hashPassword(Account account)
     {
-        String hash = passwordHasher.hash(account.getPassword());
-        account.setPassword(hash);
+        Pair<String, String> hashAndSalt = passwordHasher.hash(account.getPassword());
+        account.setPassword(hashAndSalt.getFirst());
+        account.setSalt(hashAndSalt.getSecond());
 
         return account;
 

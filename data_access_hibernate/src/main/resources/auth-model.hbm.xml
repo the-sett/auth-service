@@ -9,6 +9,7 @@
       <generator class="native"/>
     </id>
     <property name="password" column="password" type="text"/>
+    <property name="salt" column="salt" type="text"/>
     <property name="root" column="root" type="boolean"/>
 
     <!--REL: roles -> Role: Many-Many account_role owner uni-->

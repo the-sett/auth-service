@@ -2,6 +2,7 @@
     create table account (
         id int8 not null,
         password text,
+        salt text,
         root boolean,
         username text,
         primary key (id)

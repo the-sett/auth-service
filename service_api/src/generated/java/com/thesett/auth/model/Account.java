@@ -44,6 +44,9 @@ public class Account  implements Entity<Long>, Serializable {
     /** Holds the password property. */    
     protected String password;
 
+    /** Holds the salt property. */    
+    protected String salt;
+
     /** Holds the root property. */    
     protected Boolean root;
 
@@ -101,6 +104,18 @@ public class Account  implements Entity<Long>, Serializable {
     }
 
     /**
+     * Accepts a new value for the salt property.
+     *
+     * @param salt The salt property.
+     *
+     * @return 'this' (so that fluents can be chained methods).
+     */
+    public Account withSalt(String salt) {
+        this.salt = salt;
+        return this;
+    }
+
+    /**
      * Accepts a new value for the root property.
      *
      * @param root The root property.
@@ -142,6 +157,15 @@ public class Account  implements Entity<Long>, Serializable {
     }
 
     /**
+     * Provides the salt property.
+     *
+     * @return The salt property.
+     */
+    public String getSalt() {
+        return salt;
+    }
+
+    /**
      * Provides the root property.
      *
      * @return The root property.
@@ -174,6 +198,15 @@ public class Account  implements Entity<Long>, Serializable {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * Accepts a new value for the salt property.
+     *
+     * @param salt The salt property.
+     */
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     /**

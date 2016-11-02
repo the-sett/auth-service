@@ -173,6 +173,7 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
         for (Account account : accounts)
         {
             Assert.assertNull("Password should not be returned.", account.getPassword());
+            Assert.assertNull("Password salt should not be returned.", account.getSalt());
         }
     }
 
@@ -186,6 +187,7 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
         for (Account account : accounts)
         {
             Assert.assertNull("Password should not be returned.", account.getPassword());
+            Assert.assertNull("Password salt should not be returned.", account.getSalt());
         }
     }
 
@@ -197,6 +199,7 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
         account = accountService.create(account);
 
         Assert.assertNull("Password should not be returned.", account.getPassword());
+        Assert.assertNull("Password salt should not be returned.", account.getSalt());
     }
 
     @Test
@@ -209,6 +212,7 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
         account = accountService.retrieve(account.getId());
 
         Assert.assertNull("Password should not be returned.", account.getPassword());
+        Assert.assertNull("Password salt should not be returned.", account.getSalt());
     }
 
     @Test
@@ -221,6 +225,7 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
         account = accountService.update(account.getId(), account);
 
         Assert.assertNull("Password should not be returned.", account.getPassword());
+        Assert.assertNull("Password salt should not be returned.", account.getSalt());
     }
 
     @Test(expected = EntityException.class)

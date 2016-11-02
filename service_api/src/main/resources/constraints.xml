@@ -32,6 +32,9 @@
         <field name="password">
             <valid/>
         </field>
+        <field name="salt">
+            <valid/>
+        </field>
         <field name="root">
             <valid/>
         </field>

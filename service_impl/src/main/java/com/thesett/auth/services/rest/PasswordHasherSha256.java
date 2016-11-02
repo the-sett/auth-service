@@ -1,9 +1,12 @@
 /* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 package com.thesett.auth.services.rest;
 
+import com.thesett.common.util.Pair;
+
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Sha256Hash;
+import org.apache.shiro.util.ByteSource;
 
 /**
  * PasswordHasherSha256 salts and hashes a password using SHA-256 for a defined number of iterations.
@@ -41,11 +44,11 @@ public class PasswordHasherSha256
      *
      * @return The hashed password.
      */
-    public String hash(String password)
+    public Pair<String, String> hash(String password)
     {
-        Object salt = random.nextBytes();
+        ByteSource salt = random.nextBytes();
         String result = new Sha256Hash(password, salt, hashIterations).toBase64();
 
-        return result;
+        return new Pair<>(result, salt.toBase64());
     }
 }

@@ -19,6 +19,7 @@
             <String name="username" type="username"/>
         </Unique>
         <String name="password"/>
+        <String name="salt"/>
         <Boolean name="root"/>
         <Set name="roles">
             <Component name="role" type="role"/>
