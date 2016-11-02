@@ -35,6 +35,10 @@ type alias Model =
 
 
 type alias Token =
-    { subject : String
+    { sub : String
+    , iss : Maybe String
+    , exp : Maybe String
+    , iat : Maybe String
+    , jti : Maybe String
     , permissions : List String
     }

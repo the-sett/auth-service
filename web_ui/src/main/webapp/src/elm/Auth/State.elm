@@ -4,7 +4,7 @@ import Log
 import Navigation
 import Http
 import Json.Decode as Decode exposing (Decoder, (:=))
-import Json.Decode.Extra exposing ((|:))
+import Json.Decode.Extra exposing ((|:), withDefault, maybeNull)
 import Jwt
 import Utils exposing (..)
 import Auth.Types exposing (..)
@@ -29,13 +29,21 @@ init =
 tokenDecoder : Decoder Token
 tokenDecoder =
     (Decode.succeed
-        (\subject permissions ->
-            { subject = subject
+        (\sub iss exp iat jti permissions ->
+            { sub = sub
+            , iss = iss
+            , exp = exp
+            , iat = iat
+            , jti = jti
             , permissions = permissions
             }
         )
     )
         |: ("sub" := Decode.string)
+        |: Decode.maybe ("iss" := Decode.string)
+        |: Decode.maybe ("exp" := Decode.string)
+        |: Decode.maybe ("iat" := Decode.string)
+        |: Decode.maybe ("jti" := Decode.string)
         |: ("permissions" := Decode.list Decode.string)
 
 
