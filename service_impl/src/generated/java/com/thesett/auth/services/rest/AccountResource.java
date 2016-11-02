@@ -185,9 +185,7 @@ public class AccountResource implements AccountService
             }
     )
     public Account retrieve(
-        @ApiParam(value = "The id of the item to retrieve.", required = true)
-        @PathParam("accountId")
-        Long id)
+        @ApiParam(value = "The id of the item to retrieve.", required = true) @PathParam("accountId") Long id)
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
@@ -218,9 +216,8 @@ public class AccountResource implements AccountService
             }
     )
     public Account update(
-        @ApiParam(value = "The id of the item to update.", required = true)
-        @PathParam("accountId")
-        Long id, Account account) throws EntityException
+        @ApiParam(value = "The id of the item to update.", required = true) @PathParam("accountId") Long id,
+        Account account) throws EntityException
     {
         checkNotNull(account);
 
@@ -231,7 +228,8 @@ public class AccountResource implements AccountService
         // Obtain the account to modify and confirm it exists.
         Account accountToModify = accountDAO.retrieve(id);
 
-        if (accountToModify == null) {
+        if (accountToModify == null)
+        {
             throw new EntityNotExistsException();
         }
 
@@ -267,9 +265,50 @@ public class AccountResource implements AccountService
         return result;
     }
 
+    /** {@inheritDoc} */
+    @DELETE
+    @UnitOfWorkWithDetach
+    @Path("/{accountId}")
+    @ApiOperation(value = "Deletes a Account by its id.")
+    @ApiResponses(value = { @ApiResponse(code = 400, message = "No item found matching the supplied id.") })
+    public void delete(
+        @ApiParam(value = "The id of the item to delete.", required = true) @PathParam("accountId") Long id)
+        throws EntityException
+    {
+        // Check that the caller has permission to do this.
+        Subject subject = SecurityUtils.getSubject();
+        subject.checkPermission("admin");
+
+        // Obtain the account to modify and silently failt if there is no account to delete.
+        Account accountToModify = accountDAO.retrieve(id);
+
+        if (accountToModify == null)
+        {
+            return;
+        }
+
+        // Accounts with 'root' status cannot be deleted.
+        if (accountToModify.getRoot())
+        {
+            throw new EntityDeletionException("Accounts with 'root' status cannot be deleted.");
+        }
+
+        accountDAO.delete(id);
+    }
+
+    protected <O> O checkNotNull(O object)
+    {
+        if (object == null)
+        {
+            throw new IllegalArgumentException();
+        }
+
+        return object;
+    }
+
     /**
-     * Attaches existing roles to an account, instead of propagating the roles supplied with an account
-     * for database update. This allows an account to specify roles by reference, not value.
+     * Attaches existing roles to an account, instead of propagating the roles supplied with an account for database
+     * update. This allows an account to specify roles by reference, not value.
      *
      * @param account The account to attach roles on.
      */
@@ -307,46 +346,16 @@ public class AccountResource implements AccountService
         }
     }
 
-    /** {@inheritDoc} */
-    @DELETE
-    @UnitOfWorkWithDetach
-    @Path("/{accountId}")
-    @ApiOperation(value = "Deletes a Account by its id.")
-    @ApiResponses(value = { @ApiResponse(code = 400, message = "No item found matching the supplied id.") })
-    public void delete(
-        @ApiParam(value = "The id of the item to delete.", required = true)
-        @PathParam("accountId")
-        Long id) throws EntityException
-    {
-        // Check that the caller has permission to do this.
-        Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("admin");
-
-        // Obtain the account to modify and silently failt if there is no account to delete.
-        Account accountToModify = accountDAO.retrieve(id);
-
-        if (accountToModify == null) {
-            return;
-        }
-
-        // Accounts with 'root' status cannot be deleted.
-        if (accountToModify.getRoot()) {
-            throw new EntityDeletionException("Accounts with 'root' status cannot be deleted.");
-        }
-
-        accountDAO.delete(id);
-    }
-
     /**
      * Checks that at least one role is set on an account.
      *
-     * @param account The account to check.
+     * @param  account The account to check.
      *
      * @throws EntityValidationException Iff less than one role is set on the account.
      */
     private void checkAtLeastOneRole(Account account) throws EntityValidationException
     {
-        if (account.getRoles() == null || account.getRoles().size() == 0)
+        if ((account.getRoles() == null) || (account.getRoles().size() == 0))
         {
             throw new EntityValidationException("At least one role must be set on the account.");
         }
@@ -355,7 +364,7 @@ public class AccountResource implements AccountService
     /**
      * Clears the password from an account. Accounts returned should not expose the password.
      *
-     * @param account The account to clean.
+     * @param  account The account to clean.
      *
      * @return The account with the password nulled out.
      */
@@ -370,7 +379,7 @@ public class AccountResource implements AccountService
     /**
      * Hashes the password on an account.
      *
-     * @param account The account to hash the password of.
+     * @param  account The account to hash the password of.
      *
      * @return The account with its password hashed.
      */
@@ -382,13 +391,5 @@ public class AccountResource implements AccountService
 
         return account;
 
-    }
-
-    protected <O> O checkNotNull(O object) {
-        if (object == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return object;
     }
 }
