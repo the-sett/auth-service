@@ -47,7 +47,7 @@
     <bean class="Role" ignore-annotations="true">
         <field name="name">
             <constraint annotation="javax.validation.constraints.Pattern">
-                <element name="regexp">^[a-zA-Z0-9]{4,30}$</element>
+                <element name="regexp">^[a-zA-Z0-9\\\\-]{4,30}$</element>
             </constraint>
         </field>
         <field name="permissions">
@@ -59,7 +59,7 @@
     <bean class="Permission" ignore-annotations="true">
         <field name="name">
             <constraint annotation="javax.validation.constraints.Pattern">
-                <element name="regexp">^[a-zA-Z0-9]{4,30}$</element>
+                <element name="regexp">^[a-zA-Z0-9\\\\-]{4,30}$</element>
             </constraint>
         </field>
     </bean>

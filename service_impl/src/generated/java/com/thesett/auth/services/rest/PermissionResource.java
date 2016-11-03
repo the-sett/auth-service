@@ -75,7 +75,7 @@ public class PermissionResource implements PermissionService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("admin");
+        subject.checkPermission("auth-admin");
 
         return permissionDAO.browse();
     }
@@ -89,7 +89,7 @@ public class PermissionResource implements PermissionService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("admin");
+        subject.checkPermission("auth-admin");
 
         return permissionDAO.findByExample(example);
     }
@@ -117,7 +117,7 @@ public class PermissionResource implements PermissionService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("admin");
+        subject.checkPermission("auth-admin");
 
         return permissionDAO.create(permission);
     }
@@ -142,7 +142,7 @@ public class PermissionResource implements PermissionService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("admin");
+        subject.checkPermission("auth-admin");
 
         return permissionDAO.retrieve(id);
     }
@@ -166,7 +166,7 @@ public class PermissionResource implements PermissionService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("admin");
+        subject.checkPermission("auth-admin");
 
         return permissionDAO.update(id, permission);
     }
@@ -184,7 +184,7 @@ public class PermissionResource implements PermissionService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("admin");
+        subject.checkPermission("auth-admin");
 
         permissionDAO.delete(id);
     }

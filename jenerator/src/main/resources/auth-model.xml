@@ -5,8 +5,8 @@
     <Package name="com.thesett.auth.model"/>
 
     <StringPattern name="username" regexp="^[a-zA-Z0-9]{4,30}$"/>
-    <StringPattern name="roleName" regexp="^[a-zA-Z0-9]{4,30}$"/>
-    <StringPattern name="permissionName" regexp="^[a-zA-Z0-9]{4,30}$"/>
+    <StringPattern name="roleName" regexp="^[a-zA-Z0-9\\\\-]{4,30}$"/>
+    <StringPattern name="permissionName" regexp="^[a-zA-Z0-9\\\\-]{4,30}$"/>
     
     <!-- For providing references to records (also used for simple summary queries) -->
     <ViewDef name="namedRef">

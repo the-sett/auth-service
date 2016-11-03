@@ -107,7 +107,7 @@ public class Example
      */
     public void example(ServiceFactory serviceFactory)
     {
-        Subject subject = new LocalSubject().withPermission("admin");
+        Subject subject = new LocalSubject().withPermission("auth-admin");
         ShiroUtils.setSubject(subject);
 
         createDefaultRolesAccount(serviceFactory);
@@ -198,9 +198,9 @@ public class Example
 
              // Create the admin role.
              permissions = new HashSet<>();
-             permissions.add(new Permission().withName("admin"));
+             permissions.add(new Permission().withName("auth-admin"));
 
-             role = new Role().withName("admin").withPermissions(permissions);
+             role = new Role().withName("auth-root").withPermissions(permissions);
              createRoleIfNotExists(roleService, role);
 
              // Create the user role.
@@ -240,7 +240,7 @@ public class Example
         {
             try
             {
-                Role adminRole = CollectionUtil.first(roleService.findByExample(new Role().withName("admin")));
+                Role adminRole = CollectionUtil.first(roleService.findByExample(new Role().withName("auth-root")));
 
                 Set<Role> roles = new HashSet<>();
                 roles.add(adminRole);

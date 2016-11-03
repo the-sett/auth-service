@@ -69,7 +69,7 @@ public class AccountFullStackCRUDTest extends FullStackCRUDTestBase<Account, Lon
     @Before
     public void setupSecurity()
     {
-        Subject subject = new LocalSubject().withPermission("admin");
+        Subject subject = new LocalSubject().withPermission("auth-admin");
         ShiroUtils.setSubject(subject);
     }
 

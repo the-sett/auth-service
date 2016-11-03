@@ -75,7 +75,7 @@ public class RoleResource implements RoleService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("admin");
+        subject.checkPermission("auth-admin");
 
         return roleDAO.browse();
     }
@@ -89,7 +89,7 @@ public class RoleResource implements RoleService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("admin");
+        subject.checkPermission("auth-admin");
 
         return roleDAO.findByExample(example);
     }
@@ -117,7 +117,7 @@ public class RoleResource implements RoleService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("admin");
+        subject.checkPermission("auth-admin");
 
         return roleDAO.create(role);
     }
@@ -142,7 +142,7 @@ public class RoleResource implements RoleService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("admin");
+        subject.checkPermission("auth-admin");
 
         return roleDAO.retrieve(id);
     }
@@ -165,7 +165,7 @@ public class RoleResource implements RoleService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("admin");
+        subject.checkPermission("auth-admin");
 
         return roleDAO.update(id, role);
     }
@@ -182,7 +182,7 @@ public class RoleResource implements RoleService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("admin");
+        subject.checkPermission("auth-admin");
 
         roleDAO.delete(id);
     }
