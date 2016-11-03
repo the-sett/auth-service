@@ -39,7 +39,7 @@ type alias Token =
     , iss : Maybe String
     , aud : Maybe String
     , exp : Maybe String
-    , iat : Maybe String
+    , iat : Maybe Int
     , jti : Maybe String
     , scopes : List String
     }

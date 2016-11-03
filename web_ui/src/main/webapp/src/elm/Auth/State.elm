@@ -44,7 +44,7 @@ tokenDecoder =
         |: Decode.maybe ("iss" := Decode.string)
         |: Decode.maybe ("aud" := Decode.string)
         |: Decode.maybe ("exp" := Decode.string)
-        |: Decode.maybe ("iat" := Decode.string)
+        |: Decode.maybe ("iat" := Decode.int)
         |: Decode.maybe ("jti" := Decode.string)
         |: ("scopes" := Decode.list Decode.string)
 
