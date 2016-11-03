@@ -44,7 +44,11 @@ tokenDecoder =
         |: ("sub" := Decode.string)
         |: Decode.maybe ("iss" := Decode.string)
         |: Decode.maybe ("aud" := Decode.string)
-        |: Decode.maybe ("exp" := Decode.string)
+        |: Decode.maybe
+            (Decode.map
+                (Date.fromTime << toFloat << ((*) 1000))
+                ("exp" := Decode.int)
+            )
         |: Decode.maybe
             (Decode.map
                 (Date.fromTime << toFloat << ((*) 1000))

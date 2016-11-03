@@ -43,7 +43,7 @@ type alias Token =
     { sub : String
     , iss : Maybe String
     , aud : Maybe String
-    , exp : Maybe String
+    , exp : Maybe Date
     , iat : Maybe Date
     , jti : Maybe String
     , scopes : List String

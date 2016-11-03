@@ -39,7 +39,6 @@ import com.thesett.util.security.web.ShiroJWTRealmSetupListener;
 import com.thesett.util.servlet.filter.CORSFilter;
 import com.thesett.util.swagger.EnumTypeModelConverter;
 
-import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -156,7 +155,7 @@ public class Example
         environment.servlets().addServletListeners(new ShiroJWTRealmSetupListener(keyPair.getPublic()));
 
         AccountDAO accountDAO = new AccountDAOImpl(sessionFactory, validatorFactory);
-        AuthResource authResource = new AuthResource(accountDAO, keyPair);
+        AuthResource authResource = new AuthResource(accountDAO, keyPair, 30 * 60 * 1000L);
         environment.jersey().register(authResource);
 
         // Attach resources for handling OAuth providers.

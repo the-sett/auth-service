@@ -59,17 +59,21 @@ public class AuthResource
     /** The password hasher. */
     private final PasswordHasherSha256 passwordHasher = new PasswordHasherSha256(1000);
 
+    /** The login token TTL till it expires. */
+    private final Long jwtTTLMillis;
+
     /**
      * Creates a set of authentication end-points, against the accounts accessible through the specified accounts DAO.
      *
-     * @param accountDAO The accounts DAO, to verify user accounts against.
-     * @param keyPair    An asymmetric crypto kay pair for creating and checking tokens.
+     * @param accountDAO   The accounts DAO, to verify user accounts against.
+     * @param keyPair      An asymmetric crypto kay pair for creating and checking tokens.
+     * @param jwtTTLMillis The login token TTL till it expires.
      */
-    public AuthResource(AccountDAO accountDAO, KeyPair keyPair)
+    public AuthResource(AccountDAO accountDAO, KeyPair keyPair, Long jwtTTLMillis)
     {
         this.accountDAO = accountDAO;
-
         this.keyPair = keyPair;
+        this.jwtTTLMillis = jwtTTLMillis;
     }
 
     /**
@@ -128,7 +132,7 @@ public class AuthResource
         }
 
         // Create the JWT token with claims matching the account, as a cookie.
-        String token = JwtUtils.createToken(account.getUsername(), permissions, keyPair.getPrivate());
+        String token = JwtUtils.createToken(account.getUsername(), permissions, keyPair.getPrivate(), jwtTTLMillis);
         NewCookie cookie = new NewCookie("jwt", token, "/", "localhost", "jwt", 600, false, true);
 
         Response response = Response.ok().cookie(cookie).entity(new AuthResponse().withToken(token)).build();
@@ -179,7 +183,8 @@ public class AuthResource
     @ApiOperation(value = "Removes the authentication cookie.")
     public Response logout()
     {
-        return Response.ok().header("Set-Cookie",
-            "jwt=deleted;Domain=localhost;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT").build();
+        return Response.ok()
+            .header("Set-Cookie", "jwt=deleted;Domain=localhost;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT")
+            .build();
     }
 }
