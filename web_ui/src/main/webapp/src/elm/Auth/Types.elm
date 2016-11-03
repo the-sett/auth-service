@@ -44,7 +44,7 @@ type alias Token =
     , iss : Maybe String
     , aud : Maybe String
     , exp : Maybe String
-    , iat : Maybe Int
+    , iat : Maybe Date
     , jti : Maybe String
     , scopes : List String
     }

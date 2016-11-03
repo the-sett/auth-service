@@ -1,6 +1,7 @@
 port module Auth.State exposing (update, subscriptions, init, fromSavedModel)
 
 import Log
+import Date
 import Navigation
 import Http
 import Json.Decode as Decode exposing (Decoder, (:=))
@@ -44,7 +45,11 @@ tokenDecoder =
         |: Decode.maybe ("iss" := Decode.string)
         |: Decode.maybe ("aud" := Decode.string)
         |: Decode.maybe ("exp" := Decode.string)
-        |: Decode.maybe ("iat" := Decode.int)
+        |: Decode.maybe
+            (Decode.map
+                (Date.fromTime << toFloat << ((*) 1000))
+                ("iat" := Decode.int)
+            )
         |: Decode.maybe ("jti" := Decode.string)
         |: ("scopes" := Decode.list Decode.string)
 
