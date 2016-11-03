@@ -28,7 +28,7 @@ decodeToken dec s =
             _ :: (Result.Ok encBody) :: _ :: [] ->
                 case Base64.decode encBody of
                     Result.Ok body ->
-                        case Json.decodeString dec body of
+                        case Json.decodeString dec (Debug.log "jwt" body) of
                             Result.Ok x ->
                                 Result.Ok x
 
