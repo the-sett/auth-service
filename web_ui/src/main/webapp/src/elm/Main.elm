@@ -19,7 +19,7 @@ log =
     Debug.log "top"
 
 
-main : Program (Maybe Auth.Types.Model)
+main : Program (Maybe Auth.Types.SavedModel)
 main =
     Routing.programWithFlags
         { delta2url = delta2url
@@ -42,7 +42,7 @@ main =
 -- authentication token). If this is the case, the token is kept.
 
 
-init' : Maybe Auth.Types.Model -> ( Model, Cmd Msg )
+init' : Maybe Auth.Types.SavedModel -> ( Model, Cmd Msg )
 init' authModel =
     case authModel of
         Just authModel ->
@@ -51,7 +51,7 @@ init' authModel =
                     log "authModel present"
             in
                 ( { init
-                    | auth = authModel
+                    | auth = Auth.State.fromSavedModel authModel Auth.State.init
                   }
                 , Layout.sub0 Mdl
                 )

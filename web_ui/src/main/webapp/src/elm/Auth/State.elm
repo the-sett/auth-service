@@ -1,4 +1,4 @@
-port module Auth.State exposing (update, subscriptions, init)
+port module Auth.State exposing (update, subscriptions, init, fromSavedModel)
 
 import Log
 import Navigation
@@ -49,6 +49,37 @@ tokenDecoder =
         |: ("scopes" := Decode.list Decode.string)
 
 
+toSavedModel : Model -> SavedModel
+toSavedModel model =
+    { token = model.token
+    }
+
+
+fromSavedModel : SavedModel -> Model -> Model
+fromSavedModel saved model =
+    { model
+        | token = saved.token
+        , authState = authStateFromToken saved.token
+    }
+
+
+authStateFromToken : Maybe String -> AuthState
+authStateFromToken maybeToken =
+    case maybeToken of
+        Nothing ->
+            { loggedIn = False, permissions = [] }
+
+        Just token ->
+            let
+                decodedToken =
+                    Jwt.decodeToken tokenDecoder token
+
+                d =
+                    Log.debug "auth" decodedToken
+            in
+                { loggedIn = True, permissions = [] }
+
+
 
 -- Private interface for authentication functions, and storage of auth state.
 
@@ -62,10 +93,10 @@ subscriptions model =
         ]
 
 
-port setStorage : Model -> Cmd msg
+port setStorage : SavedModel -> Cmd msg
 
 
-port removeStorage : Model -> Cmd msg
+port removeStorage : () -> Cmd msg
 
 
 port receiveLogin : (Credentials -> msg) -> Sub msg
@@ -97,7 +128,7 @@ login (Model.AuthResponse response) model =
             { model | token = response.token, authState = authStateFromToken response.token }
     in
         ( model'
-        , Cmd.batch [ setStorage model', Navigation.newUrl model.forwardLocation ]
+        , Cmd.batch [ setStorage <| toSavedModel model', Navigation.newUrl model.forwardLocation ]
         )
 
 
@@ -109,25 +140,8 @@ refresh response model =
 logout : Http.Response -> Model -> ( Model, Cmd Msg )
 logout response model =
     ( { model | token = Nothing, authState = authStateFromToken Nothing }
-    , Cmd.batch [ removeStorage model, Navigation.newUrl model.logoutLocation ]
+    , Cmd.batch [ removeStorage (), Navigation.newUrl model.logoutLocation ]
     )
-
-
-authStateFromToken : Maybe String -> AuthState
-authStateFromToken maybeToken =
-    case maybeToken of
-        Nothing ->
-            { loggedIn = False, permissions = [] }
-
-        Just token ->
-            let
-                decodedToken =
-                    Jwt.decodeToken tokenDecoder token
-
-                d =
-                    Log.debug "auth" decodedToken
-            in
-                { loggedIn = True, permissions = [] }
 
 
 authRequestFromCredentials : Credentials -> Model.AuthRequest
@@ -157,5 +171,5 @@ update' msg model =
 
         NotAuthed ->
             ( { model | token = Nothing, authState = authStateFromToken Nothing }
-            , Cmd.batch [ removeStorage model, Navigation.newUrl model.logoutLocation ]
+            , Cmd.batch [ removeStorage (), Navigation.newUrl model.logoutLocation ]
             )

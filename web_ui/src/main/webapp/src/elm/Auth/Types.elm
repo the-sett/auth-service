@@ -1,5 +1,6 @@
 module Auth.Types exposing (..)
 
+import Date exposing (Date)
 import Http
 import Model
 import Auth.Service
@@ -18,10 +19,8 @@ type Msg
     | NotAuthed
 
 
-type alias AuthState =
-    { loggedIn : Bool
-    , permissions : List String
-    }
+
+{--Describes the state of the authorization module at runtime. --}
 
 
 type alias Model =
@@ -34,6 +33,12 @@ type alias Model =
     }
 
 
+type alias AuthState =
+    { loggedIn : Bool
+    , permissions : List String
+    }
+
+
 type alias Token =
     { sub : String
     , iss : Maybe String
@@ -43,3 +48,14 @@ type alias Token =
     , jti : Maybe String
     , scopes : List String
     }
+
+
+
+{--
+ Describes the part of the authorization state that can be preserved and
+ restored accross application lifecycles.
+--}
+
+
+type alias SavedModel =
+    { token : Maybe String }
