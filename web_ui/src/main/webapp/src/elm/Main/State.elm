@@ -115,9 +115,15 @@ setLoginLocations authState =
 selectLocation : Model -> String -> ( Model, Cmd Msg )
 selectLocation model location =
     let
+        authenticated =
+            Auth.State.isLoggedIn model.auth.authState
+
+        hasPermission =
+            Auth.State.hasPermission "auth-admin" model.auth.authState
+
         -- Flag indicating whether the welcome location should be navigated to.
         jumpToWelcome =
-            not model.auth.authState.loggedIn && location /= "welcome"
+            ((not authenticated) || (not hasPermission)) && location /= "welcome"
 
         -- Maybe a command to jump to the welcome location.
         jumpToWelcomeCmd =

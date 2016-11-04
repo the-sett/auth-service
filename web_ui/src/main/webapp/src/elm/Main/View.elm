@@ -18,6 +18,7 @@ import Roles.View
 import Permissions.View
 import Welcome.View
 import Auth.Types
+import Auth.State
 import Main.Types exposing (..)
 
 
@@ -28,10 +29,17 @@ view =
 
 view' : Auth.Types.AuthState -> Model -> Html Msg
 view' authState model =
-    if authState.loggedIn then
-        app authState model
-    else
-        welcome authState model
+    let
+        authenticated =
+            Auth.State.isLoggedIn model.auth.authState
+
+        hasPermission =
+            Auth.State.hasPermission "auth-admin" model.auth.authState
+    in
+        if authenticated && hasPermission then
+            app model
+        else
+            welcome authenticated hasPermission model
 
 
 layoutOptions : Model -> List (Layout.Property Msg)
@@ -98,12 +106,12 @@ appTop model =
     (Array.get model.selectedTab tabViews |> Maybe.withDefault e404) model
 
 
-app : Auth.Types.AuthState -> Model -> Html Msg
-app authState model =
+app : Model -> Html Msg
+app model =
     Layout.render Mdl
         model.mdl
         (layoutOptions model)
-        { header = header authState model
+        { header = header True model
         , drawer = []
         , tabs =
             ( tabTitles
@@ -114,12 +122,12 @@ app authState model =
         |> framing model
 
 
-welcome : Auth.Types.AuthState -> Model -> Html Msg
-welcome authState model =
+welcome : Bool -> Bool -> Model -> Html Msg
+welcome authenticated hasPermission model =
     Layout.render Mdl
         model.mdl
         (layoutOptions model)
-        { header = header authState model
+        { header = header authenticated model
         , drawer = []
         , tabs =
             ( []
@@ -130,8 +138,8 @@ welcome authState model =
         |> framing model
 
 
-header : Auth.Types.AuthState -> Model -> List (Html Msg)
-header authState model =
+header : Bool -> Model -> List (Html Msg)
+header authenticated model =
     if model.layout.withHeader then
         [ Layout.row
             []
@@ -141,7 +149,7 @@ header authState model =
                 ]
                 []
             , Layout.spacer
-            , if authState.loggedIn then
+            , if authenticated then
                 div []
                     [ Button.render Mdl
                         [ 1, 2 ]

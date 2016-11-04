@@ -1,4 +1,12 @@
-port module Auth.State exposing (update, subscriptions, init, fromSavedModel)
+port module Auth.State
+    exposing
+        ( update
+        , subscriptions
+        , init
+        , fromSavedModel
+        , isLoggedIn
+        , hasPermission
+        )
 
 import Log
 import Date
@@ -80,13 +88,28 @@ authStateFromToken maybeToken =
 
         Just token ->
             let
-                decodedToken =
+                tokenDecodeResult =
                     Jwt.decodeToken tokenDecoder token
 
                 d =
-                    Log.debug "auth" decodedToken
+                    Log.debug "auth" tokenDecodeResult
             in
-                { loggedIn = True, permissions = [] }
+                case tokenDecodeResult of
+                    Err _ ->
+                        { loggedIn = False, permissions = [] }
+
+                    Ok decodedToken ->
+                        { loggedIn = True, permissions = decodedToken.scopes }
+
+
+isLoggedIn : AuthState -> Bool
+isLoggedIn authState =
+    authState.loggedIn
+
+
+hasPermission : String -> AuthState -> Bool
+hasPermission permission authState =
+    List.member permission authState.permissions
 
 
 
