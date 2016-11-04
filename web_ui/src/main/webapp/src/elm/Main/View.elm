@@ -39,7 +39,7 @@ view' authState model =
         if authenticated && hasPermission then
             app model
         else
-            welcome authenticated hasPermission model
+            welcome model
 
 
 layoutOptions : Model -> List (Layout.Property Msg)
@@ -122,12 +122,12 @@ app model =
         |> framing model
 
 
-welcome : Bool -> Bool -> Model -> Html Msg
-welcome authenticated hasPermission model =
+welcome : Model -> Html Msg
+welcome model =
     Layout.render Mdl
         model.mdl
         (layoutOptions model)
-        { header = header authenticated model
+        { header = header False model
         , drawer = []
         , tabs =
             ( []
