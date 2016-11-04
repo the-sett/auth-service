@@ -1,4 +1,4 @@
-module Welcome.View exposing (root)
+module Welcome.View exposing (root, notPermitted)
 
 import Html exposing (..)
 import Html.Lazy
@@ -11,12 +11,7 @@ import ViewUtils
 
 
 root : Model -> Html Msg
-root =
-    Html.Lazy.lazy root'
-
-
-root' : Model -> Html Msg
-root' model =
+root model =
     div []
         [ div [ class "layout-fixed-width--one-card" ]
             [ ViewUtils.rhythm1SpacerDiv
@@ -63,6 +58,47 @@ root' model =
                                         ]
                                         [ text "Log In"
                                         , Icon.i "chevron_right"
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+
+
+notPermitted : Model -> Html Msg
+notPermitted model =
+    div []
+        [ div [ class "layout-fixed-width--one-card" ]
+            [ ViewUtils.rhythm1SpacerDiv
+            , div [ class "mdl-grid" ]
+                [ div [ class "mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp" ]
+                    [ div [ class "mdl-card__media" ]
+                        [ img [ src "images/data_center-large.png" ]
+                            []
+                        ]
+                    , div [ class "mdl-card__title" ]
+                        [ h4 [ class "mdl-card__title-text" ]
+                            [ text "Not Permitted" ]
+                        ]
+                    , div [ class "mdl-card__supporting-text" ]
+                        [ text "You are not authorized."
+                        ]
+                    , div [ class "mdl-card__actions" ]
+                        [ div [ class "control-bar" ]
+                            [ div [ class "control-bar__row" ]
+                                [ div [ class "control-bar__left-0" ]
+                                    [ Button.render Mdl
+                                        [ 1, 2 ]
+                                        model.mdl
+                                        [ Button.colored
+                                        , Button.onClick LogIn
+                                        ]
+                                        [ Icon.i "chevron_left"
+                                        , text "Try Again"
                                         ]
                                     ]
                                 ]

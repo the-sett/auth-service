@@ -38,6 +38,8 @@ view' authState model =
     in
         if authenticated && hasPermission then
             app model
+        else if authenticated && not hasPermission then
+            notPermitted model
         else
             welcome model
 
@@ -138,6 +140,22 @@ welcome model =
         |> framing model
 
 
+notPermitted : Model -> Html Msg
+notPermitted model =
+    Layout.render Mdl
+        model.mdl
+        (layoutOptions model)
+        { header = header False model
+        , drawer = []
+        , tabs =
+            ( []
+            , []
+            )
+        , main = [ notPermittedView model ]
+        }
+        |> framing model
+
+
 header : Bool -> Model -> List (Html Msg)
 header authenticated model =
     if model.layout.withHeader then
@@ -181,6 +199,11 @@ header authenticated model =
 welcomeView : Model -> Html Msg
 welcomeView =
     .welcome >> Welcome.View.root >> App.map WelcomeMsg
+
+
+notPermittedView : Model -> Html Msg
+notPermittedView =
+    .welcome >> Welcome.View.notPermitted >> App.map WelcomeMsg
 
 
 tabs : List ( String, String, Model -> Html Msg )
