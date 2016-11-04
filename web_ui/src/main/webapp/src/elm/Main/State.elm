@@ -164,7 +164,7 @@ selectLocation model location =
                     "permissions" ->
                         Cmd.Extra.message (PermissionsMsg Permissions.Types.Init) |> Just
 
-                    x ->
+                    _ ->
                         Nothing
             else
                 Nothing
