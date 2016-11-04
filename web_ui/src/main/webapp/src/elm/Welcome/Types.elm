@@ -14,6 +14,7 @@ type Msg
     = Mdl (Material.Msg Msg)
     | GetStarted
     | LogIn
+    | TryAgain
     | Cancel
     | UpdateUsername String
     | UpdatePassword String

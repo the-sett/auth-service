@@ -36,6 +36,13 @@ update' action model =
                 ]
             )
 
+        TryAgain ->
+            ( model
+            , Cmd.batch
+                [ Auth.unauthed
+                ]
+            )
+
         Cancel ->
             ( model, Cmd.none )
 

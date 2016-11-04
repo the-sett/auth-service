@@ -92,10 +92,10 @@ notPermitted model =
                             [ div [ class "control-bar__row" ]
                                 [ div [ class "control-bar__left-0" ]
                                     [ Button.render Mdl
-                                        [ 1, 2 ]
+                                        [ 2, 1 ]
                                         model.mdl
                                         [ Button.colored
-                                        , Button.onClick LogIn
+                                        , Button.onClick TryAgain
                                         ]
                                         [ Icon.i "chevron_left"
                                         , text "Try Again"
