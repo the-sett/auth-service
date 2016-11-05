@@ -82,10 +82,28 @@ notPermitted model =
                         ]
                     , div [ class "mdl-card__title" ]
                         [ h4 [ class "mdl-card__title-text" ]
-                            [ text "Not Permitted" ]
+                            [ text "Not Authorized" ]
                         ]
                     , div [ class "mdl-card__supporting-text" ]
-                        [ text "You are not authorized."
+                        [ form [ action "#" ]
+                            [ Textfield.render Mdl
+                                [ 1, 1 ]
+                                model.mdl
+                                [ Textfield.label "Username"
+                                , Textfield.floatingLabel
+                                , Textfield.text'
+                                , Textfield.disabled
+                                ]
+                            , Textfield.render Mdl
+                                [ 1, 2 ]
+                                model.mdl
+                                [ Textfield.label "Password"
+                                , Textfield.floatingLabel
+                                , Textfield.text'
+                                , Textfield.password
+                                , Textfield.disabled
+                                ]
+                            ]
                         ]
                     , div [ class "mdl-card__actions" ]
                         [ div [ class "control-bar" ]
