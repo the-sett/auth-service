@@ -40,6 +40,8 @@ view' authState model =
             app model
         else if authenticated && not hasPermission then
             notPermitted model
+        else if not authenticated && model.welcome.logonAttempted then
+            notPermitted model
         else
             welcome model
 

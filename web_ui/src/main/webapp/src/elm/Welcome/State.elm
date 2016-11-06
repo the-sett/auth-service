@@ -12,6 +12,7 @@ init =
     { mdl = Material.model
     , username = ""
     , password = ""
+    , logonAttempted = False
     }
 
 
@@ -30,14 +31,14 @@ update' action model =
             ( model, Cmd.none )
 
         LogIn ->
-            ( model
+            ( { model | logonAttempted = True }
             , Cmd.batch
                 [ Auth.login { username = model.username, password = model.password }
                 ]
             )
 
         TryAgain ->
-            ( model
+            ( { model | logonAttempted = False }
             , Cmd.batch
                 [ Auth.unauthed
                 ]
