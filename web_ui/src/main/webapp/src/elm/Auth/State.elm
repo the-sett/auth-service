@@ -162,7 +162,7 @@ callbacks =
     { login = login
     , refresh = refresh
     , logout = logout
-    , error = error
+    , error = \_ -> \model -> ( model, Cmd.none )
     }
 
 
@@ -218,9 +218,13 @@ update' msg model =
             )
 
         LogOut ->
-            ( model, Auth.Service.invokeLogout AuthApi )
+            ( { model | logonAttempted = False }, Auth.Service.invokeLogout AuthApi )
 
         NotAuthed ->
-            ( { model | token = Nothing, authState = authStateFromToken Nothing }
+            ( { model
+                | token = Nothing
+                , authState = authStateFromToken Nothing
+                , logonAttempted = False
+              }
             , Cmd.batch [ removeStorage (), Navigation.newUrl model.logoutLocation ]
             )
