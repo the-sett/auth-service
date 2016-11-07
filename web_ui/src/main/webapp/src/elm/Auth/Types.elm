@@ -30,6 +30,7 @@ type alias Model =
     , authState : AuthState
     , forwardLocation : String
     , logoutLocation : String
+    , logonAttempted : Bool
     }
 
 

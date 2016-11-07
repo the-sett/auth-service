@@ -7,7 +7,6 @@ type alias Model =
     { mdl : Material.Model
     , username : String
     , password : String
-    , logonAttempted : Bool
     }
 
 

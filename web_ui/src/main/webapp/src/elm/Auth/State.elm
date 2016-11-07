@@ -5,6 +5,7 @@ port module Auth.State
         , init
         , fromSavedModel
         , isLoggedIn
+        , logonAttempted
         , hasPermission
         )
 
@@ -32,6 +33,7 @@ init =
         }
     , forwardLocation = ""
     , logoutLocation = ""
+    , logonAttempted = False
     }
 
 
@@ -84,7 +86,9 @@ authStateFromToken : Maybe String -> AuthState
 authStateFromToken maybeToken =
     case maybeToken of
         Nothing ->
-            { loggedIn = False, permissions = [] }
+            { loggedIn = False
+            , permissions = []
+            }
 
         Just token ->
             let
@@ -96,15 +100,24 @@ authStateFromToken maybeToken =
             in
                 case tokenDecodeResult of
                     Err _ ->
-                        { loggedIn = False, permissions = [] }
+                        { loggedIn = False
+                        , permissions = []
+                        }
 
                     Ok decodedToken ->
-                        { loggedIn = True, permissions = decodedToken.scopes }
+                        { loggedIn = True
+                        , permissions = decodedToken.scopes
+                        }
 
 
 isLoggedIn : AuthState -> Bool
 isLoggedIn authState =
     authState.loggedIn
+
+
+logonAttempted : Model -> Bool
+logonAttempted model =
+    model.logonAttempted
 
 
 hasPermission : String -> AuthState -> Bool
@@ -196,7 +209,13 @@ update' msg model =
             Auth.Service.update callbacks action' model
 
         LogIn credentials ->
-            ( model, Auth.Service.invokeLogin AuthApi (authRequestFromCredentials credentials) )
+            ( { model
+                | token = Nothing
+                , authState = authStateFromToken Nothing
+                , logonAttempted = True
+              }
+            , Auth.Service.invokeLogin AuthApi (authRequestFromCredentials credentials)
+            )
 
         LogOut ->
             ( model, Auth.Service.invokeLogout AuthApi )

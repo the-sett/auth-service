@@ -33,6 +33,9 @@ view' authState model =
         authenticated =
             Auth.State.isLoggedIn model.auth.authState
 
+        logonAttempted =
+            Auth.State.logonAttempted model.auth
+
         hasPermission =
             Auth.State.hasPermission "auth-admin" model.auth.authState
     in
@@ -40,7 +43,7 @@ view' authState model =
             app model
         else if authenticated && not hasPermission then
             notPermitted model
-        else if not authenticated && model.welcome.logonAttempted then
+        else if not authenticated && logonAttempted then
             notPermitted model
         else
             welcome model
