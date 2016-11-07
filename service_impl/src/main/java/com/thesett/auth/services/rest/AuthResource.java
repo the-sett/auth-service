@@ -134,7 +134,8 @@ public class AuthResource
 
         // Create the JWT token with claims matching the account, as a cookie.
         String token = JwtUtils.createToken(account.getUsername(), permissions, keyPair.getPrivate(), jwtTTLMillis);
-        NewCookie cookie = new NewCookie("jwt", token, "/", "localhost", "jwt", 600, false, true);
+        NewCookie cookie =
+            new NewCookie("jwt", token, "/", "localhost", "jwt", (int) (jwtTTLMillis / 1000), false, true);
 
         Response response = Response.ok().cookie(cookie).entity(new AuthResponse().withToken(token)).build();
 
@@ -180,7 +181,8 @@ public class AuthResource
             String refreshToken =
                 JwtUtils.createToken(authenticationToken.getSubject(), authenticationToken.getPermissions(),
                     keyPair.getPrivate(), jwtTTLMillis);
-            NewCookie refreshCookie = new NewCookie("jwt", token, "/", "localhost", "jwt", 600, false, true);
+            NewCookie refreshCookie =
+                new NewCookie("jwt", refreshToken, "/", "localhost", "jwt", (int) (jwtTTLMillis / 1000), false, true);
 
             Response response =
                 Response.ok().cookie(refreshCookie).entity(new AuthResponse().withToken(refreshToken)).build();
