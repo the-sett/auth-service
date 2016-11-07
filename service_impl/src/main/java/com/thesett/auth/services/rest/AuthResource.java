@@ -21,6 +21,7 @@ import com.thesett.auth.model.*;
 import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
 import com.thesett.util.security.jwt.JwtUtils;
+import com.thesett.util.security.model.JWTAuthenticationToken;
 import com.thesett.util.string.StringUtils;
 
 import io.dropwizard.hibernate.UnitOfWork;
@@ -162,9 +163,29 @@ public class AuthResource
 
         String token = cookie.getValue();
 
-        if (!StringUtils.nullOrEmpty(token) && JwtUtils.checkToken(token, keyPair.getPublic()))
+        if (!StringUtils.nullOrEmpty(token))
         {
-            return Response.ok().entity("\"" + token + "\"").build();
+            // Extract the current token and check it is valid.
+            JWTAuthenticationToken authenticationToken = new JWTAuthenticationToken(token);
+            authenticationToken.setPublicKey(keyPair.getPublic());
+
+            if (!authenticationToken.checkValid())
+            {
+                return UNAUTHORIZED;
+            }
+
+            authenticationToken.extractClaims();
+
+            // Build a new token with the same claims as the existing one.
+            String refreshToken =
+                JwtUtils.createToken(authenticationToken.getSubject(), authenticationToken.getPermissions(),
+                    keyPair.getPrivate(), jwtTTLMillis);
+            NewCookie refreshCookie = new NewCookie("jwt", token, "/", "localhost", "jwt", 600, false, true);
+
+            Response response =
+                Response.ok().cookie(refreshCookie).entity(new AuthResponse().withToken(refreshToken)).build();
+
+            return response;
         }
         else
         {
