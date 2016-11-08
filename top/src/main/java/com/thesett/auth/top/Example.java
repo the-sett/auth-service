@@ -108,7 +108,8 @@ public class Example
         bootstrap.addBundle(swaggerBundle);
         ModelConverters.getInstance().addConverter(new EnumTypeModelConverter());
 
-        bootstrap.addBundle(new ConfiguredAssetsBundle("/webapp/app/", CacheBuilderSpec.disableCaching(), "/auth-service", "index.html"));
+        bootstrap.addBundle(new ConfiguredAssetsBundle("/webapp/app/", CacheBuilderSpec.disableCaching(),
+                "/auth-service", "index.html"));
     }
 
     /**
@@ -159,8 +160,9 @@ public class Example
         // javascript clients that are running on a different origin to the one this API is
         // being served from. Disable this for security, if a javascript client is not being used
         // or is being served from the same origin.
-        environment.servlets().addFilter("cors", new CORSFilter()).addMappingForUrlPatterns(EnumSet.allOf(
-                DispatcherType.class), false, "/*");
+        environment.servlets()
+            .addFilter("cors", new CORSFilter())
+            .addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "/*");
 
         // Attach a configurator for Shiro to the Servlet lifecycle.
         environment.servlets().addServletListeners(new ShiroJWTRealmSetupListener(keyPair.getPublic()));
@@ -202,35 +204,37 @@ public class Example
     {
         RoleService roleService = serviceFactory.getRoleService();
 
-         try
-         {
-             Set<Permission> permissions;
-             Role role;
+        try
+        {
+            Set<Permission> permissions;
+            Role role;
 
-             // Create the admin role.
-             permissions = new HashSet<>();
-             permissions.add(new Permission().withName("auth-admin"));
+            // Create the admin role.
+            permissions = new HashSet<>();
+            permissions.add(new Permission().withName("auth-admin"));
 
-             role = new Role().withName("auth-root").withPermissions(permissions);
-             createRoleIfNotExists(roleService, role);
+            role = new Role().withName("auth-root").withPermissions(permissions);
+            createRoleIfNotExists(roleService, role);
 
-             // Create the user role.
-             permissions = new HashSet<>();
-             permissions.add(new Permission().withName("user"));
+            // Create the user role.
+            permissions = new HashSet<>();
+            permissions.add(new Permission().withName("user"));
 
-             role = new Role().withName("user").withPermissions(permissions);
-             createRoleIfNotExists(roleService, role);
-         }
-         catch (EntityException e)
-         {
-             throw new IllegalStateException(e);
-         }
+            role = new Role().withName("user").withPermissions(permissions);
+            createRoleIfNotExists(roleService, role);
+        }
+        catch (EntityException e)
+        {
+            throw new IllegalStateException(e);
+        }
     }
 
-    private Role createRoleIfNotExists(RoleService roleService, Role role) throws EntityException {
+    private Role createRoleIfNotExists(RoleService roleService, Role role) throws EntityException
+    {
         Role check = CollectionUtil.first(roleService.findByExample(new Role().withName(role.getName())));
 
-        if (check == null) {
+        if (check == null)
+        {
             return roleService.create(role);
         }
 
@@ -256,7 +260,8 @@ public class Example
                 Set<Role> roles = new HashSet<>();
                 roles.add(adminRole);
 
-                accountService.create(new Account().withUsername("admin").withPassword("admin").withRoles(roles).withRoot(true));
+                accountService.create(new Account().withUsername("admin").withPassword("admin").withRoles(roles)
+                    .withRoot(true));
             }
             catch (EntityException e)
             {
