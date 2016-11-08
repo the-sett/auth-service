@@ -26,14 +26,20 @@ init : Model
 init =
     { token = Nothing
     , decodedToken = Nothing
+    , refreshToken = Nothing
+    , refreshFrom = Nothing
     , errorMsg = ""
-    , authState =
-        { loggedIn = False
-        , permissions = []
-        }
+    , authState = notAuthedState
     , forwardLocation = ""
     , logoutLocation = ""
     , logonAttempted = False
+    }
+
+
+notAuthedState =
+    { loggedIn = False
+    , permissions = []
+    , expiresAt = Nothing
     }
 
 
@@ -76,38 +82,38 @@ toSavedModel model =
 
 fromSavedModel : SavedModel -> Model -> Model
 fromSavedModel saved model =
-    { model
-        | token = saved.token
-        , authState = authStateFromToken saved.token
-    }
+    let
+        decodedToken =
+            decodeToken saved.token
+    in
+        { model
+            | token = saved.token
+            , decodedToken = decodedToken
+            , authState = authStateFromToken decodedToken
+        }
 
 
-authStateFromToken : Maybe String -> AuthState
+decodeToken : Maybe String -> Maybe Token
+decodeToken maybeToken =
+    case maybeToken of
+        Nothing ->
+            Nothing
+
+        Just token ->
+            Result.toMaybe <| Jwt.decodeToken tokenDecoder token
+
+
+authStateFromToken : Maybe Token -> AuthState
 authStateFromToken maybeToken =
     case maybeToken of
         Nothing ->
-            { loggedIn = False
-            , permissions = []
-            }
+            notAuthedState
 
         Just token ->
-            let
-                tokenDecodeResult =
-                    Jwt.decodeToken tokenDecoder token
-
-                d =
-                    Log.debug "auth" tokenDecodeResult
-            in
-                case tokenDecodeResult of
-                    Err _ ->
-                        { loggedIn = False
-                        , permissions = []
-                        }
-
-                    Ok decodedToken ->
-                        { loggedIn = True
-                        , permissions = decodedToken.scopes
-                        }
+            { loggedIn = True
+            , permissions = token.scopes
+            , expiresAt = token.exp
+            }
 
 
 isLoggedIn : AuthState -> Bool
@@ -169,8 +175,16 @@ callbacks =
 login : Model.AuthResponse -> Model -> ( Model, Cmd Msg )
 login (Model.AuthResponse response) model =
     let
+        decodedToken =
+            decodeToken response.token
+
         model' =
-            { model | token = response.token, authState = authStateFromToken response.token }
+            { model
+                | token = response.token
+                , refreshToken = response.refreshToken
+                , decodedToken = decodedToken
+                , authState = authStateFromToken decodedToken
+            }
     in
         ( model'
         , Cmd.batch [ setStorage <| toSavedModel model', Navigation.newUrl model.forwardLocation ]

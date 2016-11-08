@@ -26,6 +26,8 @@ type Msg
 type alias Model =
     { token : Maybe String
     , decodedToken : Maybe Token
+    , refreshToken : Maybe String
+    , refreshFrom : Maybe Date
     , errorMsg : String
     , authState : AuthState
     , forwardLocation : String
@@ -37,6 +39,7 @@ type alias Model =
 type alias AuthState =
     { loggedIn : Bool
     , permissions : List String
+    , expiresAt : Maybe Date
     }
 
 
