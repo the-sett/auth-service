@@ -7,12 +7,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
@@ -22,7 +19,6 @@ import com.thesett.auth.model.*;
 import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
 import com.thesett.util.security.jwt.JwtUtils;
-import com.thesett.util.security.model.JWTAuthenticationToken;
 import com.thesett.util.string.StringUtils;
 
 import io.dropwizard.hibernate.UnitOfWork;
@@ -135,6 +131,96 @@ public class AuthResource
             return UNAUTHORIZED;
         }
 
+        // Generate a refresh token and stuff it in the refresh cache.
+        String refreshToken = random.nextBytes().toBase64();
+        refreshCache.put(refreshToken, account, refreshTTLMillis, TimeUnit.MILLISECONDS);
+
+        // Create the JWT token with claims matching the account, as a cookie.
+        String token = getJWTTokenFromAccount(account);
+        NewCookie cookie =
+            new NewCookie("jwt", token, "/", "localhost", "jwt", (int) (jwtTTLMillis / 1000), false, true);
+
+        AuthResponse authResponse = new AuthResponse().withToken(token).withRefreshToken(refreshToken);
+        Response response = Response.ok().cookie(cookie).entity(authResponse).build();
+
+        return response;
+    }
+
+    /**
+     * Refreshes the callers access tokens, provided they have a valid refresh token.
+     *
+     * @param  refreshRequest The refresh request with the refresh token in it.
+     *
+     * @return A response with the JWT as an httpOnly cookie, and in the body, or the {@link #UNAUTHORIZED} return code
+     *         when the refresh is not accepted.
+     */
+    @POST
+    @Path("/refresh")
+    @UnitOfWork
+    @ApiOperation(value = "Checks a refresh token and supplies new auth and refresh tokens.")
+    public Response refresh(RefreshRequest refreshRequest)
+    {
+        if (refreshRequest == null)
+        {
+            return UNAUTHORIZED;
+        }
+
+        String refreshToken = refreshRequest.getRefreshToken();
+
+        if (StringUtils.nullOrEmpty(refreshToken))
+        {
+            return UNAUTHORIZED;
+        }
+
+        // Extract the current token and check it is valid.
+        Account account = refreshCache.get(refreshToken);
+
+        if (account == null)
+        {
+            return UNAUTHORIZED;
+        }
+
+        // Generate a refresh token and stuff it in the refresh cache.
+        String newRefreshToken = random.nextBytes().toBase64();
+        refreshCache.evict(refreshToken);
+        refreshCache.put(newRefreshToken, account, refreshTTLMillis, TimeUnit.MILLISECONDS);
+
+        // Build a new token with the same claims as the existing one.
+        String authToken = getJWTTokenFromAccount(account);
+        NewCookie refreshCookie =
+            new NewCookie("jwt", authToken, "/", "localhost", "jwt", (int) (jwtTTLMillis / 1000), false, true);
+
+        AuthResponse authResponse = new AuthResponse().withToken(authToken).withRefreshToken(newRefreshToken);
+        Response response = Response.ok().cookie(refreshCookie).entity(authResponse).build();
+
+        return response;
+    }
+
+    /**
+     * Removes the callers JWT token cookie.
+     *
+     * @return An OK response, with a JWT cookie set to expire in the past.
+     */
+    @POST
+    @Path("/logout")
+    @UnitOfWorkWithDetach
+    @ApiOperation(value = "Removes the authentication cookie.")
+    public Response logout()
+    {
+        return Response.ok()
+            .header("Set-Cookie", "jwt=deleted;Domain=localhost;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT")
+            .build();
+    }
+
+    /**
+     * Extracts the subject and permissions from an Account and uses them to build a JWT token.
+     *
+     * @param  account The account to build a token for.
+     *
+     * @return A JWT token reflecting the subject and permissions of the account.
+     */
+    private String getJWTTokenFromAccount(Account account)
+    {
         // Extract the users permissions into a description of their access claims.
         Set<String> permissions = new LinkedHashSet<>();
 
@@ -152,87 +238,6 @@ public class AuthResource
             }
         }
 
-        // Generate a refresh token and stuff it in the refresh cache.
-        String refreshToken = random.nextBytes().toBase64();
-        refreshCache.put(refreshToken, account, refreshTTLMillis, TimeUnit.MILLISECONDS);
-
-        // Create the JWT token with claims matching the account, as a cookie.
-        String token = JwtUtils.createToken(account.getUsername(), permissions, keyPair.getPrivate(), jwtTTLMillis);
-        NewCookie cookie =
-            new NewCookie("jwt", token, "/", "localhost", "jwt", (int) (jwtTTLMillis / 1000), false, true);
-
-        AuthResponse authResponse = new AuthResponse().withToken(token).withRefreshToken(refreshToken);
-        Response response = Response.ok().cookie(cookie).entity(authResponse).build();
-
-        return response;
-    }
-
-    /**
-     * Refreshes the callers JWT token, provided they are currently logged in with a valid token.
-     *
-     * @param  cookie The callers JWT token cookie.
-     *
-     * @return <tt>true</tt> iff the caller has a currently valid token.
-     */
-    @GET
-    @Path("/refresh")
-    @UnitOfWorkWithDetach
-    @ApiOperation(value = "Checks if a user token is authenticated.")
-    public Response refresh(@CookieParam(value = "jwt") Cookie cookie)
-    {
-        System.out.println("cookie = " + cookie);
-
-        if (cookie == null)
-        {
-            return UNAUTHORIZED;
-        }
-
-        String token = cookie.getValue();
-
-        if (!StringUtils.nullOrEmpty(token))
-        {
-            // Extract the current token and check it is valid.
-            JWTAuthenticationToken authenticationToken = new JWTAuthenticationToken(token);
-            authenticationToken.setPublicKey(keyPair.getPublic());
-
-            if (!authenticationToken.checkValid())
-            {
-                return UNAUTHORIZED;
-            }
-
-            authenticationToken.extractClaims();
-
-            // Build a new token with the same claims as the existing one.
-            String refreshToken =
-                JwtUtils.createToken(authenticationToken.getSubject(), authenticationToken.getPermissions(),
-                    keyPair.getPrivate(), jwtTTLMillis);
-            NewCookie refreshCookie =
-                new NewCookie("jwt", refreshToken, "/", "localhost", "jwt", (int) (jwtTTLMillis / 1000), false, true);
-
-            Response response =
-                Response.ok().cookie(refreshCookie).entity(new AuthResponse().withToken(refreshToken)).build();
-
-            return response;
-        }
-        else
-        {
-            return UNAUTHORIZED;
-        }
-    }
-
-    /**
-     * Removes the callers JWT token cookie.
-     *
-     * @return An OK response, with a JWT cookie set to expire in the past.
-     */
-    @POST
-    @Path("/logout")
-    @UnitOfWorkWithDetach
-    @ApiOperation(value = "Removes the authentication cookie.")
-    public Response logout()
-    {
-        return Response.ok()
-            .header("Set-Cookie", "jwt=deleted;Domain=localhost;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT")
-            .build();
+        return JwtUtils.createToken(account.getUsername(), permissions, keyPair.getPrivate(), jwtTTLMillis);
     }
 }
