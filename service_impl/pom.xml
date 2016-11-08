@@ -41,6 +41,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.thesett.jenerator.utils</groupId>
+            <artifactId>jenerator_util_caching</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.strategicgains</groupId>
             <artifactId>HyperExpress-HAL</artifactId>
         </dependency>        

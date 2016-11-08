@@ -4,6 +4,7 @@ package com.thesett.auth.services.rest;
 import java.security.KeyPair;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
@@ -29,6 +30,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
+import org.apache.shiro.crypto.RandomNumberGenerator;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.infinispan.Cache;
 
 /**
  * AuthResource provides authentication end-points, and supplies JWT tokens in response to valid requests.
@@ -61,20 +66,35 @@ public class AuthResource
     private final PasswordHasherSha256 passwordHasher = new PasswordHasherSha256(1000);
 
     /** The login token TTL till it expires. */
-    private final Long jwtTTLMillis;
+    private final long jwtTTLMillis;
+
+    /** The refresh token TTL till it expires. */
+    private final long refreshTTLMillis;
+
+    /** The refresh cache. */
+    private final Cache<String, Account> refreshCache;
+
+    /** A secure random number generator for refresh tokens. */
+    private RandomNumberGenerator random;
 
     /**
      * Creates a set of authentication end-points, against the accounts accessible through the specified accounts DAO.
      *
-     * @param accountDAO   The accounts DAO, to verify user accounts against.
-     * @param keyPair      An asymmetric crypto kay pair for creating and checking tokens.
-     * @param jwtTTLMillis The login token TTL till it expires.
+     * @param accountDAO       The accounts DAO, to verify user accounts against.
+     * @param keyPair          An asymmetric crypto kay pair for creating and checking tokens.
+     * @param jwtTTLMillis     The login token TTL till it expires.
+     * @param refreshTTLMillis The refresh token TTL till it expires.
+     * @param refreshCache     The refresh cache.
      */
-    public AuthResource(AccountDAO accountDAO, KeyPair keyPair, Long jwtTTLMillis)
+    public AuthResource(AccountDAO accountDAO, KeyPair keyPair, long jwtTTLMillis, long refreshTTLMillis,
+        Cache<String, Account> refreshCache)
     {
         this.accountDAO = accountDAO;
         this.keyPair = keyPair;
         this.jwtTTLMillis = jwtTTLMillis;
+        this.refreshTTLMillis = refreshTTLMillis;
+        this.refreshCache = refreshCache;
+        random = new SecureRandomNumberGenerator();
     }
 
     /**
@@ -132,12 +152,17 @@ public class AuthResource
             }
         }
 
+        // Generate a refresh token and stuff it in the refresh cache.
+        String refreshToken = random.nextBytes().toBase64();
+        refreshCache.put(refreshToken, account, refreshTTLMillis, TimeUnit.MILLISECONDS);
+
         // Create the JWT token with claims matching the account, as a cookie.
         String token = JwtUtils.createToken(account.getUsername(), permissions, keyPair.getPrivate(), jwtTTLMillis);
         NewCookie cookie =
             new NewCookie("jwt", token, "/", "localhost", "jwt", (int) (jwtTTLMillis / 1000), false, true);
 
-        Response response = Response.ok().cookie(cookie).entity(new AuthResponse().withToken(token)).build();
+        AuthResponse authResponse = new AuthResponse().withToken(token);
+        Response response = Response.ok().cookie(cookie).entity(authResponse).build();
 
         return response;
     }

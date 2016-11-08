@@ -51,6 +51,8 @@ import io.swagger.converter.ModelConverters;
 import org.apache.shiro.subject.Subject;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.infinispan.Cache;
+import org.infinispan.manager.EmbeddedCacheManager;
 
 /**
  * Example is a DropWizard application extension point, allowing the environment to be configured, additional services
@@ -104,12 +106,12 @@ public class Example
     public void bootstrap(Bootstrap<AppConfiguration> bootstrap)
     {
         bootstrap.addBundle(shiroBundle);
-
         bootstrap.addBundle(swaggerBundle);
-        ModelConverters.getInstance().addConverter(new EnumTypeModelConverter());
-
         bootstrap.addBundle(new ConfiguredAssetsBundle("/webapp/app/", CacheBuilderSpec.disableCaching(),
                 "/auth-service", "index.html"));
+        bootstrap.addBundle(infinispanBundle);
+
+        ModelConverters.getInstance().addConverter(new EnumTypeModelConverter());
     }
 
     /**
@@ -167,8 +169,13 @@ public class Example
         // Attach a configurator for Shiro to the Servlet lifecycle.
         environment.servlets().addServletListeners(new ShiroJWTRealmSetupListener(keyPair.getPublic()));
 
+        // Set up the auth endpoints.
+        EmbeddedCacheManager cacheManager = infinispanBundle.getCacheManager();
+        Cache<String, Account> refreshCache = cacheManager.getCache();
+
         AccountDAO accountDAO = new AccountDAOImpl(sessionFactory, validatorFactory);
-        AuthResource authResource = new AuthResource(accountDAO, keyPair, 30 * 60 * 1000L);
+        AuthResource authResource =
+            new AuthResource(accountDAO, keyPair, 5 * 60 * 1000L, 30 * 60 * 1000L, refreshCache);
         environment.jersey().register(authResource);
 
         // Attach resources for handling OAuth providers.
