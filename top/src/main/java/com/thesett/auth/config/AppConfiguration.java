@@ -8,6 +8,7 @@ import com.bazaarvoice.dropwizard.assets.AssetsBundleConfiguration;
 import com.bazaarvoice.dropwizard.assets.AssetsConfiguration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thesett.auth.services.config.ClientSecretsConfiguration;
+import com.thesett.util.caching.InfinispanConfiguration;
 import com.thesett.util.config.shiro.ShiroConfiguration;
 import com.thesett.util.views.handlebars.HandlebarsBundleConfig;
 import com.thesett.util.views.handlebars.HandlebarsConfig;
@@ -24,6 +25,9 @@ public class AppConfiguration extends Configuration implements AssetsBundleConfi
 {
     @JsonProperty("swagger")
     public SwaggerBundleConfiguration swaggerBundleConfiguration;
+
+    @JsonProperty("infinispan")
+    public InfinispanConfiguration infinispanConfiguration;
 
     /** Holds the web assets configuration. */
     @Valid

@@ -144,7 +144,13 @@
                 <artifactId>jenerator_util_shiro</artifactId>
                 <version>${jenerator.utils.version}</version>
             </dependency>
-            
+
+            <dependency>
+                <groupId>com.thesett.jenerator.utils</groupId>
+                <artifactId>jenerator_util_caching</artifactId>
+                <version>${jenerator.utils.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.thesett.jenerator.utils</groupId>
                 <artifactId>jenerator_util_shiro_db_realm</artifactId>

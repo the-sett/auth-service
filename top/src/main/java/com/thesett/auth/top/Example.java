@@ -29,6 +29,8 @@ import com.thesett.auth.services.rest.AuthResource;
 import com.thesett.auth.services.rest.FacebookAuthResource;
 import com.thesett.auth.services.rest.GithubAuthResource;
 import com.thesett.auth.services.rest.GoogleAuthResource;
+import com.thesett.util.caching.InfinispanBundle;
+import com.thesett.util.caching.InfinispanConfiguration;
 import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.config.shiro.ShiroBundle;
 import com.thesett.util.config.shiro.ShiroConfiguration;
@@ -82,6 +84,15 @@ public class Example
             protected SwaggerBundleConfiguration getSwaggerBundleConfiguration(AppConfiguration configuration)
             {
                 return configuration.swaggerBundleConfiguration;
+            }
+        };
+
+    private InfinispanBundle<AppConfiguration> infinispanBundle =
+        new InfinispanBundle<AppConfiguration>()
+        {
+            protected InfinispanConfiguration getInfinispanConfiguration(AppConfiguration configuration)
+            {
+                return configuration.infinispanConfiguration;
             }
         };
 
