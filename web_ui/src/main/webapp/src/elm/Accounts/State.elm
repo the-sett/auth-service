@@ -478,6 +478,7 @@ updateCreate model =
             , password = model.password1
             , root = Just False
             , roles = Just <| Dict.values model.selectedRoles
+            , salt = Nothing
             }
         )
     )
@@ -503,6 +504,7 @@ updateSave model =
                                 , password = model.password1
                                 , root = Just False
                                 , roles = Just <| Dict.values model.selectedRoles
+                                , salt = Nothing
                                 }
                     in
                         ( model

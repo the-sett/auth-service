@@ -45,9 +45,14 @@
         <String name="username"/>
         <String name="password"/>
     </ComponentDef>
+    
+    <ComponentDef name="refreshRequest">
+        <String name="refreshToken"/>        
+    </ComponentDef>
 
     <ComponentDef name="authResponse">
         <String name="token"/>
+        <String name="refreshToken"/>
     </ComponentDef>
 
 </CatalogueDefinition>

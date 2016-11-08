@@ -161,7 +161,7 @@ public class AuthResource
         NewCookie cookie =
             new NewCookie("jwt", token, "/", "localhost", "jwt", (int) (jwtTTLMillis / 1000), false, true);
 
-        AuthResponse authResponse = new AuthResponse().withToken(token);
+        AuthResponse authResponse = new AuthResponse().withToken(token).withRefreshToken(refreshToken);
         Response response = Response.ok().cookie(cookie).entity(authResponse).build();
 
         return response;

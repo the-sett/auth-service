@@ -20,6 +20,9 @@
         <field name="token">
             <valid/>
         </field>
+        <field name="refreshToken">
+            <valid/>
+        </field>
     </bean>
 
 
