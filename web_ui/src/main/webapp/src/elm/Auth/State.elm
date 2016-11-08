@@ -10,7 +10,9 @@ port module Auth.State
         )
 
 import Log
-import Date
+import Date exposing (Date)
+import Time
+import Maybe.Extra
 import Navigation
 import Http
 import Json.Decode as Decode exposing (Decoder, (:=))
@@ -103,6 +105,15 @@ decodeToken maybeToken =
             Result.toMaybe <| Jwt.decodeToken tokenDecoder token
 
 
+refreshTimeFromToken : Maybe Token -> Maybe Date
+refreshTimeFromToken maybeToken =
+    let
+        maybeDate =
+            Maybe.map (\token -> token.exp) maybeToken |> Maybe.Extra.join
+    in
+        Maybe.map (\date -> (Date.toTime date) - 30 * Time.second |> Date.fromTime) maybeDate
+
+
 authStateFromToken : Maybe Token -> AuthState
 authStateFromToken maybeToken =
     case maybeToken of
@@ -182,6 +193,7 @@ login (Model.AuthResponse response) model =
             { model
                 | token = response.token
                 , refreshToken = response.refreshToken
+                , refreshFrom = refreshTimeFromToken decodedToken
                 , decodedToken = decodedToken
                 , authState = authStateFromToken decodedToken
             }
