@@ -254,3 +254,6 @@ update' msg model =
               }
             , Cmd.batch [ removeStorage (), Navigation.newUrl model.logoutLocation ]
             )
+
+        Refresh ->
+            ( model, Cmd.none )

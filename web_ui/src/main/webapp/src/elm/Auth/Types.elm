@@ -17,6 +17,7 @@ type Msg
     | LogIn Credentials
     | LogOut
     | NotAuthed
+    | Refresh
 
 
 
