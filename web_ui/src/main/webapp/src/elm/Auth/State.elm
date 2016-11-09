@@ -223,24 +223,28 @@ logout response model =
 
 refreshCmd : Model -> Cmd Msg
 refreshCmd model =
-    case model.refreshFrom of
-        Nothing ->
-            Cmd.none
+    let
+        refreshRequest =
+            Model.RefreshRequest { refreshToken = model.refreshToken }
+    in
+        case model.refreshFrom of
+            Nothing ->
+                Cmd.none
 
-        Just refreshDate ->
-            tokenExpiryTask refreshDate
-                |> Task.perform (\error -> Refresh (Result.Err error)) (\result -> Refresh (Result.Ok result))
+            Just refreshDate ->
+                tokenExpiryTask refreshDate refreshRequest
+                    |> Task.perform (\error -> Refresh (Result.Err error)) (\result -> Refresh (Result.Ok result))
 
 
-tokenExpiryTask : Date -> Task.Task Http.Error Model.AuthResponse
-tokenExpiryTask refreshDate =
+tokenExpiryTask : Date -> Model.RefreshRequest -> Task.Task Http.Error Model.AuthResponse
+tokenExpiryTask refreshDate refreshRequest =
     let
         delay expiryDate now =
             max 0 ((Date.toTime expiryDate) - now - Time.second * 30)
     in
         Time.now
             `andThen` (\now -> Process.sleep <| delay refreshDate now)
-            `andThen` (\_ -> Auth.Service.refreshTask)
+            `andThen` (\_ -> Auth.Service.refreshTask refreshRequest)
 
 
 authRequestFromCredentials : Credentials -> Model.AuthRequest
