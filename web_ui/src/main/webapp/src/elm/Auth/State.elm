@@ -13,6 +13,8 @@ import Log
 import Date exposing (Date)
 import Time
 import Maybe.Extra
+import Task exposing (andThen)
+import Process
 import Navigation
 import Http
 import Json.Decode as Decode exposing (Decoder, (:=))
@@ -199,7 +201,11 @@ login (Model.AuthResponse response) model =
             }
     in
         ( model'
-        , Cmd.batch [ setStorage <| toSavedModel model', Navigation.newUrl model.forwardLocation ]
+        , Cmd.batch
+            [ setStorage <| toSavedModel model'
+            , Navigation.newUrl model.forwardLocation
+            , refreshCmd model
+            ]
         )
 
 
@@ -213,6 +219,28 @@ logout response model =
     ( { model | token = Nothing, authState = authStateFromToken Nothing }
     , Cmd.batch [ removeStorage (), Navigation.newUrl model.logoutLocation ]
     )
+
+
+refreshCmd : Model -> Cmd Msg
+refreshCmd model =
+    case model.refreshFrom of
+        Nothing ->
+            Cmd.none
+
+        Just refreshDate ->
+            tokenExpiryTask refreshDate
+                |> Task.perform (\error -> Refresh (Result.Err error)) (\result -> Refresh (Result.Ok result))
+
+
+tokenExpiryTask : Date -> Task.Task Http.Error Model.AuthResponse
+tokenExpiryTask refreshDate =
+    let
+        delay expiryDate now =
+            max 0 ((Date.toTime expiryDate) - now - Time.second * 30)
+    in
+        Time.now
+            `andThen` (\now -> Process.sleep <| delay refreshDate now)
+            `andThen` (\_ -> Auth.Service.refreshTask)
 
 
 authRequestFromCredentials : Credentials -> Model.AuthRequest
@@ -255,5 +283,5 @@ update' msg model =
             , Cmd.batch [ removeStorage (), Navigation.newUrl model.logoutLocation ]
             )
 
-        Refresh ->
+        Refresh _ ->
             ( model, Cmd.none )

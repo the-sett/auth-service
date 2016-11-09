@@ -2,6 +2,7 @@ module Auth.Types exposing (..)
 
 import Date exposing (Date)
 import Http
+import Result
 import Model
 import Auth.Service
 
@@ -17,7 +18,7 @@ type Msg
     | LogIn Credentials
     | LogOut
     | NotAuthed
-    | Refresh
+    | Refresh (Result.Result Http.Error Model.AuthResponse)
 
 
 
