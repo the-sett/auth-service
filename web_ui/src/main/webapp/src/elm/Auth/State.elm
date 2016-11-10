@@ -157,12 +157,6 @@ subscriptions model =
         ]
 
 
-port setStorage : SavedModel -> Cmd msg
-
-
-port removeStorage : () -> Cmd msg
-
-
 port receiveLogin : (Credentials -> msg) -> Sub msg
 
 
@@ -202,8 +196,7 @@ login (Model.AuthResponse response) model =
     in
         ( model'
         , Cmd.batch
-            [ setStorage <| toSavedModel model'
-            , Navigation.newUrl model.forwardLocation
+            [ Navigation.newUrl model.forwardLocation
             , refreshCmd model'
             ]
         )
@@ -226,8 +219,7 @@ refresh (Model.AuthResponse response) model =
     in
         ( model'
         , Cmd.batch
-            [ setStorage <| toSavedModel model'
-            , refreshCmd model'
+            [ refreshCmd model'
             ]
         )
 
@@ -235,7 +227,7 @@ refresh (Model.AuthResponse response) model =
 logout : Http.Response -> Model -> ( Model, Cmd Msg )
 logout response model =
     ( { model | token = Nothing, authState = authStateFromToken Nothing }
-    , Cmd.batch [ removeStorage (), Navigation.newUrl model.logoutLocation ]
+    , Cmd.batch [ Navigation.newUrl model.logoutLocation ]
     )
 
 
@@ -305,7 +297,7 @@ update msg model =
                 , authState = authStateFromToken Nothing
                 , logonAttempted = False
               }
-            , Cmd.batch [ removeStorage (), Navigation.newUrl model.logoutLocation ]
+            , Cmd.batch [ Navigation.newUrl model.logoutLocation ]
             )
 
         Refresh result ->

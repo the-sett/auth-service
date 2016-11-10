@@ -26,18 +26,11 @@
 
 <body>
     <script>
-        var storedState = localStorage.getItem('model');
-        var startingState = storedState ? JSON.parse(storedState) : null;
+        //var storedState = sessionStorage.getItem('model');
+        //var startingState = storedState ? JSON.parse(storedState) : null;
+        var startingState = null;
 
         var app = Elm.Main.fullscreen(startingState);
-
-        app.ports.setStorage.subscribe(function(state) {
-            localStorage.setItem('model', JSON.stringify(state));
-        });
-
-        app.ports.removeStorage.subscribe(function() {
-            localStorage.removeItem('model');
-        });
 
         app.ports.sendLogin.subscribe(function(msg) {
             app.ports.receiveLogin.send(msg);
