@@ -204,14 +204,32 @@ login (Model.AuthResponse response) model =
         , Cmd.batch
             [ setStorage <| toSavedModel model'
             , Navigation.newUrl model.forwardLocation
-            , refreshCmd model
+            , refreshCmd model'
             ]
         )
 
 
 refresh : Model.AuthResponse -> Model -> ( Model, Cmd Msg )
-refresh response model =
-    ( model, Cmd.none )
+refresh (Model.AuthResponse response) model =
+    let
+        decodedToken =
+            decodeToken response.token
+
+        model' =
+            { model
+                | token = response.token
+                , refreshToken = response.refreshToken
+                , refreshFrom = refreshTimeFromToken decodedToken
+                , decodedToken = decodedToken
+                , authState = authStateFromToken decodedToken
+            }
+    in
+        ( model'
+        , Cmd.batch
+            [ setStorage <| toSavedModel model'
+            , refreshCmd model'
+            ]
+        )
 
 
 logout : Http.Response -> Model -> ( Model, Cmd Msg )
@@ -239,8 +257,14 @@ refreshCmd model =
 tokenExpiryTask : Date -> Model.RefreshRequest -> Task.Task Http.Error Model.AuthResponse
 tokenExpiryTask refreshDate refreshRequest =
     let
-        delay expiryDate now =
-            max 0 ((Date.toTime expiryDate) - now - Time.second * 30)
+        delay' refreshDate now =
+            max 0 ((Debug.log "auth expTime" (Date.toTime refreshDate)) - now)
+
+        delay refreshDate now =
+            Debug.log "auth delay"
+                (delay' (Debug.log "auth expDate" refreshDate)
+                    (Debug.log "auth now" now)
+                )
     in
         Time.now
             `andThen` (\now -> Process.sleep <| delay refreshDate now)
@@ -287,5 +311,10 @@ update' msg model =
             , Cmd.batch [ removeStorage (), Navigation.newUrl model.logoutLocation ]
             )
 
-        Refresh _ ->
-            ( model, Cmd.none )
+        Refresh result ->
+            case result of
+                Err _ ->
+                    ( model, Cmd.none )
+
+                Ok authResponse ->
+                    refresh authResponse model
