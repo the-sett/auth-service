@@ -239,6 +239,10 @@ logout response model =
     )
 
 
+
+-- Functions for building and executing the refresh cycle task.
+
+
 refreshCmd : Model -> Cmd Msg
 refreshCmd model =
     let
@@ -273,14 +277,13 @@ authRequestFromCredentials credentials =
         }
 
 
+
+-- Event handler.
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
-update action model =
-    update' (Log.debug "auth" action) model
-
-
-update' : Msg -> Model -> ( Model, Cmd Msg )
-update' msg model =
-    case msg of
+update msg model =
+    case (Log.debug "auth" msg) of
         AuthApi action' ->
             Auth.Service.update callbacks action' model
 
