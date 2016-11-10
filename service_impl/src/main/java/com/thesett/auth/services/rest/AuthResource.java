@@ -136,12 +136,7 @@ public class AuthResource
         refreshCache.put(refreshToken, account, refreshTTLMillis, TimeUnit.MILLISECONDS);
 
         // Create the JWT token with claims matching the account, as a cookie.
-        String token = getJWTTokenFromAccount(account);
-        NewCookie cookie =
-            new NewCookie("jwt", token, "/", "localhost", "jwt", (int) (jwtTTLMillis / 1000), false, true);
-
-        AuthResponse authResponse = new AuthResponse().withToken(token).withRefreshToken(refreshToken);
-        Response response = Response.ok().cookie(cookie).entity(authResponse).build();
+        Response response = buildAuthedResponse(account, refreshToken);
 
         return response;
     }
@@ -186,12 +181,7 @@ public class AuthResource
         refreshCache.put(newRefreshToken, account, refreshTTLMillis, TimeUnit.MILLISECONDS);
 
         // Build a new token with the same claims as the existing one.
-        String authToken = getJWTTokenFromAccount(account);
-        NewCookie refreshCookie =
-            new NewCookie("jwt", authToken, "/", "localhost", "jwt", (int) (jwtTTLMillis / 1000), false, true);
-
-        AuthResponse authResponse = new AuthResponse().withToken(authToken).withRefreshToken(newRefreshToken);
-        Response response = Response.ok().cookie(refreshCookie).entity(authResponse).build();
+        Response response = buildAuthedResponse(account, newRefreshToken);
 
         return response;
     }
@@ -210,6 +200,26 @@ public class AuthResource
         return Response.ok()
             .header("Set-Cookie", "jwt=deleted;Domain=localhost;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT")
             .build();
+    }
+
+    /**
+     * Creates a response for an authenticated user, containing the JWT token as a cookie, and auth and refresh tokens
+     * as the entity.
+     *
+     * @param  account      The account that has passed authentication.
+     * @param  refreshToken The refresh token.
+     *
+     * @return The authenticated response.
+     */
+    private Response buildAuthedResponse(Account account, String refreshToken)
+    {
+        String authToken = getJWTTokenFromAccount(account);
+        NewCookie refreshCookie =
+            new NewCookie("jwt", authToken, "/", "localhost", "jwt", (int) (jwtTTLMillis / 1000), false, true);
+
+        AuthResponse authResponse = new AuthResponse().withToken(authToken).withRefreshToken(refreshToken);
+
+        return Response.ok().cookie(refreshCookie).entity(authResponse).build();
     }
 
     /**
