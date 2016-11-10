@@ -314,4 +314,7 @@ update msg model =
                     ( model, Cmd.none )
 
                 Ok authResponse ->
-                    refresh authResponse model
+                    if isLoggedIn model.authState then
+                        refresh authResponse model
+                    else
+                        ( model, Cmd.none )
