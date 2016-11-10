@@ -257,14 +257,8 @@ refreshCmd model =
 tokenExpiryTask : Date -> Model.RefreshRequest -> Task.Task Http.Error Model.AuthResponse
 tokenExpiryTask refreshDate refreshRequest =
     let
-        delay' refreshDate now =
-            max 0 ((Debug.log "auth expTime" (Date.toTime refreshDate)) - now)
-
         delay refreshDate now =
-            Debug.log "auth delay"
-                (delay' (Debug.log "auth expDate" refreshDate)
-                    (Debug.log "auth now" now)
-                )
+            max 0 ((Date.toTime refreshDate) - now)
     in
         Time.now
             `andThen` (\now -> Process.sleep <| delay refreshDate now)
