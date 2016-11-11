@@ -7,9 +7,12 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
@@ -101,8 +104,8 @@ public class AuthResource
      *
      * @param  authRequest The username/password authentication request.
      *
-     * @return A response with the JWT as an httpOnly cookie, and in the body, or the {@link #UNAUTHORIZED} return code
-     *         when the login is not accepted.
+     * @return A response with the JWT as an httpOnly cookie, and in the body paired with the refresh token, or the
+     *         {@link #UNAUTHORIZED} return code when the login is not accepted.
      */
     @POST
     @Path("/login")
@@ -146,8 +149,8 @@ public class AuthResource
      *
      * @param  refreshRequest The refresh request with the refresh token in it.
      *
-     * @return A response with the JWT as an httpOnly cookie, and in the body, or the {@link #UNAUTHORIZED} return code
-     *         when the refresh is not accepted.
+     * @return A response with the JWT as an httpOnly cookie, and in the body paired with the refresh token, or the
+     *         {@link #UNAUTHORIZED} return code when the login is not accepted.
      */
     @POST
     @Path("/refresh")
@@ -187,6 +190,49 @@ public class AuthResource
     }
 
     /**
+     * Refreshes the auth token from a refresh token held in a cookie.
+     *
+     * @return A response with the JWT as an httpOnly cookie, and in the body paired with the refresh token, or the
+     *         {@link #UNAUTHORIZED} return code when the login is not accepted.
+     */
+    @GET
+    @Path("/refresh")
+    @UnitOfWork
+    @ApiOperation(value = "Restores auth state from a token in a cookie.")
+    public Response restore(@CookieParam(value = "refresh") Cookie cookie)
+    {
+        if (cookie == null)
+        {
+            return UNAUTHORIZED;
+        }
+
+        String refreshToken = cookie.getValue();
+
+        if (StringUtils.nullOrEmpty(refreshToken))
+        {
+            return UNAUTHORIZED;
+        }
+
+        // Extract the current token and check it is valid.
+        Account account = refreshCache.get(refreshToken);
+
+        if (account == null)
+        {
+            return UNAUTHORIZED;
+        }
+
+        // Generate a refresh token and stuff it in the refresh cache.
+        String newRefreshToken = random.nextBytes().toBase64();
+        refreshCache.evict(refreshToken);
+        refreshCache.put(newRefreshToken, account, refreshTTLMillis, TimeUnit.MILLISECONDS);
+
+        // Build a new token with the same claims as the existing one.
+        Response response = buildAuthedResponse(account, newRefreshToken);
+
+        return response;
+    }
+
+    /**
      * Removes the callers JWT token cookie.
      *
      * @return An OK response, with a JWT cookie set to expire in the past.
@@ -199,6 +245,7 @@ public class AuthResource
     {
         return Response.ok()
             .header("Set-Cookie", "jwt=deleted;Domain=localhost;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT")
+            .header("Set-Cookie", "refresh=deleted;Domain=localhost;Path=/;Expires=Thu, 01-Jan-1970 00:00:01 GMT")
             .build();
     }
 
@@ -214,12 +261,16 @@ public class AuthResource
     private Response buildAuthedResponse(Account account, String refreshToken)
     {
         String authToken = getJWTTokenFromAccount(account);
-        NewCookie refreshCookie =
+
+        NewCookie jwtCookie =
             new NewCookie("jwt", authToken, "/", "localhost", "jwt", (int) (jwtTTLMillis / 1000), false, true);
+        NewCookie refreshCookie =
+            new NewCookie("refresh", refreshToken, "/", "localhost", "refresh", (int) (refreshTTLMillis / 1000), false,
+                true);
 
         AuthResponse authResponse = new AuthResponse().withToken(authToken).withRefreshToken(refreshToken);
 
-        return Response.ok().cookie(refreshCookie).entity(authResponse).build();
+        return Response.ok().cookie(jwtCookie).cookie(refreshCookie).entity(authResponse).build();
     }
 
     /**
