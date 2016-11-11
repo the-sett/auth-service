@@ -29,7 +29,6 @@ type Msg
 type alias Model =
     { token : Maybe String
     , decodedToken : Maybe Token
-    , refreshToken : Maybe String
     , refreshFrom : Maybe Date
     , errorMsg : String
     , authState : AuthState

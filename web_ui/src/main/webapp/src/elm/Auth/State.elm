@@ -30,7 +30,6 @@ init : Model
 init =
     { token = Nothing
     , decodedToken = Nothing
-    , refreshToken = Nothing
     , refreshFrom = Nothing
     , errorMsg = ""
     , authState = notAuthedState
@@ -192,7 +191,6 @@ login (Model.AuthResponse response) model =
         model' =
             { model
                 | token = response.token
-                , refreshToken = response.refreshToken
                 , refreshFrom = refreshTimeFromToken decodedToken
                 , decodedToken = decodedToken
                 , authState = authStateFromToken decodedToken
@@ -215,7 +213,6 @@ refresh (Model.AuthResponse response) model =
         model' =
             { model
                 | token = response.token
-                , refreshToken = response.refreshToken
                 , refreshFrom = refreshTimeFromToken decodedToken
                 , decodedToken = decodedToken
                 , authState = authStateFromToken decodedToken
