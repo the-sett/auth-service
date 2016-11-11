@@ -40,6 +40,10 @@
             app.ports.receiveLogout.send(msg);
         });
 
+        app.ports.sendRefresh.subscribe(function(msg) {
+            app.ports.receiveRefresh.send(msg);
+        });
+
         app.ports.sendUnauthed.subscribe(function(msg) {
             app.ports.receiveUnauthed.send(msg);
         });

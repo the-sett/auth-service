@@ -16,9 +16,10 @@ type alias Credentials =
 type Msg
     = AuthApi (Auth.Service.Msg)
     | LogIn Credentials
+    | Refresh
     | LogOut
     | NotAuthed
-    | Refresh (Result.Result Http.Error Model.AuthResponse)
+    | Refreshed (Result.Result Http.Error Model.AuthResponse)
 
 
 

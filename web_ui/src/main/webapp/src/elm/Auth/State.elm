@@ -153,11 +153,15 @@ subscriptions model =
     Sub.batch
         [ receiveLogin LogIn
         , receiveLogout (\_ -> LogOut)
+        , receiveRefresh (\_ -> Refresh)
         , receiveUnauthed (\_ -> NotAuthed)
         ]
 
 
 port receiveLogin : (Credentials -> msg) -> Sub msg
+
+
+port receiveRefresh : (() -> msg) -> Sub msg
 
 
 port receiveLogout : (() -> msg) -> Sub msg
@@ -197,7 +201,7 @@ login (Model.AuthResponse response) model =
         ( model'
         , Cmd.batch
             [ Navigation.newUrl model.forwardLocation
-            , refreshCmd model'
+            , delayedRefreshCmd model'
             ]
         )
 
@@ -219,7 +223,7 @@ refresh (Model.AuthResponse response) model =
     in
         ( model'
         , Cmd.batch
-            [ refreshCmd model'
+            [ delayedRefreshCmd model'
             ]
         )
 
@@ -235,23 +239,19 @@ logout response model =
 -- Functions for building and executing the refresh cycle task.
 
 
-refreshCmd : Model -> Cmd Msg
-refreshCmd model =
-    let
-        refreshRequest =
-            Model.RefreshRequest { refreshToken = model.refreshToken }
-    in
-        case model.refreshFrom of
-            Nothing ->
-                Cmd.none
+delayedRefreshCmd : Model -> Cmd Msg
+delayedRefreshCmd model =
+    case model.refreshFrom of
+        Nothing ->
+            Cmd.none
 
-            Just refreshDate ->
-                tokenExpiryTask refreshDate refreshRequest
-                    |> Task.perform (\error -> Refresh (Result.Err error)) (\result -> Refresh (Result.Ok result))
+        Just refreshDate ->
+            tokenExpiryTask refreshDate
+                |> Task.perform (\error -> Refreshed (Result.Err error)) (\result -> Refreshed (Result.Ok result))
 
 
-tokenExpiryTask : Date -> Model.RefreshRequest -> Task.Task Http.Error Model.AuthResponse
-tokenExpiryTask refreshDate refreshRequest =
+tokenExpiryTask : Date -> Task.Task Http.Error Model.AuthResponse
+tokenExpiryTask refreshDate =
     let
         delay refreshDate now =
             max 0 ((Date.toTime refreshDate) - now)
@@ -288,6 +288,9 @@ update msg model =
             , Auth.Service.invokeLogin AuthApi (authRequestFromCredentials credentials)
             )
 
+        Refresh ->
+            ( { model | logonAttempted = False }, Auth.Service.invokeRefresh AuthApi )
+
         LogOut ->
             ( { model | logonAttempted = False }, Auth.Service.invokeLogout AuthApi )
 
@@ -300,7 +303,7 @@ update msg model =
             , Cmd.batch [ Navigation.newUrl model.logoutLocation ]
             )
 
-        Refresh result ->
+        Refreshed result ->
             case result of
                 Err _ ->
                     ( model, Cmd.none )

@@ -12,6 +12,11 @@ login authRequest =
     sendLogin authRequest
 
 
+refresh : Cmd msg
+refresh =
+    sendRefresh ()
+
+
 logout : Cmd msg
 logout =
     sendLogout ()
@@ -26,6 +31,9 @@ port sendLogin : Credentials -> Cmd msg
 
 
 port sendLogout : () -> Cmd msg
+
+
+port sendRefresh : () -> Cmd msg
 
 
 port sendUnauthed : () -> Cmd msg

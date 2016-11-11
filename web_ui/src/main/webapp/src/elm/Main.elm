@@ -12,6 +12,7 @@ import Main.State exposing (..)
 import Main.View exposing (..)
 import Auth.Types
 import Auth.State
+import Auth
 
 
 log : a -> a
@@ -65,7 +66,7 @@ init' authModel =
                 d =
                     log "authModel not present"
             in
-                ( init, Layout.sub0 Mdl )
+                ( init, Cmd.batch [ Layout.sub0 Mdl, Auth.refresh ] )
 
 
 
