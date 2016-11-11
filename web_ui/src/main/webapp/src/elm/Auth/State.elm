@@ -258,7 +258,7 @@ tokenExpiryTask refreshDate refreshRequest =
     in
         Time.now
             `andThen` (\now -> Process.sleep <| delay refreshDate now)
-            `andThen` (\_ -> Auth.Service.refreshTask refreshRequest)
+            `andThen` (\_ -> Auth.Service.refreshTask)
 
 
 authRequestFromCredentials : Credentials -> Model.AuthRequest

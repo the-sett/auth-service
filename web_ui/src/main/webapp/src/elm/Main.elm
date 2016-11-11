@@ -40,6 +40,10 @@ main =
 
 -- The program may be started with an existing auth model (containing an
 -- authentication token). If this is the case, the token is kept.
+-- Generally, this will not be done as keeping the auth state in web storage
+-- is a security weakness. A better alternative is to attempt to regain the
+-- auth status from the server - if the browser still holds a valid auth token
+-- in a cookie this will be possible.
 
 
 init' : Maybe Auth.Types.SavedModel -> ( Model, Cmd Msg )

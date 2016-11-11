@@ -23,9 +23,9 @@ invokeLogin msg request =
         |> Cmd.map msg
 
 
-invokeRefresh : (Msg -> msg) -> Model.RefreshRequest -> Cmd msg
-invokeRefresh msg request =
-    refreshTask request
+invokeRefresh : (Msg -> msg) -> Cmd msg
+invokeRefresh msg =
+    refreshTask
         |> Task.perform (\error -> Refresh (Result.Err error)) (\result -> Refresh (Result.Ok result))
         |> Cmd.map msg
 
@@ -112,12 +112,12 @@ loginTask model =
         |> Http.fromJson authResponseDecoder
 
 
-refreshTask : RefreshRequest -> Task Http.Error Model.AuthResponse
-refreshTask model =
-    { verb = "POST"
-    , headers = [ ( "Content-Type", "application/json" ) ]
+refreshTask : Task Http.Error Model.AuthResponse
+refreshTask =
+    { verb = "GET"
+    , headers = []
     , url = routes.refreshUrl
-    , body = Http.string <| Encode.encode 0 <| refreshRequestEncoder model
+    , body = Http.empty
     }
         |> Http.send Http.defaultSettings
         |> Http.fromJson authResponseDecoder
