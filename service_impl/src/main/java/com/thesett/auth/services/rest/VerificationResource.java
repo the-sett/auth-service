@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.thesett.auth.model.Verifier;
+import com.thesett.auth.services.VerificationService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,7 +31,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "/auth/verification-key", description = "API for providing verification keys.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(value = MediaType.APPLICATION_JSON)
-public class VerificationResource
+public class VerificationResource implements VerificationService
 {
     /** The verification key. */
     private final PublicKey verificationKey;
@@ -46,6 +47,8 @@ public class VerificationResource
             new Verifier().withAlg("RSA512").withKey(Base64.getEncoder().encodeToString(verificationKey.getEncoded()));
     }
 
+    /** {@inheritDoc} */
+    @Override
     @GET
     @ApiOperation(value = "Provides a description of the verification key.")
     public Verifier restore()

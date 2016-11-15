@@ -21,10 +21,7 @@ import com.thesett.auth.dao.UserSecurityDAOImpl;
 import com.thesett.auth.model.Account;
 import com.thesett.auth.model.Permission;
 import com.thesett.auth.model.Role;
-import com.thesett.auth.services.AccountService;
-import com.thesett.auth.services.AuthService;
-import com.thesett.auth.services.RoleService;
-import com.thesett.auth.services.ServiceFactory;
+import com.thesett.auth.services.*;
 import com.thesett.auth.services.config.ClientSecretsConfiguration;
 import com.thesett.auth.services.rest.AuthResource;
 import com.thesett.auth.services.rest.FacebookAuthResource;
@@ -179,8 +176,8 @@ public class Example
         AuthService authResource = new AuthResource(accountDAO, keyPair, 5 * 60 * 1000L, 30 * 60 * 1000L, refreshCache);
         environment.jersey().register(authResource);
 
-        VerificationResource verificationResource = new VerificationResource(keyPair.getPublic());
-        environment.jersey().register(verificationResource);
+        VerificationService verificationService = new VerificationResource(keyPair.getPublic());
+        environment.jersey().register(verificationService);
 
         // Attach resources for handling OAuth providers.
         Client client = new JerseyClientBuilder(environment).using(appConfiguration.getHttpClient()).build("client");
