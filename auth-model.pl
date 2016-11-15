@@ -8,3 +8,4 @@ type_instance(permission, entity_type, [fields([unique(key, fields([property(nam
 type_instance(authRequest, component_type, [fields([property(username, string, "username"), property(password, string, "password")]), views([])]).
 type_instance(refreshRequest, component_type, [fields([property(refreshToken, string, "refreshToken")]), views([])]).
 type_instance(authResponse, component_type, [fields([property(token, string, "token"), property(refreshToken, string, "refreshToken")]), views([])]).
+type_instance(verifier, component_type, [fields([property(alg, string, "alg"), property(key, string, "key")]), views([])]).

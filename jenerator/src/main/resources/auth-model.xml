@@ -55,4 +55,9 @@
         <String name="refreshToken"/>
     </ComponentDef>
 
+    <ComponentDef name="verifier">
+        <String name="alg"/>
+        <String name="key"/>
+    </ComponentDef>
+
 </CatalogueDefinition>

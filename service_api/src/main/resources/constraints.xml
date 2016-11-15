@@ -33,6 +33,16 @@
     </bean>
 
 
+    <bean class="Verifier" ignore-annotations="true">
+        <field name="alg">
+            <valid/>
+        </field>
+        <field name="key">
+            <valid/>
+        </field>
+    </bean>
+
+
     <bean class="Account" ignore-annotations="true">
         <field name="username">
             <constraint annotation="javax.validation.constraints.Pattern">
