@@ -22,6 +22,7 @@ import com.thesett.auth.model.Account;
 import com.thesett.auth.model.Permission;
 import com.thesett.auth.model.Role;
 import com.thesett.auth.services.AccountService;
+import com.thesett.auth.services.AuthService;
 import com.thesett.auth.services.RoleService;
 import com.thesett.auth.services.ServiceFactory;
 import com.thesett.auth.services.config.ClientSecretsConfiguration;
@@ -174,8 +175,7 @@ public class Example
         Cache<String, Account> refreshCache = cacheManager.getCache();
 
         AccountDAO accountDAO = new AccountDAOImpl(sessionFactory, validatorFactory);
-        AuthResource authResource =
-            new AuthResource(accountDAO, keyPair, 5 * 60 * 1000L, 30 * 60 * 1000L, refreshCache);
+        AuthService authResource = new AuthResource(accountDAO, keyPair, 5 * 60 * 1000L, 30 * 60 * 1000L, refreshCache);
         environment.jersey().register(authResource);
 
         // Attach resources for handling OAuth providers.

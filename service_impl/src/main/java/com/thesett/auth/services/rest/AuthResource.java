@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 
 import com.thesett.auth.dao.AccountDAO;
 import com.thesett.auth.model.*;
+import com.thesett.auth.services.AuthService;
 import com.thesett.util.collections.CollectionUtil;
 import com.thesett.util.jersey.UnitOfWorkWithDetach;
 import com.thesett.util.security.jwt.JwtUtils;
@@ -50,7 +51,7 @@ import org.infinispan.Cache;
 @Api(value = "/auth/", description = "API for handling authentication requests.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(value = MediaType.APPLICATION_JSON)
-public class AuthResource
+public class AuthResource implements AuthService
 {
     /** Status code to respond to failed logins with. */
     public static final Response UNAUTHORIZED = Response.status(401).build();
@@ -107,6 +108,7 @@ public class AuthResource
      * @return A response with the JWT as an httpOnly cookie, and in the body paired with the refresh token, or the
      *         {@link #UNAUTHORIZED} return code when the login is not accepted.
      */
+    @Override
     @POST
     @Path("/login")
     @UnitOfWork
@@ -152,6 +154,7 @@ public class AuthResource
      * @return A response with the JWT as an httpOnly cookie, and in the body paired with the refresh token, or the
      *         {@link #UNAUTHORIZED} return code when the login is not accepted.
      */
+    @Override
     @POST
     @Path("/refresh")
     @UnitOfWork
@@ -195,6 +198,7 @@ public class AuthResource
      * @return A response with the JWT as an httpOnly cookie, and in the body paired with the refresh token, or the
      *         {@link #UNAUTHORIZED} return code when the login is not accepted.
      */
+    @Override
     @GET
     @Path("/refresh")
     @UnitOfWork
@@ -237,6 +241,7 @@ public class AuthResource
      *
      * @return An OK response, with a JWT cookie set to expire in the past.
      */
+    @Override
     @POST
     @Path("/logout")
     @UnitOfWorkWithDetach
