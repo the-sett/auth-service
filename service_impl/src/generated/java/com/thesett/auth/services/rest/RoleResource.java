@@ -42,7 +42,7 @@ import org.apache.shiro.subject.Subject;
 @Api(value = "/api/role/", description = "API implementation for working with Role")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(value = MediaType.APPLICATION_JSON)
-public class RoleResource implements RoleService
+public class RoleResource implements RoleService, Constants
 {
     /** The DAO to use for persisting role. */
     private final RoleDAO roleDAO;
@@ -75,7 +75,7 @@ public class RoleResource implements RoleService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("auth-admin");
+        subject.checkPermission(AUTH_ADMIN);
 
         return roleDAO.browse();
     }
@@ -136,9 +136,7 @@ public class RoleResource implements RoleService
             }
     )
     public Role retrieve(
-        @ApiParam(value = "The id of the item to retrieve.", required = true)
-        @PathParam("roleId")
-        Long id)
+        @ApiParam(value = "The id of the item to retrieve.", required = true) @PathParam("roleId") Long id)
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
@@ -159,9 +157,8 @@ public class RoleResource implements RoleService
                 @ApiResponse(code = 400, message = "No item found matching the supplied id.")
             }
     )
-    public Role update(@ApiParam(value = "The id of the item to update.", required = true)
-        @PathParam("roleId")
-        Long id, Role role) throws EntityException
+    public Role update(@ApiParam(value = "The id of the item to update.", required = true) @PathParam("roleId") Long id,
+        Role role) throws EntityException
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
@@ -176,9 +173,8 @@ public class RoleResource implements RoleService
     @Path("/{roleId}")
     @ApiOperation(value = "Deletes a Role by its id.")
     @ApiResponses(value = { @ApiResponse(code = 400, message = "No item found matching the supplied id.") })
-    public void delete(@ApiParam(value = "The id of the item to delete.", required = true)
-        @PathParam("roleId")
-        Long id) throws EntityException
+    public void delete(@ApiParam(value = "The id of the item to delete.", required = true) @PathParam("roleId") Long id)
+        throws EntityException
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();

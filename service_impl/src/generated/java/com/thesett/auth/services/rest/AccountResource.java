@@ -50,7 +50,7 @@ import org.apache.shiro.subject.Subject;
 @Api(value = "/api/account/", description = "API implementation for working with Account")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(value = MediaType.APPLICATION_JSON)
-public class AccountResource implements AccountService
+public class AccountResource implements AccountService, Constants
 {
     /** The DAO to use for persisting account. */
     private final AccountDAO accountDAO;
@@ -91,7 +91,7 @@ public class AccountResource implements AccountService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("auth-admin");
+        subject.checkPermission(AUTH_ADMIN);
 
         List<Account> results = accountDAO.browse();
 
@@ -113,7 +113,7 @@ public class AccountResource implements AccountService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("auth-admin");
+        subject.checkPermission(AUTH_ADMIN);
 
         List<Account> results = accountDAO.findByExample(example);
 
@@ -151,7 +151,7 @@ public class AccountResource implements AccountService
 
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("auth-admin");
+        subject.checkPermission(AUTH_ADMIN);
 
         // Ensure that at least one role is set on the account.
         checkAtLeastOneRole(account);
@@ -189,7 +189,7 @@ public class AccountResource implements AccountService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("auth-admin");
+        subject.checkPermission(AUTH_ADMIN);
 
         Account result = accountDAO.retrieve(id);
 
@@ -223,7 +223,7 @@ public class AccountResource implements AccountService
 
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("auth-admin");
+        subject.checkPermission(AUTH_ADMIN);
 
         // Obtain the account to modify and confirm it exists.
         Account accountToModify = accountDAO.retrieve(id);
@@ -278,7 +278,7 @@ public class AccountResource implements AccountService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("auth-admin");
+        subject.checkPermission(AUTH_ADMIN);
 
         // Obtain the account to modify and silently failt if there is no account to delete.
         Account accountToModify = accountDAO.retrieve(id);

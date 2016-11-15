@@ -42,7 +42,7 @@ import org.apache.shiro.subject.Subject;
 @Api(value = "/api/permission/", description = "API implementation for working with Permission")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(value = MediaType.APPLICATION_JSON)
-public class PermissionResource implements PermissionService
+public class PermissionResource implements PermissionService, Constants
 {
     /** The DAO to use for persisting permission. */
     private final PermissionDAO permissionDAO;
@@ -75,7 +75,7 @@ public class PermissionResource implements PermissionService
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
-        subject.checkPermission("auth-admin");
+        subject.checkPermission(AUTH_ADMIN);
 
         return permissionDAO.browse();
     }
@@ -136,9 +136,7 @@ public class PermissionResource implements PermissionService
             }
     )
     public Permission retrieve(
-        @ApiParam(value = "The id of the item to retrieve.", required = true)
-        @PathParam("permissionId")
-        Long id)
+        @ApiParam(value = "The id of the item to retrieve.", required = true) @PathParam("permissionId") Long id)
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
@@ -160,9 +158,8 @@ public class PermissionResource implements PermissionService
             }
     )
     public Permission update(
-        @ApiParam(value = "The id of the item to update.", required = true)
-        @PathParam("permissionId")
-        Long id, Permission permission) throws EntityException
+        @ApiParam(value = "The id of the item to update.", required = true) @PathParam("permissionId") Long id,
+        Permission permission) throws EntityException
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
@@ -178,9 +175,8 @@ public class PermissionResource implements PermissionService
     @ApiOperation(value = "Deletes a Permission by its id.")
     @ApiResponses(value = { @ApiResponse(code = 400, message = "No item found matching the supplied id.") })
     public void delete(
-        @ApiParam(value = "The id of the item to delete.", required = true)
-        @PathParam("permissionId")
-        Long id) throws EntityException
+        @ApiParam(value = "The id of the item to delete.", required = true) @PathParam("permissionId") Long id)
+        throws EntityException
     {
         // Check that the caller has permission to do this.
         Subject subject = SecurityUtils.getSubject();
