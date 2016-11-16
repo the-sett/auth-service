@@ -51,7 +51,7 @@ public class VerificationResource implements VerificationService
     @Override
     @GET
     @ApiOperation(value = "Provides a description of the verification key.")
-    public Verifier restore()
+    public Verifier retrieve()
     {
         return verifier;
     }

@@ -22,5 +22,5 @@ public interface VerificationService
      *
      * @return Information about the verification algorithm and key.
      */
-    Verifier restore();
+    Verifier retrieve();
 }
