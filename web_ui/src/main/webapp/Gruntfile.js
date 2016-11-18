@@ -32,7 +32,7 @@ module.exports = function(grunt) {
         'elm': {
             compile: {
                 files: {
-                    'app/auth_web_ui.js': ['src/elm/**/*.elm', 'src/generated/elm/**/*.elm']
+                    'app/auth_web_ui.js': ['src/elm/**/*.elm', 'src/auth-client/elm/**/*.elm']
                 }
             }
         },
