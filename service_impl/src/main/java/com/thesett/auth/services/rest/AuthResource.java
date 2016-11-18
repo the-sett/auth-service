@@ -6,16 +6,14 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 
 import com.thesett.auth.dao.AccountDAO;
 import com.thesett.auth.model.*;
@@ -108,7 +106,6 @@ public class AuthResource implements AuthService
      * @return A response with the JWT as an httpOnly cookie, and in the body paired with the refresh token, or the
      *         {@link #UNAUTHORIZED} return code when the login is not accepted.
      */
-    @Override
     @POST
     @Path("/login")
     @UnitOfWork
@@ -120,8 +117,10 @@ public class AuthResource implements AuthService
                 @ApiResponse(code = 401, message = "User not authenticated.")
             }
     )
-    public Response login(AuthRequest authRequest)
+    public Response login(@Context HttpServletRequest request, AuthRequest authRequest)
     {
+        String host = request.getServerName();
+
         // Check the request against the accounts.
         Account account =
             CollectionUtil.first(accountDAO.findByExample(new Account().withUsername(authRequest.getUsername())));
@@ -141,7 +140,7 @@ public class AuthResource implements AuthService
         refreshCache.put(refreshToken, account, refreshTTLMillis, TimeUnit.MILLISECONDS);
 
         // Create the JWT token with claims matching the account, as a cookie.
-        Response response = buildAuthedResponse(account, refreshToken);
+        Response response = buildAuthedResponse(account, refreshToken, host);
 
         return response;
     }
@@ -154,13 +153,14 @@ public class AuthResource implements AuthService
      * @return A response with the JWT as an httpOnly cookie, and in the body paired with the refresh token, or the
      *         {@link #UNAUTHORIZED} return code when the login is not accepted.
      */
-    @Override
     @POST
     @Path("/refresh")
     @UnitOfWork
     @ApiOperation(value = "Checks a refresh token and supplies new auth and refresh tokens.")
-    public Response refresh(RefreshRequest refreshRequest)
+    public Response refresh(@Context HttpServletRequest request, RefreshRequest refreshRequest)
     {
+        String host = request.getServerName();
+
         if (refreshRequest == null)
         {
             return UNAUTHORIZED;
@@ -187,7 +187,7 @@ public class AuthResource implements AuthService
         refreshCache.put(newRefreshToken, account, refreshTTLMillis, TimeUnit.MILLISECONDS);
 
         // Build a new token with the same claims as the existing one.
-        Response response = buildAuthedResponse(account, newRefreshToken);
+        Response response = buildAuthedResponse(account, newRefreshToken, host);
 
         return response;
     }
@@ -198,13 +198,14 @@ public class AuthResource implements AuthService
      * @return A response with the JWT as an httpOnly cookie, and in the body paired with the refresh token, or the
      *         {@link #UNAUTHORIZED} return code when the login is not accepted.
      */
-    @Override
     @GET
     @Path("/refresh")
     @UnitOfWork
     @ApiOperation(value = "Restores auth state from a token in a cookie.")
-    public Response restore(@CookieParam(value = "refresh") Cookie cookie)
+    public Response restore(@Context HttpServletRequest request, @CookieParam(value = "refresh") Cookie cookie)
     {
+        String host = request.getServerName();
+
         if (cookie == null)
         {
             return UNAUTHORIZED;
@@ -231,7 +232,7 @@ public class AuthResource implements AuthService
         refreshCache.put(newRefreshToken, account, refreshTTLMillis, TimeUnit.MILLISECONDS);
 
         // Build a new token with the same claims as the existing one.
-        Response response = buildAuthedResponse(account, newRefreshToken);
+        Response response = buildAuthedResponse(account, newRefreshToken, host);
 
         return response;
     }
@@ -260,17 +261,18 @@ public class AuthResource implements AuthService
      *
      * @param  account      The account that has passed authentication.
      * @param  refreshToken The refresh token.
+     * @param  host         The domain to issue the cookies to.
      *
      * @return The authenticated response.
      */
-    private Response buildAuthedResponse(Account account, String refreshToken)
+    private Response buildAuthedResponse(Account account, String refreshToken, String host)
     {
         String authToken = getJWTTokenFromAccount(account);
 
         NewCookie jwtCookie =
-            new NewCookie("jwt", authToken, "/", "localhost", "jwt", (int) (jwtTTLMillis / 1000), false, true);
+            new NewCookie("jwt", authToken, "/", host, "jwt", (int) (jwtTTLMillis / 1000), false, true);
         NewCookie refreshCookie =
-            new NewCookie("refresh", refreshToken, "/", "localhost", "refresh", (int) (refreshTTLMillis / 1000), false,
+            new NewCookie("refresh", refreshToken, "/", host, "refresh", (int) (refreshTTLMillis / 1000), false,
                 true);
 
         AuthResponse authResponse = new AuthResponse().withToken(authToken).withRefreshToken(refreshToken);

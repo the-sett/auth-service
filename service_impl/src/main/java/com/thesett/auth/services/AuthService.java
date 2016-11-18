@@ -1,6 +1,7 @@
 /* Copyright Rupert Smith, 2005 to 2008, all rights reserved. */
 package com.thesett.auth.services;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
@@ -35,7 +36,7 @@ public interface AuthService
      * @return A response with the JWT as an httpOnly cookie, and in the body paired with the refresh token, or the HTTP
      *         401 return code when the login is not accepted.
      */
-    Response login(AuthRequest authRequest);
+    Response login(HttpServletRequest request, AuthRequest authRequest);
 
     /**
      * Refreshes the callers access tokens, provided they have a valid refresh token.
@@ -45,7 +46,7 @@ public interface AuthService
      * @return A response with the JWT as an httpOnly cookie, and in the body paired with the refresh token, or the HTTP
      *         401 return code when the login is not accepted.
      */
-    Response refresh(RefreshRequest refreshRequest);
+    Response refresh(HttpServletRequest request, RefreshRequest refreshRequest);
 
     /**
      * Refreshes the auth token from a refresh token held in a cookie.
@@ -53,7 +54,7 @@ public interface AuthService
      * @return A response with the JWT as an httpOnly cookie, and in the body paired with the refresh token, or the HTTP
      *         401 return code when the login is not accepted.
      */
-    Response restore(@CookieParam(value = "refresh") Cookie cookie);
+    Response restore(HttpServletRequest request, Cookie cookie);
 
     /**
      * Removes the callers JWT token cookie.
