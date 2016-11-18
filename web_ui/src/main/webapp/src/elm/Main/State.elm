@@ -1,6 +1,6 @@
 module Main.State exposing (init, update)
 
-import Log
+
 import Array exposing (Array)
 import Dict exposing (Dict)
 import Navigation
@@ -44,7 +44,7 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
-    update' (Log.debug "top" action) model
+    update' (Debug.log "top" action) model
 
 
 update' : Msg -> Model -> ( Model, Cmd Msg )

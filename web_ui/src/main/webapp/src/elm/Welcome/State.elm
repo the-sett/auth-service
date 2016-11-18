@@ -1,6 +1,6 @@
 module Welcome.State exposing (init, update)
 
-import Log
+
 import Platform.Cmd exposing (Cmd)
 import Material
 import Welcome.Types exposing (..)
@@ -17,7 +17,7 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
-    update' (Log.debug "welcome" action) model
+    update' (Debug.log "welcome" action) model
 
 
 update' : Msg -> Model -> ( Model, Cmd Msg )

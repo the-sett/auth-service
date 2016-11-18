@@ -1,6 +1,6 @@
 module Roles.State exposing (..)
 
-import Log
+
 import String
 import Dict exposing (Dict)
 import Platform.Cmd exposing (Cmd)
@@ -222,7 +222,7 @@ permissionList permissions model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
-    case (Log.debug "permissions" action) of
+    case (Debug.log "permissions" action) of
         Mdl action' ->
             Material.update action' model
 

@@ -1,6 +1,6 @@
 module Accounts.State exposing (..)
 
-import Log
+
 import Set
 import Dict exposing (Dict)
 import Dict.Extra
@@ -301,7 +301,7 @@ roleList roles model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
-    case (Log.debug "accounts" action) of
+    case (Debug.log "accounts" action) of
         Mdl action' ->
             Material.update action' model
 

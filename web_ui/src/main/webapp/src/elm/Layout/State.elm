@@ -1,6 +1,6 @@
 module Layout.State exposing (..)
 
-import Log
+
 import Platform.Cmd exposing (Cmd, none)
 import Material
 import Material.Color as Color
@@ -26,7 +26,7 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
-    update' (Log.debug "layout" action) model
+    update' (Debug.log "layout" action) model
 
 
 update' : Msg -> Model -> ( Model, Cmd Msg )
