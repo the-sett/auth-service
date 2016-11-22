@@ -17,17 +17,16 @@ import Accounts.View
 import Roles.View
 import Permissions.View
 import Welcome.View
-import Auth.Types
 import Auth.State
 import Main.Types exposing (..)
 
 
-view : Auth.Types.AuthState -> Model -> Html Msg
+view : Auth.State.AuthState -> Model -> Html Msg
 view =
     Html.Lazy.lazy2 view'
 
 
-view' : Auth.Types.AuthState -> Model -> Html Msg
+view' : Auth.State.AuthState -> Model -> Html Msg
 view' authState model =
     let
         authenticated =

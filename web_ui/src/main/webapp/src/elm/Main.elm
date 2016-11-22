@@ -10,7 +10,6 @@ import Menu.Types
 import Main.Types exposing (..)
 import Main.State exposing (..)
 import Main.View exposing (..)
-import Auth.Types
 import Auth.State
 import Auth
 
@@ -20,7 +19,7 @@ log =
     Debug.log "top"
 
 
-main : Program (Maybe Auth.Types.SavedModel)
+main : Program (Maybe Auth.State.SavedModel)
 main =
     Routing.programWithFlags
         { delta2url = delta2url
@@ -47,7 +46,7 @@ main =
 -- in a cookie this will be possible.
 
 
-init' : Maybe Auth.Types.SavedModel -> ( Model, Cmd Msg )
+init' : Maybe Auth.State.SavedModel -> ( Model, Cmd Msg )
 init' authModel =
     case authModel of
         Just authModel ->
