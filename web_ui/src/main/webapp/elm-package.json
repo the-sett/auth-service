@@ -4,7 +4,9 @@
     "repository": "https://github.com/no-user/not-a-github-project.git",
     "license": "private",
     "source-directories": [
-        "src/elm", "src/auth-client/elm"
+        "src/elm",
+        "src/auth-client/elm",
+        "src/elmq/elm"
     ],
     "exposed-modules": [],
     "native-modules": true,
