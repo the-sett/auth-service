@@ -19,9 +19,9 @@ log =
     Debug.log "top"
 
 
-main : Program (Maybe Auth.State.SavedModel)
+main : Program Never
 main =
-    Routing.programWithFlags
+    Routing.program
         { delta2url = delta2url
         , location2messages = location2messages
         , init = init'
@@ -37,35 +37,9 @@ main =
         }
 
 
-
--- The program may be started with an existing auth model (containing an
--- authentication token). If this is the case, the token is kept.
--- Generally, this will not be done as keeping the auth state in web storage
--- is a security weakness. A better alternative is to attempt to regain the
--- auth status from the server - if the browser still holds a valid auth token
--- in a cookie this will be possible.
-
-
-init' : Maybe Auth.State.SavedModel -> ( Model, Cmd Msg )
-init' authModel =
-    case authModel of
-        Just authModel ->
-            let
-                d =
-                    log "authModel present"
-            in
-                ( { init
-                    | auth = Auth.State.fromSavedModel authModel Auth.State.init
-                  }
-                , Layout.sub0 Mdl
-                )
-
-        Nothing ->
-            let
-                d =
-                    log "authModel not present"
-            in
-                ( init, Cmd.batch [ Layout.sub0 Mdl, Auth.refresh ] )
+init' : ( Model, Cmd Msg )
+init' =
+    ( init, Cmd.batch [ Layout.sub0 Mdl, Auth.refresh ] )
 
 
 

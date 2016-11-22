@@ -3,14 +3,12 @@ port module Auth.State
         ( update
         , subscriptions
         , init
-        , fromSavedModel
         , isLoggedIn
         , logonAttempted
         , hasPermission
         , Model
         , Msg
         , AuthState
-        , SavedModel
         )
 
 import Date exposing (Date)
@@ -80,17 +78,6 @@ type alias Token =
     }
 
 
-
-{--
- Describes the part of the authorization state that can be preserved and
- restored accross application lifecycles.
---}
-
-
-type alias SavedModel =
-    { token : Maybe String }
-
-
 init : Model
 init =
     { token = Nothing
@@ -153,25 +140,6 @@ credentialsDecoder =
     )
         |: ("username" := Decode.string)
         |: ("password" := Decode.string)
-
-
-toSavedModel : Model -> SavedModel
-toSavedModel model =
-    { token = model.token
-    }
-
-
-fromSavedModel : SavedModel -> Model -> Model
-fromSavedModel saved model =
-    let
-        decodedToken =
-            decodeToken saved.token
-    in
-        { model
-            | token = saved.token
-            , decodedToken = decodedToken
-            , authState = authStateFromToken decodedToken
-        }
 
 
 decodeToken : Maybe String -> Maybe Token
