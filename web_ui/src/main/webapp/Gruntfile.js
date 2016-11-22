@@ -33,6 +33,9 @@ module.exports = function(grunt) {
         'exec': {
             'elm-github-install': {
                 command: 'elm-github-install'
+            },
+            'closure': {
+                command: './closure-minify'
             }
         },
 
@@ -184,5 +187,5 @@ module.exports = function(grunt) {
     grunt.registerTask('dev', ['bower', 'connect:server', 'watch:dev']);
     grunt.registerTask('minified', ['bower', 'connect:server', 'watch:min']);
     grunt.registerTask('build', ['bower', 'copy', 'exec:elm-github-install', 'elm', 'responsive_images']);
-    grunt.registerTask('package', ['build', 'uglify', 'compress']);
+    grunt.registerTask('package', ['build', 'exec:closure', 'uglify', 'compress']);
 };

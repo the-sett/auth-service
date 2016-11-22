@@ -1,0 +1,3 @@
+#!/bin/sh
+
+java -jar closure-compiler.jar -O ADVANCED --assume_function_wrapper --js app/auth_web_ui.js > auth_web_ui.js && cp auth_web_ui.js app/
