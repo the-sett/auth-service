@@ -31,22 +31,6 @@
         var startingState = null;
 
         var app = Elm.Main.fullscreen(startingState);
-
-        app.ports.sendLogin.subscribe(function(msg) {
-            app.ports.receiveLogin.send(msg);
-        });
-
-        app.ports.sendLogout.subscribe(function(msg) {
-            app.ports.receiveLogout.send(msg);
-        });
-
-        app.ports.sendRefresh.subscribe(function(msg) {
-            app.ports.receiveRefresh.send(msg);
-        });
-
-        app.ports.sendUnauthed.subscribe(function(msg) {
-            app.ports.receiveUnauthed.send(msg);
-        });
     </script>
 </body>
 

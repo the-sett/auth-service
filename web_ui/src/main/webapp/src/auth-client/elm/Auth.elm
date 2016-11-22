@@ -1,5 +1,8 @@
 port module Auth exposing (..)
 
+import Emitter
+import Json.Encode as Encode
+
 
 type alias Credentials =
     { username : String
@@ -7,33 +10,29 @@ type alias Credentials =
     }
 
 
+credentialsEncoder : Credentials -> Encode.Value
+credentialsEncoder model =
+    [ ( "username", Encode.string model.username )
+    , ( "password", Encode.string model.password )
+    ]
+        |> Encode.object
+
+
 login : Credentials -> Cmd msg
 login authRequest =
-    sendLogin authRequest
+    Emitter.send "auth.login" <| credentialsEncoder authRequest
 
 
 refresh : Cmd msg
 refresh =
-    sendRefresh ()
+    Emitter.sendNaked "auth.refresh"
 
 
 logout : Cmd msg
 logout =
-    sendLogout ()
+    Emitter.sendNaked "auth.logout"
 
 
 unauthed : Cmd msg
 unauthed =
-    sendUnauthed ()
-
-
-port sendLogin : Credentials -> Cmd msg
-
-
-port sendLogout : () -> Cmd msg
-
-
-port sendRefresh : () -> Cmd msg
-
-
-port sendUnauthed : () -> Cmd msg
+    Emitter.sendNaked "auth.unauthed"

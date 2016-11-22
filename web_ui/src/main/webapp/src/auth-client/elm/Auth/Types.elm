@@ -15,7 +15,7 @@ type alias Credentials =
 
 type Msg
     = AuthApi (Auth.Service.Msg)
-    | LogIn Credentials
+    | LogIn (Maybe Credentials)
     | Refresh
     | LogOut
     | NotAuthed
