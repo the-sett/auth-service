@@ -1,4 +1,11 @@
-port module Auth exposing (..)
+port module Auth
+    exposing
+        ( login
+        , refresh
+        , logout
+        , unauthed
+        , Credentials
+        )
 
 import Emitter
 import Json.Encode as Encode
