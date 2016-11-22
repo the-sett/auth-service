@@ -14,6 +14,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-ng-annotate');
     grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-elm');
+    grunt.loadNpmTasks('grunt-exec');
 
     grunt.initConfig({
         'pkg': grunt.file.readJSON('package.json'),
@@ -26,6 +27,12 @@ module.exports = function(grunt) {
                     targetDir: 'assets/bower_components',
                     cleanTargetDir: false
                 }
+            }
+        },
+
+        'exec': {
+            'elm-github-install': {
+                command: 'elm-github-install'
             }
         },
 
@@ -176,6 +183,6 @@ module.exports = function(grunt) {
 
     grunt.registerTask('dev', ['bower', 'connect:server', 'watch:dev']);
     grunt.registerTask('minified', ['bower', 'connect:server', 'watch:min']);
-    grunt.registerTask('build', ['bower', 'copy', 'elm', 'responsive_images']);
+    grunt.registerTask('build', ['bower', 'copy', 'exec:elm-github-install', 'elm', 'responsive_images']);
     grunt.registerTask('package', ['build', 'uglify', 'compress']);
 };
