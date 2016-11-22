@@ -19,7 +19,7 @@ import Http
 import Json.Encode as Encode
 import Json.Decode as Decode exposing (Decoder, (:=))
 import Json.Decode.Extra exposing ((|:), withDefault, maybeNull)
-import Emitter
+import Elmq
 import Jwt
 import Utils exposing (..)
 import Auth.Types exposing (..)
@@ -169,10 +169,10 @@ hasPermission permission authState =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Emitter.listen "auth.login" (\value -> LogIn (decodeCredentials value))
-        , Emitter.listenNaked "auth.logout" LogOut
-        , Emitter.listenNaked "auth.refresh" Refresh
-        , Emitter.listenNaked "auth.unauthed" NotAuthed
+        [ Elmq.listen "auth.login" (\value -> LogIn (decodeCredentials value))
+        , Elmq.listenNaked "auth.logout" LogOut
+        , Elmq.listenNaked "auth.refresh" Refresh
+        , Elmq.listenNaked "auth.unauthed" NotAuthed
         ]
 
 

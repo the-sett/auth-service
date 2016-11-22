@@ -1,4 +1,4 @@
-effect module Emitter
+effect module Elmq
     where { command = MyCmd, subscription = MySub }
     exposing
         ( send
@@ -70,7 +70,7 @@ type MySub msg
 
 
 {-| Sends the given value to the given channel.
-    Ui.Helpers.Emitter.send "channelId" (Json.string "test")
+    Elmq.send "channelId" (Json.string "test")
 -}
 send : String -> Value -> Cmd msg
 send id value =
@@ -79,7 +79,7 @@ send id value =
 
 {-| Sends a _naked message_ (without value) to the given channel. This is used
 generally to trigger actions.
-    Ui.Helpers.Emitter.send "channelId"
+    Elmq.send "channelId"
 -}
 sendNaked : String -> Cmd msg
 sendNaked id =
@@ -87,7 +87,7 @@ sendNaked id =
 
 
 {-| Sends a string value to the given channel.
-    Ui.Helpers.Emitter.sendString "channelId" "test"
+    Elmq.sendString "channelId" "test"
 -}
 sendString : String -> String -> Cmd msg
 sendString id value =
@@ -95,7 +95,7 @@ sendString id value =
 
 
 {-| Sends a float value to the given channel.
-    Ui.Helpers.Emitter.sendFloat "channelId" 0.42
+    Elmq.sendFloat "channelId" 0.42
 -}
 sendFloat : String -> Float -> Cmd msg
 sendFloat id value =
@@ -103,7 +103,7 @@ sendFloat id value =
 
 
 {-| Sends a integer value to the given channel.
-    Ui.Helpers.Emitter.sendInt "channelId" 10
+    Elmq.sendInt "channelId" 10
 -}
 sendInt : String -> Int -> Cmd msg
 sendInt id value =
@@ -111,7 +111,7 @@ sendInt id value =
 
 
 {-| Sends a boolean value to the given channel.
-    Ui.Helpers.Emitter.sendBool "channelId" 10
+    Elmq.sendBool "channelId" 10
 -}
 sendBool : String -> Bool -> Cmd msg
 sendBool id value =
@@ -119,7 +119,7 @@ sendBool id value =
 
 
 {-| Creates a subscription for the given channel.
-    Ui.Helpers.Emitter.listen "channelId" HandleValue
+    Elmq.listen "channelId" HandleValue
 -}
 listen : String -> (Value -> msg) -> Sub msg
 listen id tagger =
@@ -127,7 +127,7 @@ listen id tagger =
 
 
 {-| Creates a subscription for the given channel.
-    Ui.Helpers.Emitter.listenNaked "channelId" NakedMsg
+    Elmq.listenNaked "channelId" NakedMsg
 -}
 listenNaked : String -> msg -> Sub msg
 listenNaked id msg =
@@ -135,7 +135,7 @@ listenNaked id msg =
 
 
 {-| Creates a subscription for the given string channel.
-    Ui.Helpers.Emitter.listenString "channelId" HandleString
+    Elmq.listenString "channelId" HandleString
 -}
 listenString : String -> (String -> msg) -> Sub msg
 listenString id tagger =
@@ -143,7 +143,7 @@ listenString id tagger =
 
 
 {-| Creates a subscription for the given float channel.
-    Ui.Helpers.Emitter.listenFloat "channelId" HandleFloat
+    Elmq.listenFloat "channelId" HandleFloat
 -}
 listenFloat : String -> (Float -> msg) -> Sub msg
 listenFloat id tagger =
@@ -151,7 +151,7 @@ listenFloat id tagger =
 
 
 {-| Creates a subscription for the given integer channel.
-    Ui.Helpers.Emitter.listenInt "channelId" HandleInt
+    Elmq.listenInt "channelId" HandleInt
 -}
 listenInt : String -> (Int -> msg) -> Sub msg
 listenInt id tagger =
@@ -159,7 +159,7 @@ listenInt id tagger =
 
 
 {-| Creates a subscription for the given boolean channel.
-    Ui.Helpers.Emitter.listenBool "channelId" HandleInt
+    Elmq.listenBool "channelId" HandleInt
 -}
 listenBool : String -> (Bool -> msg) -> Sub msg
 listenBool id tagger =
@@ -167,7 +167,7 @@ listenBool id tagger =
 
 
 {-| Decodes a Json value and maps it to a message with a fallback value.
-    Ui.Helpers.Emitter.decode Json.Decode.string "" HandleString value
+    Elmq.decode Json.Decode.string "" HandleString value
 -}
 decode : Json.Decode.Decoder value -> value -> (value -> msg) -> Value -> msg
 decode decoder default msg value =

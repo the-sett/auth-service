@@ -7,7 +7,7 @@ port module Auth
         , Credentials
         )
 
-import Emitter
+import Elmq
 import Json.Encode as Encode
 
 
@@ -27,19 +27,19 @@ credentialsEncoder model =
 
 login : Credentials -> Cmd msg
 login authRequest =
-    Emitter.send "auth.login" <| credentialsEncoder authRequest
+    Elmq.send "auth.login" <| credentialsEncoder authRequest
 
 
 refresh : Cmd msg
 refresh =
-    Emitter.sendNaked "auth.refresh"
+    Elmq.sendNaked "auth.refresh"
 
 
 logout : Cmd msg
 logout =
-    Emitter.sendNaked "auth.logout"
+    Elmq.sendNaked "auth.logout"
 
 
 unauthed : Cmd msg
 unauthed =
-    Emitter.sendNaked "auth.unauthed"
+    Elmq.sendNaked "auth.unauthed"
