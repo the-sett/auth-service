@@ -163,7 +163,7 @@ hasPermission permission authState =
 
 
 
--- Private interface for authentication functions, and storage of auth state.
+-- Subscriptions to the auth channels.
 
 
 subscriptions : Model -> Sub Msg
@@ -174,9 +174,6 @@ subscriptions model =
         , Emitter.listenNaked "auth.refresh" Refresh
         , Emitter.listenNaked "auth.unauthed" NotAuthed
         ]
-
-
-port receiveLogin : (Credentials -> msg) -> Sub msg
 
 
 
