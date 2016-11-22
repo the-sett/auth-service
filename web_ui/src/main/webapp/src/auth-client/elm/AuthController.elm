@@ -1,4 +1,4 @@
-port module Auth.State
+port module AuthController
     exposing
         ( update
         , subscriptions

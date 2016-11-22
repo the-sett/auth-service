@@ -17,26 +17,26 @@ import Accounts.View
 import Roles.View
 import Permissions.View
 import Welcome.View
-import Auth.State
+import AuthController
 import Main.Types exposing (..)
 
 
-view : Auth.State.AuthState -> Model -> Html Msg
+view : AuthController.AuthState -> Model -> Html Msg
 view =
     Html.Lazy.lazy2 view'
 
 
-view' : Auth.State.AuthState -> Model -> Html Msg
+view' : AuthController.AuthState -> Model -> Html Msg
 view' authState model =
     let
         authenticated =
-            Auth.State.isLoggedIn model.auth.authState
+            AuthController.isLoggedIn model.auth.authState
 
         logonAttempted =
-            Auth.State.logonAttempted model.auth
+            AuthController.logonAttempted model.auth
 
         hasPermission =
-            Auth.State.hasPermission "auth-admin" model.auth.authState
+            AuthController.hasPermission "auth-admin" model.auth.authState
     in
         if authenticated && hasPermission then
             app model

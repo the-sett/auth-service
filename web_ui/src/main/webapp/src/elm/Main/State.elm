@@ -12,7 +12,7 @@ import Material
 import Material.Helpers exposing (pure, lift, lift')
 import Material.Layout as Layout
 import Welcome.State
-import Auth.State
+import AuthController
 import Auth
 import Layout.State
 import Menu.State
@@ -29,7 +29,7 @@ import Main.View
 init : Model
 init =
     { welcome = Welcome.State.init
-    , auth = setLoginLocations Auth.State.init
+    , auth = setLoginLocations AuthController.init
     , mdl = Layout.setTabsWidth 1384 Material.model
     , accounts = Accounts.State.init
     , roles = Roles.State.init
@@ -69,7 +69,7 @@ update' action model =
             ( model, Auth.logout )
 
         AuthMsg a ->
-            lift .auth (\m x -> { m | auth = x }) AuthMsg Auth.State.update a model
+            lift .auth (\m x -> { m | auth = x }) AuthMsg AuthController.update a model
 
         WelcomeMsg a ->
             lift .welcome (\m x -> { m | welcome = x }) WelcomeMsg Welcome.State.update a model
@@ -116,10 +116,10 @@ selectLocation : Model -> String -> ( Model, Cmd Msg )
 selectLocation model location =
     let
         authenticated =
-            Auth.State.isLoggedIn model.auth.authState
+            AuthController.isLoggedIn model.auth.authState
 
         hasPermission =
-            Auth.State.hasPermission "auth-admin" model.auth.authState
+            AuthController.hasPermission "auth-admin" model.auth.authState
 
         -- Flag indicating whether the welcome location should be navigated to.
         jumpToWelcome =

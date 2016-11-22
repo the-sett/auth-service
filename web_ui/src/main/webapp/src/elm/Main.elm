@@ -10,7 +10,7 @@ import Menu.Types
 import Main.Types exposing (..)
 import Main.State exposing (..)
 import Main.View exposing (..)
-import Auth.State
+import AuthController
 import Auth
 
 
@@ -31,7 +31,7 @@ main =
                 Sub.batch
                     [ Sub.map MenusMsg (Menu.subs Menu.Types.MDL init.menus.mdl)
                     , Layout.subs Mdl init.mdl
-                    , Sub.map AuthMsg (Auth.State.subscriptions init.auth)
+                    , Sub.map AuthMsg (AuthController.subscriptions init.auth)
                     ]
         , update = update
         }

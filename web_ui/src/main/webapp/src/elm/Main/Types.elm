@@ -7,12 +7,12 @@ import Menu.Types
 import Accounts.Types
 import Roles.Types
 import Permissions.Types
-import Auth.State
+import AuthController
 
 
 type alias Model =
     { welcome : Welcome.Types.Model
-    , auth : Auth.State.Model
+    , auth : AuthController.Model
     , mdl : Material.Model
     , accounts : Accounts.Types.Model
     , roles : Roles.Types.Model
@@ -29,7 +29,7 @@ type Msg
     = SelectTab Int
     | SelectLocation String
     | Mdl (Material.Msg Msg)
-    | AuthMsg Auth.State.Msg
+    | AuthMsg AuthController.Msg
     | WelcomeMsg Welcome.Types.Msg
     | AccountsMsg Accounts.Types.Msg
     | RolesMsg Roles.Types.Msg
