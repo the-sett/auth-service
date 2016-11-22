@@ -1,5 +1,9 @@
 module Auth.Types exposing (..)
 
+{-|
+Types for the auth module.
+-}
+
 import Date exposing (Date)
 import Http
 import Result
