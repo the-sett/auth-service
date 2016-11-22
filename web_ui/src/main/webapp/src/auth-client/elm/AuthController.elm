@@ -11,6 +11,13 @@ port module AuthController
         , AuthState
         )
 
+{-|
+Maintains the auth state and follows the TEA pattern to provide a stateful auth
+module that can be linked in to TEA applications.
+@docs update, subscriptions, init, isLoggedIn, logonAttempted, hasPermission
+@docs Model, Msg, AuthState
+-}
+
 import Date exposing (Date)
 import Time
 import Maybe.Extra
@@ -35,6 +42,8 @@ type alias Credentials =
     }
 
 
+{-| Describes the events this controller responds to.
+-}
 type Msg
     = AuthApi (Auth.Service.Msg)
     | LogIn (Maybe Credentials)
@@ -44,10 +53,8 @@ type Msg
     | Refreshed (Result.Result Http.Error Model.AuthResponse)
 
 
-
-{--Describes the state of the authorization module at runtime. --}
-
-
+{-| The complete state of this auth module.
+-}
 type alias Model =
     { token : Maybe String
     , decodedToken : Maybe Token
@@ -60,6 +67,11 @@ type alias Model =
     }
 
 
+{-| A sub-section of the auth module state describing whether or not the user
+is logged in, what permissions they have, and when their auth token will expire.
+This is the part of the auth state that consumers of this module are interested
+in.
+-}
 type alias AuthState =
     { loggedIn : Bool
     , permissions : List String
@@ -78,6 +90,8 @@ type alias Token =
     }
 
 
+{-| The initial unauthed state.
+-}
 init : Model
 init =
     { token = Nothing
@@ -89,6 +103,10 @@ init =
     , logoutLocation = ""
     , logonAttempted = False
     }
+
+
+
+{--Helper functions over the auth model. --}
 
 
 notAuthedState =
@@ -179,16 +197,22 @@ authStateFromToken maybeToken =
             }
 
 
+{-| Determines whether the user is currently logged in.
+-}
 isLoggedIn : AuthState -> Bool
 isLoggedIn authState =
     authState.loggedIn
 
 
+{-| Reports whether a logon has been attempted.
+-}
 logonAttempted : Model -> Bool
 logonAttempted model =
     model.logonAttempted
 
 
+{-| Checks if the user currently holds a named permission.
+-}
 hasPermission : String -> AuthState -> Bool
 hasPermission permission authState =
     List.member permission authState.permissions
@@ -198,6 +222,9 @@ hasPermission permission authState =
 -- Subscriptions to the auth channels.
 
 
+{-| Creates the needed subscriptions to auth events that can be triggered from
+the Auth module.
+-}
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
@@ -309,6 +336,9 @@ authRequestFromCredentials credentials =
 -- Event handler.
 
 
+{-| Updates the auth state and triggers events needed to communicate with the
+auth server.
+-}
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case (Debug.log "auth" msg) of
