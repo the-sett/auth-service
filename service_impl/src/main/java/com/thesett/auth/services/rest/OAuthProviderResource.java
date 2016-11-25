@@ -90,7 +90,7 @@ public abstract class OAuthProviderResource
 
             if (tokenIsValid)
             {
-                jwt.extractClaims();
+                jwt.extractClaims("realmName");
 
                 Subject subject = jwt.asLocalSubject();
                 ShiroUtils.setSubject(subject);
