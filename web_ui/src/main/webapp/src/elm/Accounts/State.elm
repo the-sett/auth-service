@@ -1,6 +1,5 @@
 module Accounts.State exposing (..)
 
-
 import Set
 import Dict exposing (Dict)
 import Dict.Extra
@@ -8,7 +7,6 @@ import Array
 import Maybe
 import String
 import Platform.Cmd exposing (Cmd)
-import Cmd.Extra
 import List.Extra
 import Http
 import Exts.Maybe exposing (catMaybes)
@@ -228,7 +226,7 @@ accountList accounts model =
 
 accountCreate : Model.Account -> Model -> ( Model, Cmd Msg )
 accountCreate account model =
-    ( model, Cmd.Extra.message Init )
+    ( model, Utils.message Init )
 
 
 accountToEdit : Model.Account -> Model -> ( Model, Cmd msg )
@@ -240,7 +238,7 @@ accountToEdit account model =
 
 accountSaved : Model.Account -> model -> ( model, Cmd Msg )
 accountSaved account model =
-    ( model, Cmd.Extra.message Init )
+    ( model, Utils.message Init )
 
 
 accountDelete : String -> Model -> ( Model, Cmd Msg )
@@ -254,7 +252,7 @@ accountDelete id model =
     in
         ( { model | accounts = newAccounts, numToDelete = numToDelete }
         , if numToDelete == 0 then
-            Cmd.Extra.message Init
+            Utils.message Init
           else
             Cmd.none
         )
@@ -268,7 +266,7 @@ accountDeleteError error model =
     in
         ( { model | numToDelete = numToDelete }
         , if numToDelete == 0 then
-            Cmd.Extra.message Init
+            Utils.message Init
           else
             Cmd.none
         )

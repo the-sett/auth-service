@@ -1,10 +1,8 @@
 module Permissions.State exposing (..)
 
-
 import String
 import Dict exposing (Dict)
 import Platform.Cmd exposing (Cmd)
-import Cmd.Extra
 import Http
 import Material
 import Permissions.Types exposing (..)
@@ -118,12 +116,12 @@ permissionList permissions model =
 
 permissionCreate : Model.Permission -> Model -> ( Model, Cmd Msg )
 permissionCreate permission model =
-    ( model, Cmd.Extra.message Init )
+    ( model, Utils.message Init )
 
 
 permissionSaved : Model.Permission -> model -> ( model, Cmd Msg )
 permissionSaved permission model =
-    ( model, Cmd.Extra.message Init )
+    ( model, Utils.message Init )
 
 
 permissionDelete : String -> Model -> ( Model, Cmd Msg )
@@ -137,7 +135,7 @@ permissionDelete id model =
     in
         ( { model | permissions = newPermissions }
         , if numToDelete == 0 then
-            Cmd.Extra.message Init
+            Utils.message Init
           else
             Cmd.none
         )
@@ -151,7 +149,7 @@ permissionDeleteError error model =
     in
         ( { model | numToDelete = numToDelete }
         , if numToDelete == 0 then
-            Cmd.Extra.message Init
+            Utils.message Init
           else
             Cmd.none
         )

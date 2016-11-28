@@ -1,16 +1,15 @@
 module Main.State exposing (init, update)
 
-
 import Array exposing (Array)
 import Dict exposing (Dict)
 import Navigation
 import Maybe exposing (Maybe)
-import Cmd.Extra
 import Exts.Maybe exposing (catMaybes)
 import Platform.Cmd exposing (..)
 import Material
 import Material.Helpers exposing (pure, lift, lift')
 import Material.Layout as Layout
+import Utils exposing (..)
 import Welcome.State
 import AuthController
 import Auth
@@ -156,13 +155,13 @@ selectLocation model location =
             if not jumpToWelcome then
                 case location of
                     "accounts" ->
-                        Cmd.Extra.message (AccountsMsg Accounts.Types.Init) |> Just
+                        Utils.message (AccountsMsg Accounts.Types.Init) |> Just
 
                     "roles" ->
-                        Cmd.Extra.message (RolesMsg Roles.Types.Init) |> Just
+                        Utils.message (RolesMsg Roles.Types.Init) |> Just
 
                     "permissions" ->
-                        Cmd.Extra.message (PermissionsMsg Permissions.Types.Init) |> Just
+                        Utils.message (PermissionsMsg Permissions.Types.Init) |> Just
 
                     _ ->
                         Nothing

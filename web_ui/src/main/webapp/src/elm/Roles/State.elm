@@ -1,10 +1,8 @@
 module Roles.State exposing (..)
 
-
 import String
 import Dict exposing (Dict)
 import Platform.Cmd exposing (Cmd)
-import Cmd.Extra
 import Http
 import Material
 import Roles.Types exposing (..)
@@ -156,12 +154,12 @@ roleList roles model =
 
 roleCreate : Model.Role -> Model -> ( Model, Cmd Msg )
 roleCreate role model =
-    ( model, Cmd.Extra.message Init )
+    ( model, Utils.message Init )
 
 
 roleSaved : Model.Role -> model -> ( model, Cmd Msg )
 roleSaved role model =
-    ( model, Cmd.Extra.message Init )
+    ( model, Utils.message Init )
 
 
 roleDelete : String -> Model -> ( Model, Cmd Msg )
@@ -175,7 +173,7 @@ roleDelete id model =
     in
         ( { model | roles = newRoles }
         , if numToDelete == 0 then
-            Cmd.Extra.message Init
+            Utils.message Init
           else
             Cmd.none
         )
@@ -189,7 +187,7 @@ roleDeleteError error model =
     in
         ( { model | numToDelete = numToDelete }
         , if numToDelete == 0 then
-            Cmd.Extra.message Init
+            Utils.message Init
           else
             Cmd.none
         )
