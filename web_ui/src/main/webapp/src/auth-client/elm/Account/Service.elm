@@ -1,6 +1,5 @@
 module Account.Service exposing (..)
 
-
 import Platform.Cmd exposing (Cmd)
 import Result
 import Http
@@ -17,44 +16,44 @@ type Msg
     | Create (Result.Result Http.Error Model.Account)
     | Retrieve (Result.Result Http.Error Model.Account)
     | Update (Result.Result Http.Error Model.Account)
-    | Delete (Result.Result Http.Error String)
+    | Delete (Result.Result Http.Error ())
 
 
 invokeFindAll : (Msg -> msg) -> Cmd msg
 invokeFindAll msg =
     findAllTask
-        |> Task.perform (\error -> FindAll (Result.Err error)) (\result -> FindAll (Result.Ok result))
+        |> Http.send FindAll
         |> Cmd.map msg
 
 invokeFindByExample : (Msg -> msg) -> Model.Account -> Cmd msg
 invokeFindByExample msg example =
     findByExampleTask example
-        |> Task.perform (\error -> FindByExample (Result.Err error)) (\result -> FindByExample (Result.Ok result))
+        |> Http.send FindByExample
         |> Cmd.map msg
 
 
 invokeCreate : (Msg -> msg) -> Model.Account -> Cmd msg
 invokeCreate msg model =
     createTask model
-        |> Task.perform (\error -> Create (Result.Err error)) (\result -> Create (Result.Ok result))
+        |> Http.send Create
         |> Cmd.map msg
 
 invokeRetrieve : (Msg -> msg) -> String -> Cmd msg
 invokeRetrieve msg id =
     retrieveTask id
-        |> Task.perform (\error -> Retrieve (Result.Err error)) (\result -> Retrieve (Result.Ok result))
+        |> Http.send Retrieve
         |> Cmd.map msg
 
 invokeUpdate : (Msg -> msg) -> String -> Model.Account -> Cmd msg
 invokeUpdate msg id model =
     updateTask id model
-        |> Task.perform (\error -> Update (Result.Err error)) (\result -> Update (Result.Ok result))
+        |> Http.send Update
         |> Cmd.map msg
 
 invokeDelete : (Msg -> msg) -> String -> Cmd msg
 invokeDelete msg id =
     deleteTask id
-        |> Task.perform (\error -> Delete (Result.Err error)) (\result -> Delete (Result.Ok id))
+        |> Http.send Delete
         |> Cmd.map msg
 
 type alias Callbacks model msg =
@@ -68,7 +67,7 @@ type alias Callbacks model msg =
     , retrieveError : Http.Error -> model -> ( model, Cmd msg )
     , update : Model.Account -> model -> ( model, Cmd msg )
     , updateError : Http.Error -> model -> ( model, Cmd msg )
-    , delete : String -> model -> ( model, Cmd msg )
+    , delete : model -> ( model, Cmd msg )
     , deleteError : Http.Error -> model -> ( model, Cmd msg )
     , error : Http.Error -> model -> ( model, Cmd msg )
     }
@@ -85,7 +84,7 @@ callbacks =
     , retrieveError = \_ -> \model -> ( model, Cmd.none )
     , update = \_ -> \model -> ( model, Cmd.none )
     , updateError = \_ -> \model -> ( model, Cmd.none )
-    , delete = \_ -> \model -> ( model, Cmd.none )
+    , delete = \model -> ( model, Cmd.none )
     , deleteError = \_ -> \model -> ( model, Cmd.none )
     , error = \_ -> \model -> ( model, Cmd.none )
     }
@@ -93,12 +92,7 @@ callbacks =
 
 update : Callbacks model msg -> Msg -> model -> ( model, Cmd msg )
 update callbacks action model =
-    update_ callbacks (Debug.log "account.api" action) model
-
-
-update_ : Callbacks model msg -> Msg -> model -> ( model, Cmd msg )
-update_ callbacks action model =
-    case action of
+    case (Debug.log "account.api" action) of
         FindAll result ->
             (case result of
                 Ok account ->
@@ -166,8 +160,8 @@ update_ callbacks action model =
 
         Delete result ->
             (case result of
-                Ok response ->
-                    callbacks.delete response model
+                Ok _ ->
+                    callbacks.delete model
 
                 Err httpError ->
                     let
@@ -188,73 +182,77 @@ routes =
     , delete = api ++ "account/"
     }
 
-findAllTask : Task Http.Error (List Account)
+findAllTask : Http.Request (List Account)
 findAllTask =
-    { verb = "GET"
+    Http.request
+    { method = "GET"
     , headers = []
     , url = routes.findAll
-    , body = Http.empty
+    , body = Http.emptyBody
+    , expect = Http.expectJson (Decode.list accountDecoder)
+    , timeout = Nothing
+    , withCredentials = False
     }
-        |> Http.send Http.defaultSettings
-        |> Http.fromJson (Decode.list accountDecoder)
 
-findByExampleTask : Account -> Task Http.Error (List Account)
+findByExampleTask : Account -> Http.Request (List Account)
 findByExampleTask model =
-    { verb = "POST"
+    Http.request
+    { method = "POST"
     , headers = []
     , url = routes.findByExample
-    , body = Http.string <| Encode.encode 0 <| accountEncoder model
+    , body = Http.jsonBody <| accountEncoder model
+    , expect = Http.expectJson (Decode.list accountDecoder)
+    , timeout = Nothing
+    , withCredentials = False
     }
-        |> Http.send Http.defaultSettings
-        |> Http.fromJson (Decode.list accountDecoder)
 
-createTask : Account -> Task Http.Error Account
+createTask : Account -> Http.Request Account
 createTask model =
-    { verb = "POST"
-    , headers = [ ( "Content-Type", "application/json" ) ]
+    Http.request
+    { method = "POST"
+    , headers = []
     , url = routes.create
-    , body = Http.string <| Encode.encode 0 <| accountEncoder model
+    , body = Http.jsonBody <| accountEncoder model
+    , expect = Http.expectJson accountDecoder
+    , timeout = Nothing
+    , withCredentials = False
     }
-        |> Http.send Http.defaultSettings
-        |> Http.fromJson accountDecoder
 
 
-retrieveTask : String -> Task Http.Error Account
+retrieveTask : String -> Http.Request Account
 retrieveTask id =
-    { verb = "GET"
+    Http.request
+    { method = "GET"
     , headers = []
     , url = routes.retrieve ++ id
-    , body = Http.empty
+    , body = Http.emptyBody
+    , expect = Http.expectJson accountDecoder
+    , timeout = Nothing
+    , withCredentials = False
     }
-        |> Http.send Http.defaultSettings
-        |> Http.fromJson accountDecoder
 
 
-updateTask : String -> Account -> Task Http.Error Account
+updateTask : String -> Account -> Http.Request Account
 updateTask id model =
-    { verb = "POST"
-    , headers = [ ( "Content-Type", "application/json" ) ]
+    Http.request
+    { method = "PUT"
+    , headers = []
     , url = routes.update ++ id
-    , body = Http.string <| Encode.encode 0 <| accountEncoder model
+    , body = Http.jsonBody <| accountEncoder model
+    , expect = Http.expectJson accountDecoder
+    , timeout = Nothing
+    , withCredentials = False
     }
-        |> Http.send Http.defaultSettings
-        |> Http.fromJson accountDecoder
 
 
-
-deleteTask : String -> Task Http.Error Http.Response
+deleteTask : String -> Http.Request ()
 deleteTask id =
-   { verb = "DELETE"
+    Http.request
+   { method = "DELETE"
    , headers = []
    , url = routes.delete ++ id
-   , body = Http.empty
+   , body = Http.emptyBody
+   , expect = Http.expectStringResponse (\_ -> Ok ())
+   , timeout = Nothing
+   , withCredentials = False
    }
-       |> Http.send Http.defaultSettings
-       |> Task.mapError promoteError
-
-
-promoteError : Http.RawError -> Http.Error
-promoteError rawError =
-   case rawError of
-       Http.RawTimeout -> Http.Timeout
-       Http.RawNetworkError -> Http.NetworkError
