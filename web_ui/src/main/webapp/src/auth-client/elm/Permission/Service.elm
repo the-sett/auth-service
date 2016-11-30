@@ -16,7 +16,7 @@ type Msg
     | Create (Result.Result Http.Error Model.Permission)
     | Retrieve (Result.Result Http.Error Model.Permission)
     | Update (Result.Result Http.Error Model.Permission)
-    | Delete (Result.Result Http.Error ())
+    | Delete (Result.Result Http.Error String)
 
 
 invokeFindAll : (Msg -> msg) -> Cmd msg
@@ -52,8 +52,11 @@ invokeUpdate msg id model =
 
 invokeDelete : (Msg -> msg) -> String -> Cmd msg
 invokeDelete msg id =
-    deleteTask id
-        |> Http.send Delete
+    let
+       delete result = Delete <| Result.map (\() -> id) result
+    in
+     deleteTask id
+        |> Http.send delete
         |> Cmd.map msg
 
 type alias Callbacks model msg =
@@ -67,7 +70,7 @@ type alias Callbacks model msg =
     , retrieveError : Http.Error -> model -> ( model, Cmd msg )
     , update : Model.Permission -> model -> ( model, Cmd msg )
     , updateError : Http.Error -> model -> ( model, Cmd msg )
-    , delete : model -> ( model, Cmd msg )
+    , delete : String -> model -> ( model, Cmd msg )
     , deleteError : Http.Error -> model -> ( model, Cmd msg )
     , error : Http.Error -> model -> ( model, Cmd msg )
     }
@@ -84,7 +87,7 @@ callbacks =
     , retrieveError = \_ -> \model -> ( model, Cmd.none )
     , update = \_ -> \model -> ( model, Cmd.none )
     , updateError = \_ -> \model -> ( model, Cmd.none )
-    , delete = \model -> ( model, Cmd.none )
+    , delete = \_ -> \model -> ( model, Cmd.none )
     , deleteError = \_ -> \model -> ( model, Cmd.none )
     , error = \_ -> \model -> ( model, Cmd.none )
     }
@@ -160,8 +163,8 @@ update callbacks action model =
 
         Delete result ->
             (case result of
-                Ok _ ->
-                    callbacks.delete model
+                Ok id ->
+                    callbacks.delete id model
 
                 Err httpError ->
                     let
