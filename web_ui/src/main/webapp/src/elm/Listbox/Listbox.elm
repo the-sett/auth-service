@@ -7,7 +7,7 @@ import Json.Encode as Encode
 import Html exposing (Attribute, Html, text, button, span, div, node)
 import Html.Attributes exposing (attribute, class, property)
 import Html.Events exposing (on, onClick, onMouseOver, onMouseOut)
-import Html.App exposing (program)
+import Html exposing (program)
 import Material
 import Material.Toggles as Toggles
 

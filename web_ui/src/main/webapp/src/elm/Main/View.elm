@@ -5,7 +5,7 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (href, class, style, id)
 import Html.Lazy
-import Html.App as App
+import Html as App
 import Material.Layout as Layout
 import Material.Options as Options exposing (css, when)
 import Material.Toggles as Toggles
