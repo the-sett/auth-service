@@ -87,7 +87,7 @@ cancelButton model mdl label msg =
 
 
 {-
-   Builds a control bar with 'ok' and 'cancel' actions.
+   Builds a control bar with _ok_ and _cancel_ actions.
     - The ok action is specified as button.
     - The cancel action is specified as a msg to trigger on the cancel button
       click.

@@ -23,11 +23,11 @@ import Main.Types exposing (..)
 
 view : AuthController.AuthState -> Model -> Html Msg
 view =
-    Html.Lazy.lazy2 view'
+    Html.Lazy.lazy2 view_
 
 
-view' : AuthController.AuthState -> Model -> Html Msg
-view' authState model =
+view_ : AuthController.AuthState -> Model -> Html Msg
+view_ authState model =
     let
         authenticated =
             AuthController.isLoggedIn model.auth.authState

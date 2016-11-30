@@ -221,14 +221,14 @@ permissionList permissions model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     case (Debug.log "permissions" action) of
-        Mdl action' ->
-            Material.update action' model
+        Mdl action_ ->
+            Material.update action_ model
 
-        RoleApi action' ->
-            Role.Service.update roleCallbacks action' model
+        RoleApi action_ ->
+            Role.Service.update roleCallbacks action_ model
 
-        PermissionApi action' ->
-            Permission.Service.update permissionCallbacks action' model
+        PermissionApi action_ ->
+            Permission.Service.update permissionCallbacks action_ model
 
         Init ->
             ( { model | roleToEdit = None }

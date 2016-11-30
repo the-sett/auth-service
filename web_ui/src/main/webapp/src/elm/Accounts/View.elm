@@ -203,7 +203,7 @@ createAccountForm model =
                 model.mdl
                 [ Textfield.label "Username"
                 , Textfield.floatingLabel
-                , Textfield.text'
+                , Textfield.text_
                 , Textfield.onInput UpdateUsername
                 , Textfield.value <| Utils.valOrEmpty model.username
                 ]
@@ -230,7 +230,7 @@ editAccountForm model =
                 model.mdl
                 [ Textfield.label "Username"
                 , Textfield.floatingLabel
-                , Textfield.text'
+                , Textfield.text_
                 , Textfield.disabled
                 , Textfield.value <| Utils.valOrEmpty model.username
                 ]

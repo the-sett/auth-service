@@ -24,7 +24,7 @@ main =
     Routing.program
         { delta2url = delta2url
         , location2messages = location2messages
-        , init = init'
+        , init = init_
         , view = \model -> view model.auth.authState model
         , subscriptions =
             \init ->
@@ -37,8 +37,8 @@ main =
         }
 
 
-init' : ( Model, Cmd Msg )
-init' =
+init_ : ( Model, Cmd Msg )
+init_ =
     ( init, Cmd.batch [ Layout.sub0 Mdl, Auth.refresh ] )
 
 

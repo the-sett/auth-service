@@ -7,7 +7,7 @@ import Maybe exposing (Maybe)
 import Exts.Maybe exposing (catMaybes)
 import Platform.Cmd exposing (..)
 import Material
-import Material.Helpers exposing (pure, lift, lift')
+import Material.Helpers exposing (pure, lift, lift_)
 import Material.Layout as Layout
 import Utils exposing (..)
 import Welcome.State
@@ -43,11 +43,11 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
-    update' (Debug.log "top" action) model
+    update_ (Debug.log "top" action) model
 
 
-update' : Msg -> Model -> ( Model, Cmd Msg )
-update' action model =
+update_ : Msg -> Model -> ( Model, Cmd Msg )
+update_ action model =
     case action of
         Mdl msg ->
             Material.update msg model
@@ -106,7 +106,7 @@ setLoginLocations authState =
    page to log in. The location being requested will be saved in the auth forward location, so
    that it can be forwarded to upon succesfull login.
 
-   When forwarding to a location with an 'Init' event available, this will be triggered
+   When forwarding to a location with an _Init_ event available, this will be triggered
    in order that a particular location can initialize itself.
 -}
 
@@ -149,7 +149,7 @@ selectLocation model location =
             Dict.get location Main.View.urlTabs
                 |> Maybe.withDefault -1
 
-        -- Maybe a command to trigger the 'Init' event when navigating to a location
+        -- Maybe a command to trigger the _Init_ event when navigating to a location
         -- with such an event.
         initCmd =
             if not jumpToWelcome then

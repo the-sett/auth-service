@@ -70,7 +70,7 @@ permissionForm model isValid completeText =
                 model.mdl
                 [ Textfield.label "Permission"
                 , Textfield.floatingLabel
-                , Textfield.text'
+                , Textfield.text_
                 , Textfield.onInput UpdatePermissionName
                 , Textfield.value <| Utils.valOrEmpty model.permissionName
                 ]

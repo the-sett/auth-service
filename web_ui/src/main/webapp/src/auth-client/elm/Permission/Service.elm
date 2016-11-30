@@ -93,11 +93,11 @@ callbacks =
 
 update : Callbacks model msg -> Msg -> model -> ( model, Cmd msg )
 update callbacks action model =
-    update' callbacks (Debug.log "permission.api" action) model
+    update_ callbacks (Debug.log "permission.api" action) model
 
 
-update' : Callbacks model msg -> Msg -> model -> ( model, Cmd msg )
-update' callbacks action model =
+update_ : Callbacks model msg -> Msg -> model -> ( model, Cmd msg )
+update_ callbacks action model =
     case action of
         FindAll result ->
             (case result of

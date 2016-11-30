@@ -82,7 +82,7 @@ roleForm model isValid completeText =
                 model.mdl
                 [ Textfield.label "Role"
                 , Textfield.floatingLabel
-                , Textfield.text'
+                , Textfield.text_
                 , Textfield.onInput UpdateRoleName
                 , Textfield.value <| Utils.valOrEmpty model.roleName
                 ]

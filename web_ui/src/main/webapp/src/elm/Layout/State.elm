@@ -26,11 +26,11 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
-    update' (Debug.log "layout" action) model
+    update_ (Debug.log "layout" action) model
 
 
-update' : Msg -> Model -> ( Model, Cmd Msg )
-update' action model =
+update_ : Msg -> Model -> ( Model, Cmd Msg )
+update_ action model =
     case action of
         TemplateMsg ->
             ( model, Cmd.none )
@@ -38,5 +38,5 @@ update' action model =
         Update f ->
             ( f model, Cmd.none )
 
-        Mdl action' ->
-            Material.update action' model
+        Mdl action_ ->
+            Material.update action_ model

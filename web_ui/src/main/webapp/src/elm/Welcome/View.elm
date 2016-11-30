@@ -32,7 +32,7 @@ root model =
                                 model.mdl
                                 [ Textfield.label "Username"
                                 , Textfield.floatingLabel
-                                , Textfield.text'
+                                , Textfield.text_
                                 , Textfield.onInput UpdateUsername
                                 ]
                             , Textfield.render Mdl
@@ -40,7 +40,7 @@ root model =
                                 model.mdl
                                 [ Textfield.label "Password"
                                 , Textfield.floatingLabel
-                                , Textfield.text'
+                                , Textfield.text_
                                 , Textfield.password
                                 , Textfield.onInput UpdatePassword
                                 ]
@@ -91,7 +91,7 @@ notPermitted model =
                                 model.mdl
                                 [ Textfield.label "Username"
                                 , Textfield.floatingLabel
-                                , Textfield.text'
+                                , Textfield.text_
                                 , Textfield.disabled
                                 ]
                             , Textfield.render Mdl
@@ -99,7 +99,7 @@ notPermitted model =
                                 model.mdl
                                 [ Textfield.label "Password"
                                 , Textfield.floatingLabel
-                                , Textfield.text'
+                                , Textfield.text_
                                 , Textfield.password
                                 , Textfield.disabled
                                 ]
