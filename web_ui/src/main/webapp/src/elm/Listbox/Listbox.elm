@@ -53,7 +53,7 @@ encodeItems items =
 
 decodeItems : Decode.Decoder (List ( String, String ))
 decodeItems =
-    Decode.at [ "detail", "value" ] <| Decode.list <| Decode.tuple2 (,) Decode.string Decode.string
+    Decode.at [ "detail", "value" ] <| Decode.list <| Decode.map2 (,) Decode.string Decode.string
 
 
 
@@ -212,7 +212,7 @@ subscriptions model =
         ]
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
     program
         { init = init
