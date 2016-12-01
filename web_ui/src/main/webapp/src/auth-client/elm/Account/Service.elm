@@ -238,7 +238,7 @@ retrieveTask id =
 updateTask : String -> Account -> Http.Request Account
 updateTask id model =
     Http.request
-    { method = "PUT"
+    { method = "POST"
     , headers = []
     , url = routes.update ++ id
     , body = Http.jsonBody <| accountEncoder model
