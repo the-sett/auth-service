@@ -3,7 +3,7 @@ module ViewUtils exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (title, class, action, attribute)
 import Material
-import Material.Options as Options exposing (Style, cs, when, nop, disabled)
+import Material.Options as Options exposing (Style, Property, cs, when, nop, disabled)
 import Material.Button as Button
 import Material.Icon as Icon
 import Material.Grid as Grid
@@ -23,6 +23,17 @@ column644 =
         , Grid.size Grid.Tablet 4
         , Grid.size Grid.Phone 4
         ]
+
+
+
+{-
+   A flipped when for function pipelining style instead of inlining.
+-}
+
+
+when : Bool -> Property c m -> Property c m
+when =
+    flip Options.when
 
 
 

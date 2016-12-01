@@ -7,11 +7,12 @@ import Html.Attributes exposing (href, class, style, id)
 import Html.Lazy
 import Html as App
 import Material.Layout as Layout
-import Material.Options as Options exposing (css, when)
+import Material.Options as Options exposing (css)
 import Material.Toggles as Toggles
 import Material.Typography as Typography
 import Material.Button as Button
 import Utils exposing (..)
+import ViewUtils
 import Layout.Types
 import Accounts.View
 import Roles.View
@@ -52,9 +53,9 @@ layoutOptions : Model -> List (Layout.Property Msg)
 layoutOptions model =
     [ Layout.selectedTab model.selectedTab
     , Layout.onSelectTab SelectTab
-    , Layout.fixedHeader `when` model.layout.fixedHeader
-    , Layout.fixedDrawer `when` model.layout.fixedDrawer
-    , Layout.fixedTabs `when` model.layout.fixedTabs
+    , Layout.fixedHeader |> ViewUtils.when model.layout.fixedHeader
+    , Layout.fixedDrawer |> ViewUtils.when model.layout.fixedDrawer
+    , Layout.fixedTabs |> ViewUtils.when model.layout.fixedTabs
     , (case model.layout.header of
         Layout.Types.Waterfall x ->
             Layout.waterfall x
@@ -68,7 +69,7 @@ layoutOptions model =
         Layout.Types.Scrolling ->
             Layout.scrolling
       )
-        `when` model.layout.withHeader
+        |> ViewUtils.when model.layout.withHeader
     , if model.transparentHeader then
         Layout.transparentHeader
       else

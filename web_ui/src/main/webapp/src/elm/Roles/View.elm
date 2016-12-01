@@ -5,7 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (title, class, action, colspan)
 import Platform.Cmd exposing (Cmd)
 import String
-import Material.Options as Options exposing (Style, cs, css, when, nop, disabled, attribute)
+import Material.Options as Options exposing (Style, cs, css, nop, disabled, attribute)
 import Material.Dialog as Dialog
 import Material.Table as Table
 import Material.Button as Button
@@ -35,14 +35,14 @@ table model =
     div [ class "data-table__apron mdl-shadow--2dp" ]
         [ Table.table [ cs "mdl-data-table mdl-js-data-table mdl-data-table--selectable" ]
             [ Table.thead []
-                [ Table.tr [ cs "data-table__inactive-row" `when` (model.roleToEdit /= None) ]
+                [ Table.tr [ cs "data-table__inactive-row" |> ViewUtils.when (model.roleToEdit /= None) ]
                     [ Table.th []
                         [ Toggles.checkbox Mdl
                             [ -1 ]
                             model.mdl
                             [ Toggles.onClick ToggleAll
                             , Toggles.value (allSelected model)
-                            , Toggles.disabled `when` (model.roleToEdit /= None)
+                            , Toggles.disabled |> ViewUtils.when (model.roleToEdit /= None)
                             ]
                             []
                         ]
@@ -119,8 +119,8 @@ editRow model idx id (Model.Role role) =
 viewRow : Model -> Int -> String -> Model.Role -> Html Msg
 viewRow model idx id (Model.Role role) =
     (Table.tr
-        [ Table.selected `when` Dict.member id model.selected
-        , cs "data-table__inactive-row" `when` (model.roleToEdit /= None)
+        [ Table.selected |> ViewUtils.when (Dict.member id model.selected)
+        , cs "data-table__inactive-row" |> ViewUtils.when (model.roleToEdit /= None)
         ]
         [ Table.td []
             [ Toggles.checkbox Mdl
@@ -128,7 +128,7 @@ viewRow model idx id (Model.Role role) =
                 model.mdl
                 [ Toggles.onClick (Toggle id)
                 , Toggles.value <| Dict.member id model.selected
-                , Toggles.disabled `when` (model.roleToEdit /= None)
+                , Toggles.disabled |> ViewUtils.when (model.roleToEdit /= None)
                 ]
                 []
             ]

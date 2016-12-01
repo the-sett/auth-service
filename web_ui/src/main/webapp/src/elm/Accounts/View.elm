@@ -8,7 +8,7 @@ import Html.Attributes exposing (title, class, action, attribute, colspan)
 import Html.Events exposing (on)
 import Json.Decode as Decode
 import Material
-import Material.Options as Options exposing (Style, cs, when, nop, disabled, css)
+import Material.Options as Options exposing (Style, cs, nop, disabled, css)
 import Material.Dialog as Dialog
 import Material.Table as Table
 import Material.Button as Button
@@ -87,7 +87,7 @@ permissionToChip (Model.Permission permission) items =
 viewRow : Model -> Int -> String -> Model.Account -> Html Msg
 viewRow model idx id (Model.Account account) =
     (Table.tr
-        [ Table.selected `when` Dict.member id model.selected ]
+        [ Table.selected |> ViewUtils.when (Dict.member id model.selected) ]
         [ Table.td []
             [ Toggles.checkbox Mdl
                 [ idx ]
