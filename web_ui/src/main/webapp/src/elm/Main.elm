@@ -19,7 +19,7 @@ log =
     Debug.log "top"
 
 
-main : Program Never (Routing.Model Model) (Routing.Msg Msg)
+main : Routing.RouteUrlProgram Never Model Msg
 main =
     Routing.program
         { delta2url = delta2url
@@ -29,7 +29,7 @@ main =
         , subscriptions =
             \init ->
                 Sub.batch
-                    [ Sub.map MenusMsg (Menu.subs Menu.Types.MDL init.menus.mdl)
+                    [ Sub.map MenusMsg (Menu.subs Menu.Types.Mdl init.menus.mdl)
                     , Layout.subs Mdl init.mdl
                     , Sub.map AuthMsg (AuthController.subscriptions init.auth)
                     ]

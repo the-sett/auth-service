@@ -1,6 +1,5 @@
 module Welcome.State exposing (init, update)
 
-
 import Platform.Cmd exposing (Cmd)
 import Material
 import Welcome.Types exposing (..)
@@ -24,7 +23,7 @@ update_ : Msg -> Model -> ( Model, Cmd Msg )
 update_ action model =
     case action of
         Mdl action_ ->
-            Material.update action_ model
+            Material.update Mdl action_ model
 
         GetStarted ->
             ( model, Cmd.none )

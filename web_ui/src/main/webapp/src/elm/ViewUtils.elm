@@ -27,17 +27,6 @@ column644 =
 
 
 {-
-   A flipped when for function pipelining style instead of inlining.
--}
-
-
-when : Bool -> Property c m -> Property c m
-when =
-    flip Options.when
-
-
-
-{-
    A grid cell that is full width on all devices.
 -}
 
@@ -68,7 +57,7 @@ completeButton model mdl label isValid msg =
             Button.colored
           else
             Button.disabled
-        , Button.onClick msg
+        , Options.onClick msg
         ]
         [ text label ]
 
@@ -89,7 +78,7 @@ cancelButton model mdl label msg =
         model
         [ Button.ripple
         , Button.accent
-        , Button.onClick msg
+        , Options.onClick msg
         ]
         [ Icon.i "chevron_left"
         , text label
@@ -148,7 +137,7 @@ confirmDialog model title mdlAction action =
                             model.mdl
                             [ Dialog.closeOn "click"
                             , Button.colored
-                            , Button.onClick action
+                            , Options.onClick action
                             ]
                             [ text "Confirm" ]
                         ]

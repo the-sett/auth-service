@@ -50,7 +50,7 @@ update_ : Msg -> Model -> ( Model, Cmd Msg )
 update_ action model =
     case action of
         Mdl msg ->
-            Material.update msg model
+            Material.update Mdl msg model
 
         SelectLocation location ->
             selectLocation model location

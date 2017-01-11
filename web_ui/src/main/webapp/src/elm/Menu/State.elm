@@ -16,8 +16,8 @@ init =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     case action of
-        MDL action_ ->
-            Material.update action_ model
+        Mdl action_ ->
+            Material.update Mdl action_ model
 
         MenuMsg idx action ->
             ( model, Cmd.none )

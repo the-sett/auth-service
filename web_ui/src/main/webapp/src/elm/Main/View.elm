@@ -53,9 +53,9 @@ layoutOptions : Model -> List (Layout.Property Msg)
 layoutOptions model =
     [ Layout.selectedTab model.selectedTab
     , Layout.onSelectTab SelectTab
-    , Layout.fixedHeader |> ViewUtils.when model.layout.fixedHeader
-    , Layout.fixedDrawer |> ViewUtils.when model.layout.fixedDrawer
-    , Layout.fixedTabs |> ViewUtils.when model.layout.fixedTabs
+    , Layout.fixedHeader |> Options.when model.layout.fixedHeader
+    , Layout.fixedDrawer |> Options.when model.layout.fixedDrawer
+    , Layout.fixedTabs |> Options.when model.layout.fixedTabs
     , (case model.layout.header of
         Layout.Types.Waterfall x ->
             Layout.waterfall x
@@ -69,7 +69,7 @@ layoutOptions model =
         Layout.Types.Scrolling ->
             Layout.scrolling
       )
-        |> ViewUtils.when model.layout.withHeader
+        |> Options.when model.layout.withHeader
     , if model.transparentHeader then
         Layout.transparentHeader
       else
@@ -178,7 +178,7 @@ header authenticated model =
                         [ 1, 2 ]
                         model.mdl
                         [ Button.colored
-                        , Button.onClick LogOut
+                        , Options.onClick LogOut
                         ]
                         [ text "Log Out"
                         ]
@@ -191,7 +191,7 @@ header authenticated model =
                     model.mdl
                     [ Toggles.ripple
                     , Toggles.value model.debugStylesheet
-                    , Toggles.onClick ToggleDebug
+                    , Options.onClick ToggleDebug
                     ]
                     [ text "Debug Style" ]
                 ]

@@ -35,14 +35,14 @@ table model =
     div [ class "data-table__apron mdl-shadow--2dp" ]
         [ Table.table [ cs "mdl-data-table mdl-js-data-table mdl-data-table--selectable" ]
             [ Table.thead []
-                [ Table.tr [ cs "data-table__inactive-row" |> ViewUtils.when (model.roleToEdit /= None) ]
+                [ Table.tr [ cs "data-table__inactive-row" |> Options.when (model.roleToEdit /= None) ]
                     [ Table.th []
                         [ Toggles.checkbox Mdl
                             [ -1 ]
                             model.mdl
-                            [ Toggles.onClick ToggleAll
+                            [ Options.onClick ToggleAll
                             , Toggles.value (allSelected model)
-                            , Toggles.disabled |> ViewUtils.when (model.roleToEdit /= None)
+                            , Toggles.disabled |> Options.when (model.roleToEdit /= None)
                             ]
                             []
                         ]
@@ -83,9 +83,10 @@ roleForm model isValid completeText =
                 [ Textfield.label "Role"
                 , Textfield.floatingLabel
                 , Textfield.text_
-                , Textfield.onInput UpdateRoleName
+                , Options.onInput UpdateRoleName
                 , Textfield.value <| Utils.valOrEmpty model.roleName
                 ]
+                []
             ]
         , ViewUtils.column644 (permissionLookup model)
         , ViewUtils.columnAll12
@@ -119,16 +120,16 @@ editRow model idx id (Model.Role role) =
 viewRow : Model -> Int -> String -> Model.Role -> Html Msg
 viewRow model idx id (Model.Role role) =
     (Table.tr
-        [ Table.selected |> ViewUtils.when (Dict.member id model.selected)
-        , cs "data-table__inactive-row" |> ViewUtils.when (model.roleToEdit /= None)
+        [ Table.selected |> Options.when (Dict.member id model.selected)
+        , cs "data-table__inactive-row" |> Options.when (model.roleToEdit /= None)
         ]
         [ Table.td []
             [ Toggles.checkbox Mdl
                 [ idx ]
                 model.mdl
-                [ Toggles.onClick (Toggle id)
+                [ Options.onClick (Toggle id)
                 , Toggles.value <| Dict.member id model.selected
-                , Toggles.disabled |> ViewUtils.when (model.roleToEdit /= None)
+                , Toggles.disabled |> Options.when (model.roleToEdit /= None)
                 ]
                 []
             ]
@@ -147,7 +148,7 @@ viewRow model idx id (Model.Role role) =
                     Button.disabled
                   else
                     Button.ripple
-                , Button.onClick (Edit id)
+                , Options.onClick (Edit id)
                 ]
                 [ text "Edit" ]
             ]
@@ -206,7 +207,7 @@ controlBar model =
                         Button.disabled
                       else
                         Button.ripple
-                    , Button.onClick Add
+                    , Options.onClick Add
                     ]
                     [ Icon.i "add" ]
                 ]
@@ -219,7 +220,7 @@ controlBar model =
                         Button.ripple
                       else
                         Button.disabled
-                    , Button.onClick Delete
+                    , Options.onClick Delete
                     , Dialog.openOn "click"
                     ]
                     [ text "Delete" ]

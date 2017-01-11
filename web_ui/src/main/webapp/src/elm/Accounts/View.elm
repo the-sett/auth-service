@@ -51,7 +51,7 @@ table model =
                         [ Toggles.checkbox Mdl
                             [ -1 ]
                             model.mdl
-                            [ Toggles.onClick ToggleAll
+                            [ Options.onClick ToggleAll
                             , Toggles.value (allSelected model)
                             ]
                             []
@@ -87,12 +87,12 @@ permissionToChip (Model.Permission permission) items =
 viewRow : Model -> Int -> String -> Model.Account -> Html Msg
 viewRow model idx id (Model.Account account) =
     (Table.tr
-        [ Table.selected |> ViewUtils.when (Dict.member id model.selected) ]
+        [ Table.selected |> Options.when (Dict.member id model.selected) ]
         [ Table.td []
             [ Toggles.checkbox Mdl
                 [ idx ]
                 model.mdl
-                [ Toggles.onClick (Toggle id)
+                [ Options.onClick (Toggle id)
                 , Toggles.value <| Dict.member id model.selected
                 ]
                 []
@@ -109,14 +109,14 @@ viewRow model idx id (Model.Account account) =
                 model.mdl
                 [ Button.accent
                 , Button.ripple
-                , Button.onClick (Edit id)
+                , Options.onClick (Edit id)
                 ]
                 [ text "Edit" ]
             , Button.render Mdl
                 [ 0, 1, idx ]
                 model.mdl
                 [ Button.ripple
-                , Button.onClick (ToggleMore id)
+                , Options.onClick (ToggleMore id)
                 ]
                 [ if moreSelected id model then
                     Icon.i "expand_less"
@@ -168,7 +168,7 @@ controlBar model =
                     [ Button.fab
                     , Button.colored
                     , Button.ripple
-                    , Button.onClick Add
+                    , Options.onClick Add
                     ]
                     [ Icon.i "add" ]
                 ]
@@ -181,7 +181,7 @@ controlBar model =
                         Button.ripple
                       else
                         Button.disabled
-                    , Button.onClick Delete
+                    , Options.onClick Delete
                     , Dialog.openOn "click"
                     ]
                     [ text "Delete" ]
@@ -204,9 +204,10 @@ createAccountForm model =
                 [ Textfield.label "Username"
                 , Textfield.floatingLabel
                 , Textfield.text_
-                , Textfield.onInput UpdateUsername
+                , Options.onInput UpdateUsername
                 , Textfield.value <| Utils.valOrEmpty model.username
                 ]
+                []
             , password1Field model
             , password2Field model
             ]
@@ -234,6 +235,7 @@ editAccountForm model =
                 , Textfield.disabled
                 , Textfield.value <| Utils.valOrEmpty model.username
                 ]
+                []
             , password1Field model
             , password2Field model
             ]
@@ -257,9 +259,10 @@ password1Field model =
         [ Textfield.label "Password"
         , Textfield.floatingLabel
         , Textfield.password
-        , Textfield.onInput UpdatePassword1
+        , Options.onInput UpdatePassword1
         , Textfield.value <| Utils.valOrEmpty model.password1
         ]
+        []
 
 
 password2Field : Model -> Html Msg
@@ -271,13 +274,14 @@ password2Field model =
         [ Textfield.label "Repeat Password"
         , Textfield.floatingLabel
         , Textfield.password
-        , Textfield.onInput UpdatePassword2
+        , Options.onInput UpdatePassword2
         , Textfield.value <| Utils.valOrEmpty model.password2
         , if checkPasswordMatch model then
             Options.nop
           else
             Textfield.error <| "Passwords do not match."
         ]
+        []
 
 
 roleLookup : Model -> List (Html Msg)

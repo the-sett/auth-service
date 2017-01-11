@@ -6,6 +6,7 @@ import Html.Attributes exposing (title, class, href, src, action)
 import Material.Button as Button
 import Material.Icon as Icon
 import Material.Textfield as Textfield
+import Material.Options as Options
 import Welcome.Types exposing (..)
 import ViewUtils
 
@@ -33,8 +34,9 @@ root model =
                                 [ Textfield.label "Username"
                                 , Textfield.floatingLabel
                                 , Textfield.text_
-                                , Textfield.onInput UpdateUsername
+                                , Options.onInput UpdateUsername
                                 ]
+                                []
                             , Textfield.render Mdl
                                 [ 1, 2 ]
                                 model.mdl
@@ -42,8 +44,9 @@ root model =
                                 , Textfield.floatingLabel
                                 , Textfield.text_
                                 , Textfield.password
-                                , Textfield.onInput UpdatePassword
+                                , Options.onInput UpdatePassword
                                 ]
+                                []
                             ]
                         ]
                     , div [ class "mdl-card__actions" ]
@@ -54,7 +57,7 @@ root model =
                                         [ 1, 2 ]
                                         model.mdl
                                         [ Button.colored
-                                        , Button.onClick LogIn
+                                        , Options.onClick LogIn
                                         ]
                                         [ text "Log In"
                                         , Icon.i "chevron_right"
@@ -94,6 +97,7 @@ notPermitted model =
                                 , Textfield.text_
                                 , Textfield.disabled
                                 ]
+                                []
                             , Textfield.render Mdl
                                 [ 1, 2 ]
                                 model.mdl
@@ -103,6 +107,7 @@ notPermitted model =
                                 , Textfield.password
                                 , Textfield.disabled
                                 ]
+                                []
                             ]
                         ]
                     , div [ class "mdl-card__actions" ]
@@ -113,7 +118,7 @@ notPermitted model =
                                         [ 2, 1 ]
                                         model.mdl
                                         [ Button.colored
-                                        , Button.onClick TryAgain
+                                        , Options.onClick TryAgain
                                         ]
                                         [ Icon.i "chevron_left"
                                         , text "Try Again"

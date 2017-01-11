@@ -34,15 +34,15 @@ table : Model -> Html Msg
 table model =
     div [ class "data-table__apron mdl-shadow--2dp" ]
         [ Table.table [ cs "mdl-data-table mdl-js-data-table mdl-data-table--selectable" ]
-            [ Table.thead [ cs "data-table__inactive-row" |> ViewUtils.when (model.permissionToEdit /= None) ]
+            [ Table.thead [ cs "data-table__inactive-row" |> Options.when (model.permissionToEdit /= None) ]
                 [ Table.tr []
                     [ Table.th []
                         [ Toggles.checkbox Mdl
                             [ -1 ]
                             model.mdl
-                            [ Toggles.onClick ToggleAll
+                            [ Options.onClick ToggleAll
                             , Toggles.value (allSelected model)
-                            , Toggles.disabled |> ViewUtils.when (model.permissionToEdit /= None)
+                            , Toggles.disabled |> Options.when (model.permissionToEdit /= None)
                             ]
                             []
                         ]
@@ -71,9 +71,10 @@ permissionForm model isValid completeText =
                 [ Textfield.label "Permission"
                 , Textfield.floatingLabel
                 , Textfield.text_
-                , Textfield.onInput UpdatePermissionName
+                , Options.onInput UpdatePermissionName
                 , Textfield.value <| Utils.valOrEmpty model.permissionName
                 ]
+                []
             ]
         , ViewUtils.columnAll12
             [ ViewUtils.okCancelControlBar
@@ -106,16 +107,16 @@ editRow model idx id (Model.Permission permission) =
 viewRow : Model -> Int -> String -> Model.Permission -> Html Msg
 viewRow model idx id (Model.Permission permission) =
     (Table.tr
-        [ Table.selected |> ViewUtils.when (Dict.member id model.selected)
-        , cs "data-table__inactive-row" |> ViewUtils.when (model.permissionToEdit /= None)
+        [ Table.selected |> Options.when (Dict.member id model.selected)
+        , cs "data-table__inactive-row" |> Options.when (model.permissionToEdit /= None)
         ]
         [ Table.td []
             [ Toggles.checkbox Mdl
                 [ idx ]
                 model.mdl
-                [ Toggles.onClick (Toggle id)
+                [ Options.onClick (Toggle id)
                 , Toggles.value <| Dict.member id model.selected
-                , Toggles.disabled |> ViewUtils.when (model.permissionToEdit /= None)
+                , Toggles.disabled |> Options.when (model.permissionToEdit /= None)
                 ]
                 []
             ]
@@ -132,7 +133,7 @@ viewRow model idx id (Model.Permission permission) =
                     Button.disabled
                   else
                     Button.ripple
-                , Button.onClick (Edit id)
+                , Options.onClick (Edit id)
                 ]
                 [ text "Edit" ]
             ]
@@ -191,7 +192,7 @@ controlBar model =
                         Button.disabled
                       else
                         Button.ripple
-                    , Button.onClick Add
+                    , Options.onClick Add
                     ]
                     [ Icon.i "add" ]
                 ]
@@ -204,7 +205,7 @@ controlBar model =
                         Button.ripple
                       else
                         Button.disabled
-                    , Button.onClick Delete
+                    , Options.onClick Delete
                     , Dialog.openOn "click"
                     ]
                     [ text "Delete" ]

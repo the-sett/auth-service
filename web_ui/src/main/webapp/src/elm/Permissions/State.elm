@@ -159,7 +159,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     case (Debug.log "permissions" action) of
         Mdl action_ ->
-            Material.update action_ model
+            Material.update Mdl action_ model
 
         PermissionApi action_ ->
             Permission.Service.update permissionCallbacks action_ model

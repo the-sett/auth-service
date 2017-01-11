@@ -168,7 +168,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Mdl action_ ->
-            Material.update action_ model
+            Material.update Mdl action_ model
 
         ItemsChanged items ->
             ( { model | items = Dict.fromList items }, Cmd.none )

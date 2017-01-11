@@ -17,6 +17,6 @@ type alias Model =
 
 type Msg
     = MenuMsg Int Menu.Msg
-    | MDL (Material.Msg Msg)
+    | Mdl (Material.Msg Msg)
     | Select String
     | SetIcon String

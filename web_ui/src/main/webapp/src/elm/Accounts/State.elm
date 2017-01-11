@@ -99,7 +99,7 @@ moreSelected id model =
     Set.member id model.moreStatus
 
 
-conflatePermissions : Model.Account -> List (Model.Permission)
+conflatePermissions : Model.Account -> List Model.Permission
 conflatePermissions (Model.Account account) =
     let
         conflateRoles (Model.Role role) =
@@ -301,7 +301,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     case (Debug.log "accounts" action) of
         Mdl action_ ->
-            Material.update action_ model
+            Material.update Mdl action_ model
 
         AccountApi action_ ->
             Account.Service.update accountCallbacks action_ model

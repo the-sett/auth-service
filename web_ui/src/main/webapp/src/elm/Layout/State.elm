@@ -1,6 +1,5 @@
 module Layout.State exposing (..)
 
-
 import Platform.Cmd exposing (Cmd, none)
 import Material
 import Material.Color as Color
@@ -39,4 +38,4 @@ update_ action model =
             ( f model, Cmd.none )
 
         Mdl action_ ->
-            Material.update action_ model
+            Material.update Mdl action_ model
