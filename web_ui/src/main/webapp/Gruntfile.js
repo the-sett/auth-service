@@ -163,7 +163,7 @@ module.exports = function(grunt) {
         'watch': {
             'dev': {
                 files: ['Gruntfile.js', 'bower.json', 'elm-package.json', 'server.js', 'config.rb', 'src/**'],
-                tasks: ['build'],
+                tasks: ['loop'],
                 options: {
                     atBegin: true
                 }
@@ -184,8 +184,9 @@ module.exports = function(grunt) {
         },
     });
 
-    grunt.registerTask('dev', ['bower', 'connect:server', 'watch:dev']);
+    grunt.registerTask('dev', ['bower', 'connect:server', 'build', 'watch:dev']);
     grunt.registerTask('minified', ['bower', 'connect:server', 'watch:min']);
-    grunt.registerTask('build', ['bower', 'copy', 'exec:elm-github-install', 'elm', 'responsive_images']);
+    grunt.registerTask('build', ['bower', 'copy', 'exec:elm-github-install', 'loop']);
+    grunt.registerTask('loop', ['elm', 'responsive_images']);
     grunt.registerTask('package', ['build', 'exec:closure', 'uglify', 'compress']);
 };
