@@ -2,7 +2,6 @@
 package com.thesett.auth.services;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.CookieParam;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 
