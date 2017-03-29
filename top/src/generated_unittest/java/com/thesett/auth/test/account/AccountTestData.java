@@ -1,9 +1,6 @@
 package com.thesett.auth.test.account;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import com.thesett.auth.dao.RoleDAO;
 import com.thesett.auth.model.Role;
@@ -42,8 +39,9 @@ public class AccountTestData extends TestDataSupplierLongKey<Account>
         Set<Role> roleSet = new HashSet<>();
         roleSet.add(role);
 
-        initialValue = new Account().withUsername("user1").withPassword("password").withRoot(false).withRoles(roleSet);
-        updatedValue = new Account().withUsername("user1").withRoot(false).withRoles(roleSet);
+        String externalId = UUID.randomUUID().toString();
+        initialValue = new Account().withUuid(externalId).withUsername("user1").withPassword("password").withRoot(false).withRoles(roleSet);
+        updatedValue = new Account().withUuid(externalId).withUsername("user1").withRoot(false).withRoles(roleSet);
     }
 
     /** {@inheritDoc} */

@@ -4,6 +4,7 @@ package com.thesett.auth.services.rest;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -162,6 +163,13 @@ public class AccountResource implements AccountService, Constants
         // Ensure the password is hashed.
         hashPassword(account);
 
+        // Ensure a UUID is set on the account.
+        if (StringUtils.nullOrEmpty(account.getUuid()))
+        {
+            UUID uuid = UUID.randomUUID();
+            account.setUuid(uuid.toString());
+        }
+
         Account result = accountDAO.create(account);
 
         // Null out the password.
@@ -176,7 +184,7 @@ public class AccountResource implements AccountService, Constants
     @Path("/{accountId}")
     @Timed
     @UnitOfWorkWithDetach
-    @ApiOperation(value = "Retreives a Account by its id.")
+    @ApiOperation(value = "Retrieves a Account by its id.")
     @ApiResponses(
         value =
             {

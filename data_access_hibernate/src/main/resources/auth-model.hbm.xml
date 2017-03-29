@@ -21,6 +21,9 @@
 
 
     <properties name="Account2" unique="true">
+    <property name="uuid" column="uuid" type="text"/>
+    </properties>
+    <properties name="Account3" unique="true">
     <property name="username" column="username" type="text"/>
     </properties>
 

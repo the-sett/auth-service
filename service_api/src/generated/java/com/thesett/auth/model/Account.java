@@ -26,7 +26,7 @@ import com.thesett.util.equality.EqualityHelper;
  *
  * <table id="equality"><caption>Equality Fields</caption>
  * <tr><th> Field Name </th></tr>
-* <tr><td> username </td></tr>
+* <tr><td> uuid </td></tr>
  * </table>    
  *
  * @author Generated Code
@@ -37,6 +37,9 @@ public class Account  implements Entity<Long>, Serializable {
 
     /** Holds the database surrogate id. */
     private Long id;
+
+    /** Holds the uuid property. */    
+    protected String uuid;
 
     /** Holds the username property. */    
     protected String username;
@@ -79,6 +82,18 @@ public class Account  implements Entity<Long>, Serializable {
     }
 
     
+    /**
+     * Accepts a new value for the uuid property.
+     *
+     * @param uuid The uuid property.
+     *
+     * @return 'this' (so that fluents can be chained methods).
+     */
+    public Account withUuid(String uuid) {
+        this.uuid = uuid;
+        return this;
+    }
+
     /**
      * Accepts a new value for the username property.
      *
@@ -139,6 +154,15 @@ public class Account  implements Entity<Long>, Serializable {
         return this;
     }
     /**
+     * Provides the uuid property.
+     *
+     * @return The uuid property.
+     */
+    public String getUuid() {
+        return uuid;
+    }
+
+    /**
      * Provides the username property.
      *
      * @return The username property.
@@ -182,6 +206,15 @@ public class Account  implements Entity<Long>, Serializable {
     public Set<Role> getRoles() {
         return roles;
     }
+    /**
+     * Accepts a new value for the uuid property.
+     *
+     * @param uuid The uuid property.
+     */
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
     /**
      * Accepts a new value for the username property.
      *
@@ -248,7 +281,7 @@ public class Account  implements Entity<Long>, Serializable {
         if (o instanceof Account) {
             Account comp = (Account)o;
 
-            return EqualityHelper.nullSafeEquals(username, comp.username);
+            return EqualityHelper.nullSafeEquals(uuid, comp.uuid);
         } else {
             return false;
         }
@@ -261,7 +294,7 @@ public class Account  implements Entity<Long>, Serializable {
      * @return A hash code of the components equality value.
      */
     public int hashCode() {
-        return EqualityHelper.nullSafeHashCode(username);
+        return EqualityHelper.nullSafeHashCode(uuid);
     }
 
     

@@ -16,6 +16,9 @@
     <!-- === Security: Users, Roles and Permissions. === -->
     <EntityDef name="account">
         <Unique natural_key="true">
+            <String name="uuid" not_null="true"/>
+        </Unique>
+        <Unique>
             <String name="username" type="username"/>
         </Unique>
         <String name="password"/>

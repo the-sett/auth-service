@@ -4,6 +4,7 @@
         password text,
         salt text,
         root boolean,
+        uuid text,
         username text,
         primary key (id)
     );
@@ -37,6 +38,9 @@
         permission_id int8 not null,
         primary key (role_id, permission_id)
     );
+
+    alter table account 
+        add constraint UK_frnp5g2qs47uu764ln1rymxur  unique (uuid);
 
     alter table account 
         add constraint UK_gex1lmaqpg0ir5g1f5eftyaa1  unique (username);

@@ -44,6 +44,9 @@
 
 
     <bean class="Account" ignore-annotations="true">
+        <field name="uuid">
+            <valid/>
+        </field>
         <field name="username">
             <constraint annotation="javax.validation.constraints.Pattern">
                 <element name="regexp">^[a-zA-Z0-9]{4,30}$</element>
