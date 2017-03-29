@@ -306,6 +306,6 @@ public class AuthResource implements AuthService
             }
         }
 
-        return JwtUtils.createToken(account.getUsername(), permissions, keyPair.getPrivate(), jwtTTLMillis);
+        return JwtUtils.createToken(account.getUuid(), permissions, keyPair.getPrivate(), jwtTTLMillis);
     }
 }
