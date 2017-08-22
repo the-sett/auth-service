@@ -72,8 +72,8 @@
                 <version>1.0</version>
                 <configuration>
                     <workingDirectory>src/main/webapp</workingDirectory>
-                    <nodeVersion>v0.10.29</nodeVersion>
-                    <npmVersion>1.4.21</npmVersion>
+                    <nodeVersion>v7.10.1</nodeVersion>
+                    <npmVersion>4.2.0</npmVersion>
                     <installDirectory>target</installDirectory>
                 </configuration>
                 <executions>
