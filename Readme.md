@@ -11,6 +11,7 @@ Its feature set is as follows:
 * Uses JWT tokens.
 * Can be clustered.
 * Provides an API for dependant services to obtain JWT verification keys.
+* Hashes and salts passwords properly.
 
 Future directions are likely to cover:
 
