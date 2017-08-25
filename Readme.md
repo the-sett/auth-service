@@ -1,6 +1,21 @@
 Auth Server
 ===========
 
+Auth server is a simple authentication and user permissions management system.
+Its feature set is as follows:
+
+* REST API.
+* Supports direct authentication of users by username/password.
+* Uses JWT tokens.
+* Supports Users, Roles and Permissions.
+* Can be clustered.
+* Provides an API for dependant services to obtain JWT verification keys.
+
+Future directions are likely to cover:
+
+* Creation of User accounts through federated authentication services such as Facebook Connect.
+* Management and configuration of multiple authentication end points for applications.
+
 Build Instructions
 ------------------
 
@@ -9,6 +24,8 @@ Once you have cloned the source code:
     mvn clean install
     ./refresh_db
     ./run
+
+The 'refresh_db' script requires the invoking user to have super user rights on a Postgres database called 'authdb'.    
 
 Point your browser to:
 
