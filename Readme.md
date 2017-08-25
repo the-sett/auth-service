@@ -1,49 +1,27 @@
-Accounts
-=====
+Auth Server
+===========
 
 Build Instructions
 ------------------
 
-Prior to building all of the source needs to be obtained. The 'mygovscot_utils' directory exists in a separate Git repository, and this can either be cloned directly under Accounts, or symlinked to.
+Once you have cloned the source code:
 
-To clone mygovscot_utils under auth do:
-
-    ./clone_external_modules
-
-To symlink mygovscot_utils do:
-
-    cd .. (to parent directory to Accounts)
-    git clone http://stash.digital.gov.uk/scm/mgv/mygovscot_utils.git
-    cd auth
-    ./symlink_external_modules
-
-Once you have all of the source code:
-    
     mvn clean install
+    ./refresh_db
+    ./run
+
+Point your browser to:
+
+    http://localhost:9073/auth-service/
+
+And log in as admin/admin.
 
 
-As described above the source code is split into a main Git repository and some utility code in the 'mygovscot_utils' Git repository. Some scripts are provided to simplify working with mutliple Git repositories.
-
-    ./push_all
-    ./pull_all
-    ./stat_all
-
-Which work as you might expect from the names.
-    
-
-    mvn idea:idea
-
-OR
-
-    mvn eclipse:eclipse
-
-Open the resulting project files in your IDE.
-
-Alternatively, the pom.xml file can be opened directly by IntelliJ or Eclipse.    
-
+Database Migration
+------------------
 
 Note: For release versions only, not SNAPSHOTs.
-        
+
 When the database is to be migrated to a new release version, the DropWizard migration can be invoked like this:
 
     java -jar auth_top-1.0.jar db migrate config.yml
@@ -59,7 +37,16 @@ The migration scripts may be altered during development in order to prepare them
 
     java -jar auth_top-1.0-SNAPSHOT.jar db drop-all --confirm-delete-everything config.yml
     java -jar auth_top-1.0-SNAPSHOT.jar db migrate config.yml
-                
+
+Hibernate can generate the database schema automatically, and a build profile has been set up to do this. Run:
+
+        mvn clean install -Pschemagen
+
+The output schema will be in "top/target/schema-create.ddl".
+
+
+Integration Testing
+-------------------
 
 Integration tests require a database to be set up in order to run, so they have been placed under separate source roots named 'src/integrationtests'. These can be run by making use of the 'it' build profile. For example:
 
@@ -68,12 +55,8 @@ Integration tests require a database to be set up in order to run, so they have 
 The integration tests will perform a drop-create on the database, leaving the database with an up to date schema loaded.
 
 
-Hibernate can generate the database schema automatically, and a build profile has been set up to do this. Run:
-
-    mvn clean install -Pschemagen
-
-The output schema will be in "top/target/schema-create.ddl".
-
+Code Coverage and Sonar
+-----------------------
 
 Sonar can apply quality metrics to the code. Some additional configuration around sonar has been included in the Maven build, so that test coverage reports work correctly when a test in one module exercises code in another, and also for integration tests. The test coverage reports are aggregated accross the whole project. To run the full quality metrics through sonar use:
 
