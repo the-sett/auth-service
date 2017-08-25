@@ -6,8 +6,9 @@ Its feature set is as follows:
 
 * REST API.
 * Supports direct authentication of users by username/password.
+* Supports login/logout/refresh actions.
+* Provide a management UI for Users, Roles and Permissions.
 * Uses JWT tokens.
-* Supports Users, Roles and Permissions.
 * Can be clustered.
 * Provides an API for dependant services to obtain JWT verification keys.
 
