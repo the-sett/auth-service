@@ -45,8 +45,8 @@ import org.infinispan.Cache;
  *
  * @author Rupert Smith
  */
-@Path("/auth/")
-@Api(value = "/auth/", description = "API for handling authentication requests.")
+@Path("/api/")
+@Api(value = "/api/", description = "API for handling authentication requests.")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(value = MediaType.APPLICATION_JSON)
 public class AuthResource implements AuthService

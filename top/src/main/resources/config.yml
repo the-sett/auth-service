@@ -7,7 +7,7 @@ database:
 
 server:
   type: simple
-  applicationContextPath: /
+  applicationContextPath: /auth/
   adminContextPath: /admin
   connector:
     type: http
