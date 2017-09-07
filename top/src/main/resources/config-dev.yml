@@ -41,6 +41,10 @@ shiro:
   session_handler: true
   url_pattern: /*
 
+assets:
+ overrides:
+   /admin: web_ui/src/main/webapp/app/
+
 swagger:
   resourcePackage: com.thesett.auth.services
 
