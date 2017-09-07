@@ -24,6 +24,7 @@ import Permissions.Types
 import Main.Types exposing (..)
 import Main.View
 import Config exposing (config)
+import OutMessage
 
 
 init : Model
@@ -62,8 +63,9 @@ update_ action model =
             lift .auth (\m x -> { m | auth = x }) AuthMsg AuthController.update a model
 
         AuthCmdMsg a ->
-            --AuthController.updateFromAuthCmd a model.auth
-            ( model, Cmd.none )
+            AuthController.updateFromAuthCmd a model.auth
+                |> Tuple.mapFirst (\auth -> { model | auth = auth })
+                |> Tuple.mapSecond (Cmd.map AuthMsg)
 
         SelectLocation location ->
             selectLocation model location
@@ -82,8 +84,17 @@ update_ action model =
             ( model, Cmd.none )
 
         WelcomeMsg a ->
-            lift .welcome (\m x -> { m | welcome = x }) WelcomeMsg Welcome.Welcome.update a model
+            let
+                interpretOutMsg : Welcome.Welcome.OutMsg -> Model -> ( Model, Cmd Msg )
+                interpretOutMsg (Welcome.Welcome.AuthMsg outMsg) model =
+                    ( model, AuthCmdMsg outMsg |> Utils.message )
+            in
+                Welcome.Welcome.update a model.welcome
+                    |> OutMessage.mapComponent (\welcome -> { model | welcome = welcome })
+                    |> OutMessage.mapCmd WelcomeMsg
+                    |> OutMessage.evaluateMaybe interpretOutMsg Cmd.none
 
+        --lift .welcome (\m x -> { m | welcome = x }) WelcomeMsg
         AccountsMsg a ->
             lift .accounts (\m x -> { m | accounts = x }) AccountsMsg Accounts.State.update a model
 

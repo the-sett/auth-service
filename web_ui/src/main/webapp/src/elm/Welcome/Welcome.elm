@@ -1,4 +1,4 @@
-module Welcome.Welcome exposing (init, update, root, notPermitted, Model, Msg)
+module Welcome.Welcome exposing (init, update, root, notPermitted, Model, Msg, OutMsg(..))
 
 import Platform.Cmd exposing (Cmd)
 import Material
@@ -22,13 +22,16 @@ type alias Model =
 
 type Msg
     = Mdl (Material.Msg Msg)
-    | AuthMsg Auth.AuthCmd
     | GetStarted
     | LogIn
     | TryAgain
     | Cancel
     | UpdateUsername String
     | UpdatePassword String
+
+
+type OutMsg
+    = AuthMsg Auth.AuthCmd
 
 
 init : Model
@@ -39,37 +42,33 @@ init =
     }
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
 update action model =
-    update_ (Debug.log "welcome" action) model
-
-
-update_ : Msg -> Model -> ( Model, Cmd Msg )
-update_ action model =
-    case action of
+    case (Debug.log "welcome" action) of
         Mdl action_ ->
-            Material.update Mdl action_ model
-
-        AuthMsg authMsg ->
-            ( model, Cmd.none )
+            let
+                ( newModel, cmd ) =
+                    Material.update Mdl action_ model
+            in
+                ( newModel, cmd, Nothing )
 
         GetStarted ->
-            ( model, Cmd.none )
+            ( model, Cmd.none, Nothing )
 
         LogIn ->
-            update_ (AuthMsg (Auth.login { username = model.username, password = model.password })) model
+            ( model, Cmd.none, Just (AuthMsg (Auth.login { username = model.username, password = model.password })) )
 
         TryAgain ->
-            update_ (AuthMsg Auth.unauthed) model
+            ( model, Cmd.none, Just (AuthMsg Auth.unauthed) )
 
         Cancel ->
-            ( model, Cmd.none )
+            ( model, Cmd.none, Nothing )
 
         UpdateUsername str ->
-            ( { model | username = str }, Cmd.none )
+            ( { model | username = str }, Cmd.none, Nothing )
 
         UpdatePassword str ->
-            ( { model | password = str }, Cmd.none )
+            ( { model | password = str }, Cmd.none, Nothing )
 
 
 root : Model -> Html Msg

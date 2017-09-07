@@ -25,7 +25,7 @@ type alias Config =
 config : Config
 config =
     { applicationContextRoot = "/auth/"
-    , apiRoot = "/api/"
+    , apiRoot = "/auth/api/"
     }
 
 
