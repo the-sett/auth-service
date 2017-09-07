@@ -10,7 +10,7 @@ import Permission.Service
 
 type ItemToEdit
     = None
-    | WithId String (Model.Role)
+    | WithId String Model.Role
     | New
 
 
@@ -28,10 +28,10 @@ type alias Model =
 
 type Msg
     = Mdl (Material.Msg Msg)
-    | RoleApi (Role.Service.Msg)
-    | PermissionApi (Permission.Service.Msg)
+    | RoleApi Role.Service.Msg
+    | PermissionApi Permission.Service.Msg
     | Init
-    | Toggle (String)
+    | Toggle String
     | ToggleAll
     | UpdateRoleName String
     | SelectChanged (Dict String String)

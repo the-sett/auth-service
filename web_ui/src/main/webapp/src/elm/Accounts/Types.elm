@@ -34,12 +34,12 @@ type alias Model =
 
 type Msg
     = Mdl (Material.Msg Msg)
-    | AccountApi (Account.Service.Msg)
-    | RoleApi (Role.Service.Msg)
+    | AccountApi Account.Service.Msg
+    | RoleApi Role.Service.Msg
     | Init
-    | Toggle (String)
+    | Toggle String
     | ToggleAll
-    | ToggleMore (String)
+    | ToggleMore String
     | Add
     | Delete
     | ConfirmDelete

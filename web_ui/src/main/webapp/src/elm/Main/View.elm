@@ -89,10 +89,11 @@ framing model contents =
           else
             div [] []
         , contents
-          {-
-             Dialogs need to be pulled up here to make the dialog
-             polyfill work on some browsers.
-          -}
+
+        {-
+           Dialogs need to be pulled up here to make the dialog
+           polyfill work on some browsers.
+        -}
         , case nth model.selectedTab tabs of
             Just ( "Accounts", _, _ ) ->
                 App.map AccountsMsg (Accounts.View.dialog model.accounts)

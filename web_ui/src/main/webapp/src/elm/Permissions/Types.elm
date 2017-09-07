@@ -9,7 +9,7 @@ import Permission.Service
 
 type ItemToEdit
     = None
-    | WithId String (Model.Permission)
+    | WithId String Model.Permission
     | New
 
 
@@ -25,9 +25,9 @@ type alias Model =
 
 type Msg
     = Mdl (Material.Msg Msg)
-    | PermissionApi (Permission.Service.Msg)
+    | PermissionApi Permission.Service.Msg
     | Init
-    | Toggle (String)
+    | Toggle String
     | ToggleAll
     | UpdatePermissionName String
     | Add
