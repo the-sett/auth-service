@@ -1,7 +1,7 @@
 module Main.Types exposing (..)
 
 import Material
-import Welcome.Types
+import Welcome.Welcome
 import Layout.Types
 import Menu.Types
 import Accounts.Types
@@ -12,7 +12,7 @@ import Auth
 
 
 type alias Model =
-    { welcome : Welcome.Types.Model
+    { welcome : Welcome.Welcome.Model
     , auth : AuthController.Model
     , mdl : Material.Model
     , accounts : Accounts.Types.Model
@@ -32,7 +32,7 @@ type Msg
     | AuthMsg AuthController.Msg
     | SelectTab Int
     | SelectLocation String
-    | WelcomeMsg Welcome.Types.Msg
+    | WelcomeMsg Welcome.Welcome.Msg
     | AccountsMsg Accounts.Types.Msg
     | RolesMsg Roles.Types.Msg
     | PermissionsMsg Permissions.Types.Msg

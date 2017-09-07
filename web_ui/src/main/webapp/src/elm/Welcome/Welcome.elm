@@ -1,5 +1,8 @@
-module Welcome.View exposing (root, notPermitted)
+module Welcome.Welcome exposing (init, update, root, notPermitted, Model, Msg)
 
+import Platform.Cmd exposing (Cmd)
+import Material
+import Auth
 import Html exposing (..)
 import Html.Lazy
 import Html.Attributes exposing (title, class, href, src, action)
@@ -7,8 +10,66 @@ import Material.Button as Button
 import Material.Icon as Icon
 import Material.Textfield as Textfield
 import Material.Options as Options
-import Welcome.Types exposing (..)
 import ViewUtils
+
+
+type alias Model =
+    { mdl : Material.Model
+    , username : String
+    , password : String
+    }
+
+
+type Msg
+    = Mdl (Material.Msg Msg)
+    | AuthMsg Auth.AuthCmd
+    | GetStarted
+    | LogIn
+    | TryAgain
+    | Cancel
+    | UpdateUsername String
+    | UpdatePassword String
+
+
+init : Model
+init =
+    { mdl = Material.model
+    , username = ""
+    , password = ""
+    }
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update action model =
+    update_ (Debug.log "welcome" action) model
+
+
+update_ : Msg -> Model -> ( Model, Cmd Msg )
+update_ action model =
+    case action of
+        Mdl action_ ->
+            Material.update Mdl action_ model
+
+        AuthMsg authMsg ->
+            ( model, Cmd.none )
+
+        GetStarted ->
+            ( model, Cmd.none )
+
+        LogIn ->
+            update_ (AuthMsg (Auth.login { username = model.username, password = model.password })) model
+
+        TryAgain ->
+            update_ (AuthMsg Auth.unauthed) model
+
+        Cancel ->
+            ( model, Cmd.none )
+
+        UpdateUsername str ->
+            ( { model | username = str }, Cmd.none )
+
+        UpdatePassword str ->
+            ( { model | password = str }, Cmd.none )
 
 
 root : Model -> Html Msg

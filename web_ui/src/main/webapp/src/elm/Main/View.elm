@@ -17,7 +17,7 @@ import Layout.Types
 import Accounts.View
 import Roles.View
 import Permissions.View
-import Welcome.View
+import Welcome.Welcome
 import Auth
 import AuthController
 import Main.Types exposing (..)
@@ -205,12 +205,12 @@ header authenticated model =
 
 welcomeView : Model -> Html Msg
 welcomeView =
-    .welcome >> Welcome.View.root >> App.map WelcomeMsg
+    .welcome >> Welcome.Welcome.root >> App.map WelcomeMsg
 
 
 notPermittedView : Model -> Html Msg
 notPermittedView =
-    .welcome >> Welcome.View.notPermitted >> App.map WelcomeMsg
+    .welcome >> Welcome.Welcome.notPermitted >> App.map WelcomeMsg
 
 
 tabs : List ( String, String, Model -> Html Msg )

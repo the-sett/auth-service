@@ -10,7 +10,7 @@ import Material
 import Material.Helpers exposing (pure, lift, lift_)
 import Material.Layout as Layout
 import Utils exposing (..)
-import Welcome.State
+import Welcome.Welcome
 import AuthController
 import Auth
 import Layout.State
@@ -28,7 +28,7 @@ import Config exposing (config)
 
 init : Model
 init =
-    { welcome = Welcome.State.init
+    { welcome = Welcome.Welcome.init
     , auth =
         AuthController.init
             { logoutLocation = "#welcome"
@@ -82,7 +82,7 @@ update_ action model =
             ( model, Cmd.none )
 
         WelcomeMsg a ->
-            lift .welcome (\m x -> { m | welcome = x }) WelcomeMsg Welcome.State.update a model
+            lift .welcome (\m x -> { m | welcome = x }) WelcomeMsg Welcome.Welcome.update a model
 
         AccountsMsg a ->
             lift .accounts (\m x -> { m | accounts = x }) AccountsMsg Accounts.State.update a model
