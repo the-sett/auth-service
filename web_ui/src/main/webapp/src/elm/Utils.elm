@@ -28,14 +28,14 @@ checkAll checks model =
 -}
 
 
-error : Http.Error -> model -> ( model, Cmd msg )
-error httpError model =
+error : (Auth.AuthCmd -> msg) -> Http.Error -> model -> ( model, Cmd msg )
+error tagger httpError model =
     case httpError of
         Http.BadStatus response ->
             if (response.status.code == 401) then
-                ( model, Auth.unauthed )
+                ( model, tagger Auth.unauthed |> message )
             else if (response.status.code == 403) then
-                ( model, Auth.unauthed )
+                ( model, tagger Auth.unauthed |> message )
             else
                 ( model, Cmd.none )
 

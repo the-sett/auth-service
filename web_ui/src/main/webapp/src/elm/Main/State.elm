@@ -23,12 +23,18 @@ import Permissions.State
 import Permissions.Types
 import Main.Types exposing (..)
 import Main.View
+import Config exposing (config)
 
 
 init : Model
 init =
     { welcome = Welcome.State.init
-    , auth = setLoginLocations AuthController.init
+    , auth =
+        AuthController.init
+            { logoutLocation = "#welcome"
+            , forwardLocation = "#accounts"
+            , authApiRoot = config.apiRoot
+            }
     , mdl = Layout.setTabsWidth 1384 Material.model
     , accounts = Accounts.State.init
     , roles = Roles.State.init
@@ -52,6 +58,13 @@ update_ action model =
         Mdl msg ->
             Material.update Mdl msg model
 
+        AuthMsg a ->
+            lift .auth (\m x -> { m | auth = x }) AuthMsg AuthController.update a model
+
+        AuthCmdMsg a ->
+            --AuthController.updateFromAuthCmd a model.auth
+            ( model, Cmd.none )
+
         SelectLocation location ->
             selectLocation model location
 
@@ -65,10 +78,8 @@ update_ action model =
             ( { model | debugStylesheet = not model.debugStylesheet }, Cmd.none )
 
         LogOut ->
-            ( model, Auth.logout )
-
-        AuthMsg a ->
-            lift .auth (\m x -> { m | auth = x }) AuthMsg AuthController.update a model
+            --( model, Auth.logout )
+            ( model, Cmd.none )
 
         WelcomeMsg a ->
             lift .welcome (\m x -> { m | welcome = x }) WelcomeMsg Welcome.State.update a model
@@ -94,10 +105,6 @@ urlOfTab tabNo =
     "#" ++ (Array.get tabNo Main.View.tabUrls |> Maybe.withDefault "")
 
 
-setLoginLocations authState =
-    { authState | logoutLocation = "#welcome", forwardLocation = "#accounts" }
-
-
 
 {-
    This is the main router for the application, invoked on all url location changes.
@@ -115,10 +122,10 @@ selectLocation : Model -> String -> ( Model, Cmd Msg )
 selectLocation model location =
     let
         authenticated =
-            AuthController.isLoggedIn model.auth.authState
+            AuthController.extractAuthState model.auth |> Auth.isLoggedIn
 
         hasPermission =
-            AuthController.hasPermission "auth-admin" model.auth.authState
+            AuthController.extractAuthState model.auth |> Auth.hasPermission "auth-admin"
 
         -- Flag indicating whether the welcome location should be navigated to.
         jumpToWelcome =
@@ -132,8 +139,8 @@ selectLocation model location =
                 Nothing
 
         -- Saves the location as the current forward location on the auth state.
-        forwardLocation authState =
-            { authState | forwardLocation = "#" ++ location }
+        forwardLocation =
+            "#" ++ location |> AuthController.updateForwardLocation
 
         -- When not on the welcome location, the current location is saved as the
         -- current auth forwarding location, so that it can be restored after a

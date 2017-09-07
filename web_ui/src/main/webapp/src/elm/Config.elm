@@ -24,8 +24,8 @@ type alias Config =
 -}
 config : Config
 config =
-    { applicationContextRoot = "/jtrial/"
-    , apiRoot = "/jtrial/api/"
+    { applicationContextRoot = "/auth/"
+    , apiRoot = "/api/"
     }
 
 

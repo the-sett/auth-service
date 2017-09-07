@@ -25,13 +25,12 @@ main =
         { delta2url = delta2url
         , location2messages = location2messages
         , init = init_
-        , view = \model -> view model.auth.authState model
+        , view = \model -> view (AuthController.extractAuthState model.auth) model
         , subscriptions =
             \init ->
                 Sub.batch
                     [ Sub.map MenusMsg (Menu.subs Menu.Types.Mdl init.menus.mdl)
                     , Layout.subs Mdl init.mdl
-                    , Sub.map AuthMsg (AuthController.subscriptions init.auth)
                     ]
         , update = update
         }
@@ -39,7 +38,13 @@ main =
 
 init_ : ( Model, Cmd Msg )
 init_ =
-    ( init, Cmd.batch [ Layout.sub0 Mdl, Auth.refresh ] )
+    ( init
+    , Cmd.batch
+        [ Layout.sub0 Mdl
+
+        --, Auth.refresh
+        ]
+    )
 
 
 

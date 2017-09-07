@@ -8,6 +8,7 @@ import Maybe
 import Model
 import Account.Service
 import Role.Service
+import Auth
 
 
 type ViewState
@@ -34,6 +35,7 @@ type alias Model =
 
 type Msg
     = Mdl (Material.Msg Msg)
+    | AuthMsg Auth.AuthCmd
     | AccountApi Account.Service.Msg
     | RoleApi Role.Service.Msg
     | Init

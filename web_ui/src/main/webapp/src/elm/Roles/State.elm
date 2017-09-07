@@ -141,7 +141,7 @@ roleCallbacks =
             , update = roleSaved
             , delete = roleDelete
             , deleteError = roleDeleteError
-            , error = error
+            , error = error AuthMsg
         }
 
 
@@ -205,7 +205,7 @@ permissionCallbacks =
     in
         { default
             | findAll = permissionList
-            , error = error
+            , error = error AuthMsg
         }
 
 
@@ -223,6 +223,9 @@ update action model =
     case (Debug.log "permissions" action) of
         Mdl action_ ->
             Material.update Mdl action_ model
+
+        AuthMsg authMsg ->
+            ( model, Cmd.none )
 
         RoleApi action_ ->
             Role.Service.update roleCallbacks action_ model

@@ -25,18 +25,17 @@ update_ action model =
         Mdl action_ ->
             Material.update Mdl action_ model
 
+        AuthMsg authMsg ->
+            ( model, Cmd.none )
+
         GetStarted ->
             ( model, Cmd.none )
 
         LogIn ->
-            ( model
-            , Cmd.batch
-                [ Auth.login { username = model.username, password = model.password }
-                ]
-            )
+            update_ (AuthMsg (Auth.login { username = model.username, password = model.password })) model
 
         TryAgain ->
-            ( model, Cmd.batch [ Auth.unauthed ] )
+            update_ (AuthMsg Auth.unauthed) model
 
         Cancel ->
             ( model, Cmd.none )

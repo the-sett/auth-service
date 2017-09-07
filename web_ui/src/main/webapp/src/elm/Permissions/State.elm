@@ -103,7 +103,7 @@ permissionCallbacks =
             , update = permissionSaved
             , delete = permissionDelete
             , deleteError = permissionDeleteError
-            , error = error
+            , error = error AuthMsg
         }
 
 
@@ -160,6 +160,9 @@ update action model =
     case (Debug.log "permissions" action) of
         Mdl action_ ->
             Material.update Mdl action_ model
+
+        AuthMsg authMsg ->
+            ( model, Cmd.none )
 
         PermissionApi action_ ->
             Permission.Service.update permissionCallbacks action_ model

@@ -213,7 +213,7 @@ accountCallbacks =
             , update = accountSaved
             , delete = accountDelete
             , deleteError = accountDeleteError
-            , error = error
+            , error = error AuthMsg
         }
 
 
@@ -284,7 +284,7 @@ roleCallbacks =
     in
         { default
             | findAll = roleList
-            , error = error
+            , error = error AuthMsg
         }
 
 
@@ -302,6 +302,9 @@ update action model =
     case (Debug.log "accounts" action) of
         Mdl action_ ->
             Material.update Mdl action_ model
+
+        AuthMsg authMsg ->
+            ( model, Cmd.none )
 
         AccountApi action_ ->
             Account.Service.update accountCallbacks action_ model

@@ -1,6 +1,7 @@
 module Welcome.Types exposing (..)
 
 import Material
+import Auth
 
 
 type alias Model =
@@ -12,6 +13,7 @@ type alias Model =
 
 type Msg
     = Mdl (Material.Msg Msg)
+    | AuthMsg Auth.AuthCmd
     | GetStarted
     | LogIn
     | TryAgain

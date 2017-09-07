@@ -8,6 +8,7 @@ import Accounts.Types
 import Roles.Types
 import Permissions.Types
 import AuthController
+import Auth
 
 
 type alias Model =
@@ -26,10 +27,11 @@ type alias Model =
 
 
 type Msg
-    = SelectTab Int
-    | SelectLocation String
-    | Mdl (Material.Msg Msg)
+    = Mdl (Material.Msg Msg)
+    | AuthCmdMsg Auth.AuthCmd
     | AuthMsg AuthController.Msg
+    | SelectTab Int
+    | SelectLocation String
     | WelcomeMsg Welcome.Types.Msg
     | AccountsMsg Accounts.Types.Msg
     | RolesMsg Roles.Types.Msg

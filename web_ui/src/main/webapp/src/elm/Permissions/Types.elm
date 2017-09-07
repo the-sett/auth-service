@@ -5,6 +5,7 @@ import Dict exposing (Dict)
 import Maybe
 import Model
 import Permission.Service
+import Auth
 
 
 type ItemToEdit
@@ -25,6 +26,7 @@ type alias Model =
 
 type Msg
     = Mdl (Material.Msg Msg)
+    | AuthMsg Auth.AuthCmd
     | PermissionApi Permission.Service.Msg
     | Init
     | Toggle String
