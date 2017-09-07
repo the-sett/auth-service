@@ -61,6 +61,9 @@ public class AppConfiguration extends Configuration implements AssetsBundleConfi
     @JsonProperty
     private JerseyClientConfiguration httpClient = new JerseyClientConfiguration();
 
+    @JsonProperty("apis")
+    public ApiConfiguration apiConfiguration;
+
     /** {@inheritDoc} */
     public HandlebarsConfig getHandlebars()
     {
@@ -193,5 +196,9 @@ public class AppConfiguration extends Configuration implements AssetsBundleConfi
 
     public void setHttpClient(JerseyClientConfiguration httpClient) {
         this.httpClient = httpClient;
+    }
+
+    public ApiConfiguration getApiConfiguration() {
+        return apiConfiguration;
     }
 }

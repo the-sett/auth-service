@@ -58,3 +58,6 @@ infinispan:
   initialHosts: localhost[7800],localhost[7801]
   clusterName: auth-cluster
   type: clustered
+
+apis:
+  root: "/api/"
