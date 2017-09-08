@@ -1,8 +1,26 @@
-module Menu.State exposing (init, update)
+module Menu.State exposing (Model, Msg(..), init, update)
 
 import Platform.Cmd exposing (Cmd)
 import Material
-import Menu.Types exposing (..)
+import Material.Menu as Menu exposing (..)
+
+
+type alias Mdl =
+    Material.Model
+
+
+type alias Model =
+    { mdl : Material.Model
+    , selected : Maybe String
+    , icon : String
+    }
+
+
+type Msg
+    = MenuMsg Int Menu.Msg
+    | Mdl (Material.Msg Msg)
+    | Select String
+    | SetIcon String
 
 
 init : Model

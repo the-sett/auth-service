@@ -21,7 +21,6 @@ import Material.Toggles as Toggles
 import Material.Typography as Typography
 import Maybe exposing (Maybe)
 import Menu.State
-import Menu.Types
 import Navigation
 import OutMessage
 import Permissions.State
@@ -44,7 +43,7 @@ type alias Model =
     , roles : Roles.Types.Model
     , permissions : Permissions.Types.Model
     , layout : Layout.State.Model
-    , menus : Menu.Types.Model
+    , menus : Menu.State.Model
     , selectedTab : Int
     , transparentHeader : Bool
     , debugStylesheet : Bool
@@ -62,7 +61,7 @@ type Msg
     | RolesMsg Roles.Types.Msg
     | PermissionsMsg Permissions.Types.Msg
     | LayoutMsg Layout.State.Msg
-    | MenusMsg Menu.Types.Msg
+    | MenusMsg Menu.State.Msg
     | ToggleHeader
     | ToggleDebug
     | LogOut

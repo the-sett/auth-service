@@ -7,7 +7,7 @@ import RouteUrl as Routing
 import Material.Layout as Layout
 import Material.Menu as Menu
 import Main.State
-import Menu.Types
+import Menu.State
 import AuthController
 import Auth
 import Config exposing (config)
@@ -28,7 +28,7 @@ main =
         , subscriptions =
             \init ->
                 Sub.batch
-                    [ Sub.map Main.State.MenusMsg (Menu.subs Menu.Types.Mdl init.menus.mdl)
+                    [ Sub.map Main.State.MenusMsg (Menu.subs Menu.State.Mdl init.menus.mdl)
                     , Layout.subs Main.State.Mdl init.mdl
                     ]
         , update = Main.State.update
