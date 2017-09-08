@@ -23,18 +23,18 @@ import Permissions.State
 import Permissions.Types
 import Main.Types exposing (..)
 import Main.View
-import Config exposing (config)
+import Config exposing (Config)
 import OutMessage
 
 
-init : Model
-init =
+init : Config -> Model
+init config =
     { welcome = Welcome.Welcome.init
     , auth =
         AuthController.init
             { logoutLocation = "#welcome"
             , forwardLocation = "#accounts"
-            , authApiRoot = config.apiRoot
+            , authApiRoot = config.authRoot
             }
     , mdl = Layout.setTabsWidth 1384 Material.model
     , accounts = Accounts.State.init config

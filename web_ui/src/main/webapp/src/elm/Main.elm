@@ -12,6 +12,7 @@ import Main.State exposing (..)
 import Main.View exposing (..)
 import AuthController
 import Auth
+import Config exposing (config)
 
 
 log : a -> a
@@ -38,7 +39,7 @@ main =
 
 init_ : ( Model, Cmd Msg )
 init_ =
-    ( init
+    ( init config
     , Cmd.batch
         [ Layout.sub0 Mdl
 
