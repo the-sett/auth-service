@@ -1,4 +1,17 @@
-module Utils exposing (..)
+module Utils
+    exposing
+        ( checkAll
+        , cleanString
+        , dictifyEntities
+        , error
+        , indexedFoldr
+        , leftIntersect
+        , message
+        , nth
+        , symDiff
+        , toggleSet
+        , valOrEmpty
+        )
 
 import Dict exposing (Dict)
 import Set exposing (Set)

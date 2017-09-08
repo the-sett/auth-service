@@ -2,7 +2,7 @@ module Menu.State exposing (Model, Msg(..), init, update)
 
 import Platform.Cmd exposing (Cmd)
 import Material
-import Material.Menu as Menu exposing (..)
+import Material.Menu as Menu
 
 
 type alias Mdl =

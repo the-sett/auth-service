@@ -42,8 +42,7 @@ import Set
 import Set as Set
 import Set exposing (Set)
 import String
-import Utils exposing (..)
-import Utils exposing (error, checkAll)
+import Utils exposing (error, checkAll, indexedFoldr)
 import ViewUtils
 
 

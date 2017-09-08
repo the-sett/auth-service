@@ -9,7 +9,7 @@ import Dict exposing (Dict)
 import Exts.Maybe exposing (catMaybes)
 import Html as App
 import Html.Attributes exposing (href, class, style, id)
-import Html exposing (..)
+import Html exposing (Html, div, text, a)
 import Html.Lazy
 import Layout.State
 import Material
@@ -24,9 +24,8 @@ import Menu.State
 import Navigation
 import OutMessage
 import Permissions.State
-import Platform.Cmd exposing (..)
 import Roles.State
-import Utils exposing (..)
+import Utils exposing (nth)
 import ViewUtils
 import Welcome.Welcome
 

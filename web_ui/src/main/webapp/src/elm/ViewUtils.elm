@@ -1,6 +1,15 @@
-module ViewUtils exposing (..)
+module ViewUtils
+    exposing
+        ( confirmDialog
+        , cancelButton
+        , column644
+        , columnAll12
+        , completeButton
+        , okCancelControlBar
+        , rhythm1SpacerDiv
+        )
 
-import Html exposing (..)
+import Html exposing (Html, div, text, p, h4)
 import Html.Attributes exposing (title, class, action, attribute)
 import Material
 import Material.Options as Options exposing (Style, Property, cs, when, nop, disabled)

@@ -1,11 +1,10 @@
-module Roles.State exposing (..)
+module Roles.State exposing (Model, Msg(..), init, update, root, dialog)
 
 import Auth
 import Config exposing (Config)
-import Dict
 import Dict exposing (Dict)
 import Html.Attributes exposing (title, class, action, colspan)
-import Html exposing (..)
+import Html exposing (Html, div, text, span, h4)
 import Http
 import Listbox exposing (listbox, onSelectedChanged, items, initiallySelected)
 import Material
@@ -24,7 +23,7 @@ import Permission.Service
 import Platform.Cmd exposing (Cmd)
 import Role.Service
 import String
-import Utils exposing (..)
+import Utils exposing (indexedFoldr, error, checkAll)
 import ViewUtils
 
 

@@ -3,7 +3,7 @@ module Welcome.Welcome exposing (init, update, root, notPermitted, Model, Msg, O
 import Platform.Cmd exposing (Cmd)
 import Material
 import Auth
-import Html exposing (..)
+import Html exposing (Html, div, text, h4, img, form)
 import Html.Lazy
 import Html.Attributes exposing (title, class, href, src, action)
 import Material.Button as Button
