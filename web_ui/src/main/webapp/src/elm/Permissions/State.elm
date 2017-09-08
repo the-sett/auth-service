@@ -1,15 +1,62 @@
 module Permissions.State exposing (..)
 
-import String
+import Auth
+import Config exposing (Config)
+import Dict
 import Dict exposing (Dict)
-import Platform.Cmd exposing (Cmd)
+import Html.Attributes exposing (title, class, action, colspan)
+import Html exposing (..)
 import Http
+import Listbox exposing (listbox, onSelectedChanged, items, initiallySelected)
 import Material
-import Permissions.Types exposing (..)
-import Utils exposing (..)
+import Material.Button as Button
+import Material.Chip as Chip
+import Material.Dialog as Dialog
+import Material.Grid as Grid
+import Material.Icon as Icon
+import Material.Options as Options exposing (Style, cs, css, nop, disabled, attribute)
+import Material.Table as Table
+import Material.Textfield as Textfield
+import Material.Toggles as Toggles
+import Maybe
 import Model
 import Permission.Service
-import Config exposing (Config)
+import Platform.Cmd exposing (Cmd)
+import String
+import Utils exposing (..)
+import ViewUtils
+
+
+type ItemToEdit
+    = None
+    | WithId String Model.Permission
+    | New
+
+
+type alias Model =
+    { mdl : Material.Model
+    , config : Config
+    , selected : Dict String Model.Permission
+    , permissions : Dict String Model.Permission
+    , permissionName : Maybe String
+    , permissionToEdit : ItemToEdit
+    , numToDelete : Int
+    }
+
+
+type Msg
+    = Mdl (Material.Msg Msg)
+    | AuthMsg Auth.AuthCmd
+    | PermissionApi Permission.Service.Msg
+    | Init
+    | Toggle String
+    | ToggleAll
+    | UpdatePermissionName String
+    | Add
+    | Edit String
+    | Delete
+    | ConfirmDelete
+    | Save
 
 
 init : Config -> Model
@@ -316,3 +363,199 @@ updateSave model =
                     }
                 )
             )
+
+
+root : Model -> Html Msg
+root model =
+    div [ class "layout-fixed-width" ]
+        [ ViewUtils.rhythm1SpacerDiv
+        , table model
+        ]
+
+
+table : Model -> Html Msg
+table model =
+    div [ class "data-table__apron mdl-shadow--2dp" ]
+        [ Table.table [ cs "mdl-data-table mdl-js-data-table mdl-data-table--selectable" ]
+            [ Table.thead [ cs "data-table__inactive-row" |> Options.when (model.permissionToEdit /= None) ]
+                [ Table.tr []
+                    [ Table.th []
+                        [ Toggles.checkbox Mdl
+                            [ -1 ]
+                            model.mdl
+                            [ Options.onClick ToggleAll
+                            , Toggles.value (allSelected model)
+                            , Toggles.disabled |> Options.when (model.permissionToEdit /= None)
+                            ]
+                            []
+                        ]
+                    , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Permission" ]
+                    , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Actions" ]
+                    ]
+                ]
+            , Table.tbody []
+                (if model.permissionToEdit == New then
+                    (indexedFoldr (permissionToRow model) [ addRow model ] model.permissions)
+                 else
+                    (indexedFoldr (permissionToRow model) [] model.permissions)
+                )
+            ]
+        , controlBar model
+        ]
+
+
+permissionForm : Model -> Bool -> String -> Html Msg
+permissionForm model isValid completeText =
+    Grid.grid []
+        [ ViewUtils.column644
+            [ Textfield.render Mdl
+                [ 1 ]
+                model.mdl
+                [ Textfield.label "Permission"
+                , Textfield.floatingLabel
+                , Textfield.text_
+                , Options.onInput UpdatePermissionName
+                , Textfield.value <| Utils.valOrEmpty model.permissionName
+                ]
+                []
+            ]
+        , ViewUtils.columnAll12
+            [ ViewUtils.okCancelControlBar
+                model.mdl
+                Mdl
+                (ViewUtils.completeButton model.mdl Mdl completeText (isValid) Save)
+                (ViewUtils.cancelButton model.mdl Mdl "Cancel" Init)
+            ]
+        ]
+
+
+addRow : Model -> Html Msg
+addRow model =
+    Table.tr []
+        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric data-table__active-row" ]
+            [ permissionForm model (validateCreatePermission model) "Create"
+            ]
+        ]
+
+
+editRow : Model -> Int -> String -> Model.Permission -> Html Msg
+editRow model idx id (Model.Permission permission) =
+    Table.tr []
+        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric data-table__active-row" ]
+            [ permissionForm model (isEditedAndValid model) "Save"
+            ]
+        ]
+
+
+viewRow : Model -> Int -> String -> Model.Permission -> Html Msg
+viewRow model idx id (Model.Permission permission) =
+    (Table.tr
+        [ Table.selected |> Options.when (Dict.member id model.selected)
+        , cs "data-table__inactive-row" |> Options.when (model.permissionToEdit /= None)
+        ]
+        [ Table.td []
+            [ Toggles.checkbox Mdl
+                [ idx ]
+                model.mdl
+                [ Options.onClick (Toggle id)
+                , Toggles.value <| Dict.member id model.selected
+                , Toggles.disabled |> Options.when (model.permissionToEdit /= None)
+                ]
+                []
+            ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| Utils.valOrEmpty permission.name ]
+        , Table.td
+            [ cs "mdl-data-table__cell--non-numeric"
+            , css "width" "20%"
+            ]
+            [ Button.render Mdl
+                [ 0, idx ]
+                model.mdl
+                [ Button.accent
+                , if model.permissionToEdit /= None then
+                    Button.disabled
+                  else
+                    Button.ripple
+                , Options.onClick (Edit id)
+                ]
+                [ text "Edit" ]
+            ]
+        ]
+    )
+
+
+permissionToRow : Model -> Int -> String -> Model.Permission -> List (Html Msg) -> List (Html Msg)
+permissionToRow model idx id permission items =
+    let
+        showAsEdit =
+            editRow model idx id permission
+
+        showAsView =
+            viewRow model idx id permission
+    in
+        (case model.permissionToEdit of
+            WithId editId _ ->
+                if (editId == id) then
+                    showAsEdit
+                else
+                    showAsView
+
+            New ->
+                showAsView
+
+            None ->
+                showAsView
+        )
+            :: items
+
+
+permissionToChip : Model.Permission -> List (Html Msg) -> List (Html Msg)
+permissionToChip (Model.Permission permission) items =
+    (span [ class "mdl-chip mdl-chip__text" ]
+        [ text <| Utils.valOrEmpty permission.name ]
+    )
+        :: items
+
+
+controlBar : Model -> Html Msg
+controlBar model =
+    div [ class "control-bar" ]
+        [ div [ class "control-bar__row" ]
+            [ div [ class "control-bar__left-0" ]
+                [ span [ class "mdl-chip mdl-chip__text" ]
+                    [ text (toString (Dict.size model.permissions) ++ " items") ]
+                ]
+            , div [ class "control-bar__right-0" ]
+                [ Button.render Mdl
+                    [ 1, 0 ]
+                    model.mdl
+                    [ Button.fab
+                    , Button.colored
+                    , if model.permissionToEdit /= None then
+                        Button.disabled
+                      else
+                        Button.ripple
+                    , Options.onClick Add
+                    ]
+                    [ Icon.i "add" ]
+                ]
+            , div [ class "control-bar__right-0" ]
+                [ Button.render Mdl
+                    [ 1, 1 ]
+                    model.mdl
+                    [ cs "mdl-button--warn"
+                    , if (someSelected model) && (model.permissionToEdit == None) then
+                        Button.ripple
+                      else
+                        Button.disabled
+                    , Options.onClick Delete
+                    , Dialog.openOn "click"
+                    ]
+                    [ text "Delete" ]
+                ]
+            ]
+        ]
+
+
+dialog model =
+    ViewUtils.confirmDialog model "Delete" Mdl ConfirmDelete

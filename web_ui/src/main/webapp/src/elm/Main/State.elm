@@ -24,8 +24,6 @@ import Menu.State
 import Navigation
 import OutMessage
 import Permissions.State
-import Permissions.Types
-import Permissions.View
 import Platform.Cmd exposing (..)
 import Roles.State
 import Roles.Types
@@ -41,7 +39,7 @@ type alias Model =
     , mdl : Material.Model
     , accounts : Accounts.State.Model
     , roles : Roles.Types.Model
-    , permissions : Permissions.Types.Model
+    , permissions : Permissions.State.Model
     , layout : Layout.State.Model
     , menus : Menu.State.Model
     , selectedTab : Int
@@ -59,7 +57,7 @@ type Msg
     | WelcomeMsg Welcome.Welcome.Msg
     | AccountsMsg Accounts.State.Msg
     | RolesMsg Roles.Types.Msg
-    | PermissionsMsg Permissions.Types.Msg
+    | PermissionsMsg Permissions.State.Msg
     | LayoutMsg Layout.State.Msg
     | MenusMsg Menu.State.Msg
     | ToggleHeader
@@ -217,7 +215,7 @@ selectLocation model location =
                         Utils.message (RolesMsg Roles.Types.Init) |> Just
 
                     "permissions" ->
-                        Utils.message (PermissionsMsg Permissions.Types.Init) |> Just
+                        Utils.message (PermissionsMsg Permissions.State.Init) |> Just
 
                     _ ->
                         Nothing
@@ -315,7 +313,7 @@ framing model contents =
                 App.map RolesMsg (Roles.View.dialog model.roles)
 
             Just ( "Permissions", _, _ ) ->
-                App.map PermissionsMsg (Permissions.View.dialog model.permissions)
+                App.map PermissionsMsg (Permissions.State.dialog model.permissions)
 
             _ ->
                 div [] []
@@ -429,7 +427,7 @@ tabs : List ( String, String, Model -> Html Msg )
 tabs =
     [ ( "Accounts", "accounts", .accounts >> Accounts.State.root >> App.map AccountsMsg )
     , ( "Roles", "roles", .roles >> Roles.View.root >> App.map RolesMsg )
-    , ( "Permissions", "permissions", .permissions >> Permissions.View.root >> App.map PermissionsMsg )
+    , ( "Permissions", "permissions", .permissions >> Permissions.State.root >> App.map PermissionsMsg )
     ]
 
 
