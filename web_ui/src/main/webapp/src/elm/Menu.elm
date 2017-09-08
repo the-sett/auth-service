@@ -1,4 +1,4 @@
-module Menu.State exposing (Model, Msg(..), init, update)
+module Menu exposing (Model, Msg(..), init, update)
 
 import Platform.Cmd exposing (Cmd)
 import Material

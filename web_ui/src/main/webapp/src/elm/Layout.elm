@@ -1,4 +1,4 @@
-module Layout.State exposing (Model, Msg, HeaderType(..), init, update)
+module Layout exposing (Model, Msg, HeaderType(..), init, update)
 
 import Material
 import Material.Color as Color

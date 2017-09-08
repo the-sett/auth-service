@@ -1,4 +1,4 @@
-module Accounts.State
+module Accounts
     exposing
         ( Model
         , Msg(..)

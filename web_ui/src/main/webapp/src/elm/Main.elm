@@ -1,6 +1,6 @@
 module Main exposing (main)
 
-import Accounts.State
+import Accounts
 import Array exposing (Array)
 import Auth
 import AuthController
@@ -12,37 +12,37 @@ import Html as App
 import Html.Attributes exposing (href, class, style, id)
 import Html exposing (Html, div, text, a)
 import Html.Lazy
-import Layout.State
+import Layout
 import Material
 import Material.Button as Button
 import Material.Helpers exposing (pure, lift, lift_)
-import Material.Layout as Layout
-import Material.Menu as Menu
+import Material.Layout
+import Material.Menu
 import Material.Options as Options exposing (css)
 import Material.Toggles as Toggles
 import Material.Typography as Typography
 import Maybe exposing (Maybe)
-import Menu.State
+import Menu
 import Navigation
 import OutMessage
-import Permissions.State
-import Roles.State
+import Permissions
+import Roles
 import RouteUrl as Routing
 import String
 import Utils exposing (nth)
 import ViewUtils
-import Welcome.Welcome
+import Welcome
 
 
 type alias Model =
-    { welcome : Welcome.Welcome.Model
+    { welcome : Welcome.Model
     , auth : AuthController.Model
     , mdl : Material.Model
-    , accounts : Accounts.State.Model
-    , roles : Roles.State.Model
-    , permissions : Permissions.State.Model
-    , layout : Layout.State.Model
-    , menus : Menu.State.Model
+    , accounts : Accounts.Model
+    , roles : Roles.Model
+    , permissions : Permissions.Model
+    , layout : Layout.Model
+    , menus : Menu.Model
     , selectedTab : Int
     , transparentHeader : Bool
     , debugStylesheet : Bool
@@ -55,12 +55,12 @@ type Msg
     | AuthMsg AuthController.Msg
     | SelectTab Int
     | SelectLocation String
-    | WelcomeMsg Welcome.Welcome.Msg
-    | AccountsMsg Accounts.State.Msg
-    | RolesMsg Roles.State.Msg
-    | PermissionsMsg Permissions.State.Msg
-    | LayoutMsg Layout.State.Msg
-    | MenusMsg Menu.State.Msg
+    | WelcomeMsg Welcome.Msg
+    | AccountsMsg Accounts.Msg
+    | RolesMsg Roles.Msg
+    | PermissionsMsg Permissions.Msg
+    | LayoutMsg Layout.Msg
+    | MenusMsg Menu.Msg
     | ToggleHeader
     | ToggleDebug
     | LogOut
@@ -68,19 +68,19 @@ type Msg
 
 init : Config -> Model
 init config =
-    { welcome = Welcome.Welcome.init
+    { welcome = Welcome.init
     , auth =
         AuthController.init
             { logoutLocation = "#welcome"
             , forwardLocation = "#accounts"
             , authApiRoot = config.authRoot
             }
-    , mdl = Layout.setTabsWidth 1384 Material.model
-    , accounts = Accounts.State.init config
-    , roles = Roles.State.init config
-    , permissions = Permissions.State.init config
-    , layout = Layout.State.init
-    , menus = Menu.State.init
+    , mdl = Material.Layout.setTabsWidth 1384 Material.model
+    , accounts = Accounts.init config
+    , roles = Roles.init config
+    , permissions = Permissions.init config
+    , layout = Layout.init
+    , menus = Menu.init
     , selectedTab = 0
     , transparentHeader = False
     , debugStylesheet = False
@@ -123,29 +123,29 @@ update_ action model =
 
         WelcomeMsg a ->
             let
-                interpretOutMsg : Welcome.Welcome.OutMsg -> Model -> ( Model, Cmd Msg )
-                interpretOutMsg (Welcome.Welcome.AuthMsg outMsg) model =
+                interpretOutMsg : Welcome.OutMsg -> Model -> ( Model, Cmd Msg )
+                interpretOutMsg (Welcome.AuthMsg outMsg) model =
                     ( model, AuthCmdMsg outMsg |> Utils.message )
             in
-                Welcome.Welcome.update a model.welcome
+                Welcome.update a model.welcome
                     |> OutMessage.mapComponent (\welcome -> { model | welcome = welcome })
                     |> OutMessage.mapCmd WelcomeMsg
                     |> OutMessage.evaluateMaybe interpretOutMsg Cmd.none
 
         AccountsMsg a ->
-            lift .accounts (\m x -> { m | accounts = x }) AccountsMsg Accounts.State.update a model
+            lift .accounts (\m x -> { m | accounts = x }) AccountsMsg Accounts.update a model
 
         RolesMsg a ->
-            lift .roles (\m x -> { m | roles = x }) RolesMsg Roles.State.update a model
+            lift .roles (\m x -> { m | roles = x }) RolesMsg Roles.update a model
 
         PermissionsMsg a ->
-            lift .permissions (\m x -> { m | permissions = x }) PermissionsMsg Permissions.State.update a model
+            lift .permissions (\m x -> { m | permissions = x }) PermissionsMsg Permissions.update a model
 
         LayoutMsg a ->
-            lift .layout (\m x -> { m | layout = x }) LayoutMsg Layout.State.update a model
+            lift .layout (\m x -> { m | layout = x }) LayoutMsg Layout.update a model
 
         MenusMsg a ->
-            lift .menus (\m x -> { m | menus = x }) MenusMsg Menu.State.update a model
+            lift .menus (\m x -> { m | menus = x }) MenusMsg Menu.update a model
 
 
 urlOfTab : Int -> String
@@ -210,13 +210,13 @@ selectLocation model location =
             if not jumpToWelcome then
                 case location of
                     "accounts" ->
-                        Utils.message (AccountsMsg Accounts.State.Init) |> Just
+                        Utils.message (AccountsMsg Accounts.Init) |> Just
 
                     "roles" ->
-                        Utils.message (RolesMsg Roles.State.Init) |> Just
+                        Utils.message (RolesMsg Roles.Init) |> Just
 
                     "permissions" ->
-                        Utils.message (PermissionsMsg Permissions.State.Init) |> Just
+                        Utils.message (PermissionsMsg Permissions.Init) |> Just
 
                     _ ->
                         Nothing
@@ -261,29 +261,29 @@ view_ authState model =
             welcome model
 
 
-layoutOptions : Model -> List (Layout.Property Msg)
+layoutOptions : Model -> List (Material.Layout.Property Msg)
 layoutOptions model =
-    [ Layout.selectedTab model.selectedTab
-    , Layout.onSelectTab SelectTab
-    , Layout.fixedHeader |> Options.when model.layout.fixedHeader
-    , Layout.fixedDrawer |> Options.when model.layout.fixedDrawer
-    , Layout.fixedTabs |> Options.when model.layout.fixedTabs
+    [ Material.Layout.selectedTab model.selectedTab
+    , Material.Layout.onSelectTab SelectTab
+    , Material.Layout.fixedHeader |> Options.when model.layout.fixedHeader
+    , Material.Layout.fixedDrawer |> Options.when model.layout.fixedDrawer
+    , Material.Layout.fixedTabs |> Options.when model.layout.fixedTabs
     , (case model.layout.header of
-        Layout.State.Waterfall x ->
-            Layout.waterfall x
+        Layout.Waterfall x ->
+            Material.Layout.waterfall x
 
-        Layout.State.Seamed ->
-            Layout.seamed
+        Layout.Seamed ->
+            Material.Layout.seamed
 
-        Layout.State.Standard ->
+        Layout.Standard ->
             Options.nop
 
-        Layout.State.Scrolling ->
-            Layout.scrolling
+        Layout.Scrolling ->
+            Material.Layout.scrolling
       )
         |> Options.when model.layout.withHeader
     , if model.transparentHeader then
-        Layout.transparentHeader
+        Material.Layout.transparentHeader
       else
         Options.nop
     ]
@@ -308,13 +308,13 @@ framing model contents =
         -}
         , case nth model.selectedTab tabs of
             Just ( "Accounts", _, _ ) ->
-                App.map AccountsMsg (Accounts.State.dialog model.accounts)
+                App.map AccountsMsg (Accounts.dialog model.accounts)
 
             Just ( "Roles", _, _ ) ->
-                App.map RolesMsg (Roles.State.dialog model.roles)
+                App.map RolesMsg (Roles.dialog model.roles)
 
             Just ( "Permissions", _, _ ) ->
-                App.map PermissionsMsg (Permissions.State.dialog model.permissions)
+                App.map PermissionsMsg (Permissions.dialog model.permissions)
 
             _ ->
                 div [] []
@@ -328,7 +328,7 @@ appTop model =
 
 app : Model -> Html Msg
 app model =
-    Layout.render Mdl
+    Material.Layout.render Mdl
         model.mdl
         (layoutOptions model)
         { header = header True model
@@ -344,7 +344,7 @@ app model =
 
 welcome : Model -> Html Msg
 welcome model =
-    Layout.render Mdl
+    Material.Layout.render Mdl
         model.mdl
         (layoutOptions model)
         { header = header False model
@@ -360,7 +360,7 @@ welcome model =
 
 notPermitted : Model -> Html Msg
 notPermitted model =
-    Layout.render Mdl
+    Material.Layout.render Mdl
         model.mdl
         (layoutOptions model)
         { header = header False model
@@ -377,14 +377,14 @@ notPermitted model =
 header : Bool -> Model -> List (Html Msg)
 header authenticated model =
     if model.layout.withHeader then
-        [ Layout.row
+        [ Material.Layout.row
             []
             [ a
                 [ Html.Attributes.id "thesett-logo"
                 , href "http://"
                 ]
                 []
-            , Layout.spacer
+            , Material.Layout.spacer
             , if authenticated then
                 div []
                     [ Button.render Mdl
@@ -416,19 +416,19 @@ header authenticated model =
 
 welcomeView : Model -> Html Msg
 welcomeView =
-    .welcome >> Welcome.Welcome.root >> App.map WelcomeMsg
+    .welcome >> Welcome.root >> App.map WelcomeMsg
 
 
 notPermittedView : Model -> Html Msg
 notPermittedView =
-    .welcome >> Welcome.Welcome.notPermitted >> App.map WelcomeMsg
+    .welcome >> Welcome.notPermitted >> App.map WelcomeMsg
 
 
 tabs : List ( String, String, Model -> Html Msg )
 tabs =
-    [ ( "Accounts", "accounts", .accounts >> Accounts.State.root >> App.map AccountsMsg )
-    , ( "Roles", "roles", .roles >> Roles.State.root >> App.map RolesMsg )
-    , ( "Permissions", "permissions", .permissions >> Permissions.State.root >> App.map PermissionsMsg )
+    [ ( "Accounts", "accounts", .accounts >> Accounts.root >> App.map AccountsMsg )
+    , ( "Roles", "roles", .roles >> Roles.root >> App.map RolesMsg )
+    , ( "Permissions", "permissions", .permissions >> Permissions.root >> App.map PermissionsMsg )
     ]
 
 
@@ -483,8 +483,8 @@ main =
         , subscriptions =
             \init ->
                 Sub.batch
-                    [ Sub.map MenusMsg (Menu.subs Menu.State.Mdl init.menus.mdl)
-                    , Layout.subs Mdl init.mdl
+                    [ Sub.map MenusMsg (Material.Menu.subs Menu.Mdl init.menus.mdl)
+                    , Material.Layout.subs Mdl init.mdl
                     ]
         , update = update
         }
@@ -494,7 +494,7 @@ init_ : ( Model, Cmd Msg )
 init_ =
     ( init config
     , Cmd.batch
-        [ Layout.sub0 Mdl
+        [ Material.Layout.sub0 Mdl
 
         --, Auth.refresh
         ]

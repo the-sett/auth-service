@@ -1,4 +1,4 @@
-module Welcome.Welcome exposing (init, update, root, notPermitted, Model, Msg, OutMsg(..))
+module Welcome exposing (init, update, root, notPermitted, Model, Msg, OutMsg(..))
 
 import Platform.Cmd exposing (Cmd)
 import Material
