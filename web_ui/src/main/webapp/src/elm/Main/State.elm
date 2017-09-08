@@ -80,8 +80,7 @@ update_ action model =
             ( { model | debugStylesheet = not model.debugStylesheet }, Cmd.none )
 
         LogOut ->
-            --( model, Auth.logout )
-            ( model, Cmd.none )
+            ( model, Auth.logout |> AuthCmdMsg |> Utils.message )
 
         WelcomeMsg a ->
             let
