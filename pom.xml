@@ -414,6 +414,7 @@
                         <include>com.thesett:*</include>
                         <include>com.thesett.laf:*</include>
                         <include>com.thesett.jenerator.utils:*</include>
+                        <include>com.thesett.codegens:*</include>
                         <include>com.thesett.validation:*</include>
                     </includes>
                 </configuration>
