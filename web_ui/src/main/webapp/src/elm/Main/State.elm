@@ -16,7 +16,6 @@ import Auth
 import Layout.State
 import Menu.State
 import Accounts.State
-import Accounts.Types
 import Roles.State
 import Roles.Types
 import Permissions.State
@@ -93,7 +92,6 @@ update_ action model =
                     |> OutMessage.mapCmd WelcomeMsg
                     |> OutMessage.evaluateMaybe interpretOutMsg Cmd.none
 
-        --lift .welcome (\m x -> { m | welcome = x }) WelcomeMsg
         AccountsMsg a ->
             lift .accounts (\m x -> { m | accounts = x }) AccountsMsg Accounts.State.update a model
 
@@ -172,7 +170,7 @@ selectLocation model location =
             if not jumpToWelcome then
                 case location of
                     "accounts" ->
-                        Utils.message (AccountsMsg Accounts.Types.Init) |> Just
+                        Utils.message (AccountsMsg Accounts.State.Init) |> Just
 
                     "roles" ->
                         Utils.message (RolesMsg Roles.Types.Init) |> Just

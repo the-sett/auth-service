@@ -4,7 +4,7 @@ import Material
 import Welcome.Welcome
 import Layout.Types
 import Menu.Types
-import Accounts.Types
+import Accounts.State
 import Roles.Types
 import Permissions.Types
 import AuthController
@@ -15,7 +15,7 @@ type alias Model =
     { welcome : Welcome.Welcome.Model
     , auth : AuthController.Model
     , mdl : Material.Model
-    , accounts : Accounts.Types.Model
+    , accounts : Accounts.State.Model
     , roles : Roles.Types.Model
     , permissions : Permissions.Types.Model
     , layout : Layout.Types.Model
@@ -33,7 +33,7 @@ type Msg
     | SelectTab Int
     | SelectLocation String
     | WelcomeMsg Welcome.Welcome.Msg
-    | AccountsMsg Accounts.Types.Msg
+    | AccountsMsg Accounts.State.Msg
     | RolesMsg Roles.Types.Msg
     | PermissionsMsg Permissions.Types.Msg
     | LayoutMsg Layout.Types.Msg

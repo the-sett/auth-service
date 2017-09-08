@@ -14,7 +14,7 @@ import Material.Button as Button
 import Utils exposing (..)
 import ViewUtils
 import Layout.Types
-import Accounts.View
+import Accounts.State
 import Roles.View
 import Permissions.View
 import Welcome.Welcome
@@ -97,7 +97,7 @@ framing model contents =
         -}
         , case nth model.selectedTab tabs of
             Just ( "Accounts", _, _ ) ->
-                App.map AccountsMsg (Accounts.View.dialog model.accounts)
+                App.map AccountsMsg (Accounts.State.dialog model.accounts)
 
             Just ( "Roles", _, _ ) ->
                 App.map RolesMsg (Roles.View.dialog model.roles)
@@ -215,7 +215,7 @@ notPermittedView =
 
 tabs : List ( String, String, Model -> Html Msg )
 tabs =
-    [ ( "Accounts", "accounts", .accounts >> Accounts.View.root >> App.map AccountsMsg )
+    [ ( "Accounts", "accounts", .accounts >> Accounts.State.root >> App.map AccountsMsg )
     , ( "Roles", "roles", .roles >> Roles.View.root >> App.map RolesMsg )
     , ( "Permissions", "permissions", .permissions >> Permissions.View.root >> App.map PermissionsMsg )
     ]
