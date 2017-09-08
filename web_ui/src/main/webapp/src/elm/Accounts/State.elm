@@ -8,52 +8,42 @@ module Accounts.State
         , dialog
         )
 
-import Set
-import Dict exposing (Dict)
-import Dict.Extra
+import Account.Service
 import Array
-import Maybe
-import String
-import Platform.Cmd exposing (Cmd)
-import List.Extra
-import Http
-import Exts.Maybe exposing (catMaybes)
-import Material
-import Utils exposing (error, checkAll)
-import Model
-import Account.Service
-import Role.Service
-import Config exposing (Config)
-import Material
-import Set exposing (Set)
-import Dict exposing (Dict)
 import Array exposing (Array)
-import Maybe
-import Model
-import Account.Service
-import Role.Service
 import Auth
 import Config exposing (Config)
-import Set as Set
-import Array
 import Dict
-import Html exposing (..)
+import Dict exposing (Dict)
+import Dict.Extra
+import Exts.Maybe exposing (catMaybes)
 import Html.Attributes exposing (title, class, action, attribute, colspan)
 import Html.Events exposing (on)
+import Html exposing (Html, div, span, h4, text)
+import Http
 import Json.Decode as Decode
-import Material
-import Material.Options as Options exposing (Style, cs, nop, disabled, css)
-import Material.Dialog as Dialog
-import Material.Table as Table
-import Material.Button as Button
-import Material.Icon as Icon
-import Material.Toggles as Toggles
-import Material.Textfield as Textfield
-import Material.Grid as Grid
-import Material.Chip as Chip
-import Utils exposing (..)
-import Model
 import Listbox exposing (listbox, onSelectedChanged, items, initiallySelected)
+import List.Extra
+import Material
+import Material.Button as Button
+import Material.Chip as Chip
+import Material.Dialog as Dialog
+import Material.Grid as Grid
+import Material.Icon as Icon
+import Material.Options as Options exposing (Style, cs, nop, disabled, css)
+import Material.Table as Table
+import Material.Textfield as Textfield
+import Material.Toggles as Toggles
+import Maybe
+import Model
+import Platform.Cmd exposing (Cmd)
+import Role.Service
+import Set
+import Set as Set
+import Set exposing (Set)
+import String
+import Utils exposing (..)
+import Utils exposing (error, checkAll)
 import ViewUtils
 
 
