@@ -26,8 +26,6 @@ import OutMessage
 import Permissions.State
 import Platform.Cmd exposing (..)
 import Roles.State
-import Roles.Types
-import Roles.View
 import Utils exposing (..)
 import ViewUtils
 import Welcome.Welcome
@@ -38,7 +36,7 @@ type alias Model =
     , auth : AuthController.Model
     , mdl : Material.Model
     , accounts : Accounts.State.Model
-    , roles : Roles.Types.Model
+    , roles : Roles.State.Model
     , permissions : Permissions.State.Model
     , layout : Layout.State.Model
     , menus : Menu.State.Model
@@ -56,7 +54,7 @@ type Msg
     | SelectLocation String
     | WelcomeMsg Welcome.Welcome.Msg
     | AccountsMsg Accounts.State.Msg
-    | RolesMsg Roles.Types.Msg
+    | RolesMsg Roles.State.Msg
     | PermissionsMsg Permissions.State.Msg
     | LayoutMsg Layout.State.Msg
     | MenusMsg Menu.State.Msg
@@ -212,7 +210,7 @@ selectLocation model location =
                         Utils.message (AccountsMsg Accounts.State.Init) |> Just
 
                     "roles" ->
-                        Utils.message (RolesMsg Roles.Types.Init) |> Just
+                        Utils.message (RolesMsg Roles.State.Init) |> Just
 
                     "permissions" ->
                         Utils.message (PermissionsMsg Permissions.State.Init) |> Just
@@ -310,7 +308,7 @@ framing model contents =
                 App.map AccountsMsg (Accounts.State.dialog model.accounts)
 
             Just ( "Roles", _, _ ) ->
-                App.map RolesMsg (Roles.View.dialog model.roles)
+                App.map RolesMsg (Roles.State.dialog model.roles)
 
             Just ( "Permissions", _, _ ) ->
                 App.map PermissionsMsg (Permissions.State.dialog model.permissions)
@@ -426,7 +424,7 @@ notPermittedView =
 tabs : List ( String, String, Model -> Html Msg )
 tabs =
     [ ( "Accounts", "accounts", .accounts >> Accounts.State.root >> App.map AccountsMsg )
-    , ( "Roles", "roles", .roles >> Roles.View.root >> App.map RolesMsg )
+    , ( "Roles", "roles", .roles >> Roles.State.root >> App.map RolesMsg )
     , ( "Permissions", "permissions", .permissions >> Permissions.State.root >> App.map PermissionsMsg )
     ]
 
