@@ -313,6 +313,12 @@
             </dependency>
 
             <dependency>
+                <groupId>com.thesett.codegens</groupId>
+                <artifactId>codegens-elm</artifactId>
+                <version>${codegens.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>com.xeiam</groupId>
                 <artifactId>sundial</artifactId>
                 <version>${sundial.version}</version>
