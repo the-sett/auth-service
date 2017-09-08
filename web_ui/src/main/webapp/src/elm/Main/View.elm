@@ -13,7 +13,7 @@ import Material.Typography as Typography
 import Material.Button as Button
 import Utils exposing (..)
 import ViewUtils
-import Layout.Types
+import Layout.State
 import Accounts.State
 import Roles.View
 import Permissions.View
@@ -58,16 +58,16 @@ layoutOptions model =
     , Layout.fixedDrawer |> Options.when model.layout.fixedDrawer
     , Layout.fixedTabs |> Options.when model.layout.fixedTabs
     , (case model.layout.header of
-        Layout.Types.Waterfall x ->
+        Layout.State.Waterfall x ->
             Layout.waterfall x
 
-        Layout.Types.Seamed ->
+        Layout.State.Seamed ->
             Layout.seamed
 
-        Layout.Types.Standard ->
+        Layout.State.Standard ->
             Options.nop
 
-        Layout.Types.Scrolling ->
+        Layout.State.Scrolling ->
             Layout.scrolling
       )
         |> Options.when model.layout.withHeader

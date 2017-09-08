@@ -2,7 +2,7 @@ module Main.Types exposing (..)
 
 import Material
 import Welcome.Welcome
-import Layout.Types
+import Layout.State
 import Menu.Types
 import Accounts.State
 import Roles.Types
@@ -18,7 +18,7 @@ type alias Model =
     , accounts : Accounts.State.Model
     , roles : Roles.Types.Model
     , permissions : Permissions.Types.Model
-    , layout : Layout.Types.Model
+    , layout : Layout.State.Model
     , menus : Menu.Types.Model
     , selectedTab : Int
     , transparentHeader : Bool
@@ -36,7 +36,7 @@ type Msg
     | AccountsMsg Accounts.State.Msg
     | RolesMsg Roles.Types.Msg
     | PermissionsMsg Permissions.Types.Msg
-    | LayoutMsg Layout.Types.Msg
+    | LayoutMsg Layout.State.Msg
     | MenusMsg Menu.Types.Msg
     | ToggleHeader
     | ToggleDebug
