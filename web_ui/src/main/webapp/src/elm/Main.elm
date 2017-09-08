@@ -6,10 +6,8 @@ import Navigation
 import RouteUrl as Routing
 import Material.Layout as Layout
 import Material.Menu as Menu
+import Main.State
 import Menu.Types
-import Main.Types exposing (..)
-import Main.State exposing (..)
-import Main.View exposing (..)
 import AuthController
 import Auth
 import Config exposing (config)
@@ -20,28 +18,28 @@ log =
     Debug.log "top"
 
 
-main : Routing.RouteUrlProgram Never Model Msg
+main : Routing.RouteUrlProgram Never Main.State.Model Main.State.Msg
 main =
     Routing.program
         { delta2url = delta2url
         , location2messages = location2messages
         , init = init_
-        , view = \model -> view (AuthController.extractAuthState model.auth) model
+        , view = \model -> Main.State.view (AuthController.extractAuthState model.auth) model
         , subscriptions =
             \init ->
                 Sub.batch
-                    [ Sub.map MenusMsg (Menu.subs Menu.Types.Mdl init.menus.mdl)
-                    , Layout.subs Mdl init.mdl
+                    [ Sub.map Main.State.MenusMsg (Menu.subs Menu.Types.Mdl init.menus.mdl)
+                    , Layout.subs Main.State.Mdl init.mdl
                     ]
-        , update = update
+        , update = Main.State.update
         }
 
 
-init_ : ( Model, Cmd Msg )
+init_ : ( Main.State.Model, Cmd Main.State.Msg )
 init_ =
-    ( init config
+    ( Main.State.init config
     , Cmd.batch
-        [ Layout.sub0 Mdl
+        [ Layout.sub0 Main.State.Mdl
 
         --, Auth.refresh
         ]
@@ -52,12 +50,12 @@ init_ =
 -- ROUTING
 
 
-urlOf : Model -> String
+urlOf : Main.State.Model -> String
 urlOf model =
-    "#" ++ (Array.get model.selectedTab tabUrls |> Maybe.withDefault "")
+    "#" ++ (Array.get model.selectedTab Main.State.tabUrls |> Maybe.withDefault "")
 
 
-delta2url : Model -> Model -> Maybe Routing.UrlChange
+delta2url : Main.State.Model -> Main.State.Model -> Maybe Routing.UrlChange
 delta2url model1 model2 =
     if model1.selectedTab /= model2.selectedTab then
         { entry = Routing.NewEntry
@@ -68,6 +66,6 @@ delta2url model1 model2 =
         Nothing
 
 
-location2messages : Navigation.Location -> List Msg
+location2messages : Navigation.Location -> List Main.State.Msg
 location2messages location =
-    [ String.dropLeft 1 location.hash |> SelectLocation ]
+    [ String.dropLeft 1 location.hash |> Main.State.SelectLocation ]

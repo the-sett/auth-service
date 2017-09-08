@@ -1,29 +1,71 @@
-module Main.State exposing (init, update)
+module Main.State exposing (Model, Msg(..), init, update, view, tabUrls)
 
+import Accounts.State
 import Array exposing (Array)
+import Auth
+import AuthController
+import Config exposing (Config)
 import Dict exposing (Dict)
-import Navigation
-import Maybe exposing (Maybe)
 import Exts.Maybe exposing (catMaybes)
-import Platform.Cmd exposing (..)
+import Html as App
+import Html.Attributes exposing (href, class, style, id)
+import Html exposing (..)
+import Html.Lazy
+import Layout.State
 import Material
+import Material.Button as Button
 import Material.Helpers exposing (pure, lift, lift_)
 import Material.Layout as Layout
-import Utils exposing (..)
-import Welcome.Welcome
-import AuthController
-import Auth
-import Layout.State
+import Material.Options as Options exposing (css)
+import Material.Toggles as Toggles
+import Material.Typography as Typography
+import Maybe exposing (Maybe)
 import Menu.State
-import Accounts.State
-import Roles.State
-import Roles.Types
+import Menu.Types
+import Navigation
+import OutMessage
 import Permissions.State
 import Permissions.Types
-import Main.Types exposing (..)
-import Main.View
-import Config exposing (Config)
-import OutMessage
+import Permissions.View
+import Platform.Cmd exposing (..)
+import Roles.State
+import Roles.Types
+import Roles.View
+import Utils exposing (..)
+import ViewUtils
+import Welcome.Welcome
+
+
+type alias Model =
+    { welcome : Welcome.Welcome.Model
+    , auth : AuthController.Model
+    , mdl : Material.Model
+    , accounts : Accounts.State.Model
+    , roles : Roles.Types.Model
+    , permissions : Permissions.Types.Model
+    , layout : Layout.State.Model
+    , menus : Menu.Types.Model
+    , selectedTab : Int
+    , transparentHeader : Bool
+    , debugStylesheet : Bool
+    }
+
+
+type Msg
+    = Mdl (Material.Msg Msg)
+    | AuthCmdMsg Auth.AuthCmd
+    | AuthMsg AuthController.Msg
+    | SelectTab Int
+    | SelectLocation String
+    | WelcomeMsg Welcome.Welcome.Msg
+    | AccountsMsg Accounts.State.Msg
+    | RolesMsg Roles.Types.Msg
+    | PermissionsMsg Permissions.Types.Msg
+    | LayoutMsg Layout.State.Msg
+    | MenusMsg Menu.Types.Msg
+    | ToggleHeader
+    | ToggleDebug
+    | LogOut
 
 
 init : Config -> Model
@@ -110,7 +152,7 @@ update_ action model =
 
 urlOfTab : Int -> String
 urlOfTab tabNo =
-    "#" ++ (Array.get tabNo Main.View.tabUrls |> Maybe.withDefault "")
+    "#" ++ (Array.get tabNo tabUrls |> Maybe.withDefault "")
 
 
 
@@ -161,7 +203,7 @@ selectLocation model location =
 
         -- Choses which tab is currently active.
         tabNo =
-            Dict.get location Main.View.urlTabs
+            Dict.get location urlTabs
                 |> Maybe.withDefault -1
 
         -- Maybe a command to trigger the _Init_ event when navigating to a location
@@ -188,3 +230,237 @@ selectLocation model location =
             { jumpToWelcomeModel | selectedTab = tabNo }
     in
         ( selectTabModel, Cmd.batch (catMaybes [ jumpToWelcomeCmd, initCmd ]) )
+
+
+
+-- Views
+
+
+view : Auth.AuthState -> Model -> Html Msg
+view =
+    Html.Lazy.lazy2 view_
+
+
+view_ : Auth.AuthState -> Model -> Html Msg
+view_ authState model =
+    let
+        authenticated =
+            Auth.isLoggedIn authState
+
+        logonAttempted =
+            AuthController.logonAttempted model.auth
+
+        hasPermission =
+            Auth.hasPermission "auth-admin" authState
+    in
+        if authenticated && hasPermission then
+            app model
+        else if authenticated && not hasPermission then
+            notPermitted model
+        else if not authenticated && logonAttempted then
+            notPermitted model
+        else
+            welcome model
+
+
+layoutOptions : Model -> List (Layout.Property Msg)
+layoutOptions model =
+    [ Layout.selectedTab model.selectedTab
+    , Layout.onSelectTab SelectTab
+    , Layout.fixedHeader |> Options.when model.layout.fixedHeader
+    , Layout.fixedDrawer |> Options.when model.layout.fixedDrawer
+    , Layout.fixedTabs |> Options.when model.layout.fixedTabs
+    , (case model.layout.header of
+        Layout.State.Waterfall x ->
+            Layout.waterfall x
+
+        Layout.State.Seamed ->
+            Layout.seamed
+
+        Layout.State.Standard ->
+            Options.nop
+
+        Layout.State.Scrolling ->
+            Layout.scrolling
+      )
+        |> Options.when model.layout.withHeader
+    , if model.transparentHeader then
+        Layout.transparentHeader
+      else
+        Options.nop
+    ]
+
+
+framing : Model -> Html Msg -> Html Msg
+framing model contents =
+    div []
+        [ if model.debugStylesheet then
+            Html.node "link"
+                [ Html.Attributes.attribute "rel" "stylesheet"
+                , Html.Attributes.attribute "href" "styles/debug.css"
+                ]
+                []
+          else
+            div [] []
+        , contents
+
+        {-
+           Dialogs need to be pulled up here to make the dialog
+           polyfill work on some browsers.
+        -}
+        , case nth model.selectedTab tabs of
+            Just ( "Accounts", _, _ ) ->
+                App.map AccountsMsg (Accounts.State.dialog model.accounts)
+
+            Just ( "Roles", _, _ ) ->
+                App.map RolesMsg (Roles.View.dialog model.roles)
+
+            Just ( "Permissions", _, _ ) ->
+                App.map PermissionsMsg (Permissions.View.dialog model.permissions)
+
+            _ ->
+                div [] []
+        ]
+
+
+appTop : Model -> Html Msg
+appTop model =
+    (Array.get model.selectedTab tabViews |> Maybe.withDefault e404) model
+
+
+app : Model -> Html Msg
+app model =
+    Layout.render Mdl
+        model.mdl
+        (layoutOptions model)
+        { header = header True model
+        , drawer = []
+        , tabs =
+            ( tabTitles
+            , []
+            )
+        , main = [ appTop model ]
+        }
+        |> framing model
+
+
+welcome : Model -> Html Msg
+welcome model =
+    Layout.render Mdl
+        model.mdl
+        (layoutOptions model)
+        { header = header False model
+        , drawer = []
+        , tabs =
+            ( []
+            , []
+            )
+        , main = [ welcomeView model ]
+        }
+        |> framing model
+
+
+notPermitted : Model -> Html Msg
+notPermitted model =
+    Layout.render Mdl
+        model.mdl
+        (layoutOptions model)
+        { header = header False model
+        , drawer = []
+        , tabs =
+            ( []
+            , []
+            )
+        , main = [ notPermittedView model ]
+        }
+        |> framing model
+
+
+header : Bool -> Model -> List (Html Msg)
+header authenticated model =
+    if model.layout.withHeader then
+        [ Layout.row
+            []
+            [ a
+                [ Html.Attributes.id "thesett-logo"
+                , href "http://"
+                ]
+                []
+            , Layout.spacer
+            , if authenticated then
+                div []
+                    [ Button.render Mdl
+                        [ 1, 2 ]
+                        model.mdl
+                        [ Button.colored
+                        , Options.onClick LogOut
+                        ]
+                        [ text "Log Out"
+                        ]
+                    ]
+              else
+                div [] []
+            , div [ id "debug-box" ]
+                [ Toggles.switch Mdl
+                    [ 0 ]
+                    model.mdl
+                    [ Toggles.ripple
+                    , Toggles.value model.debugStylesheet
+                    , Options.onClick ToggleDebug
+                    ]
+                    [ text "Debug Style" ]
+                ]
+            ]
+        ]
+    else
+        []
+
+
+welcomeView : Model -> Html Msg
+welcomeView =
+    .welcome >> Welcome.Welcome.root >> App.map WelcomeMsg
+
+
+notPermittedView : Model -> Html Msg
+notPermittedView =
+    .welcome >> Welcome.Welcome.notPermitted >> App.map WelcomeMsg
+
+
+tabs : List ( String, String, Model -> Html Msg )
+tabs =
+    [ ( "Accounts", "accounts", .accounts >> Accounts.State.root >> App.map AccountsMsg )
+    , ( "Roles", "roles", .roles >> Roles.View.root >> App.map RolesMsg )
+    , ( "Permissions", "permissions", .permissions >> Permissions.View.root >> App.map PermissionsMsg )
+    ]
+
+
+tabTitles : List (Html a)
+tabTitles =
+    List.map (\( x, _, _ ) -> text x) tabs
+
+
+tabViews : Array (Model -> Html Msg)
+tabViews =
+    List.map (\( _, _, v ) -> v) tabs |> Array.fromList
+
+
+tabUrls : Array String
+tabUrls =
+    List.map (\( _, x, _ ) -> x) tabs |> Array.fromList
+
+
+urlTabs : Dict String Int
+urlTabs =
+    List.indexedMap (\idx ( _, x, _ ) -> ( x, idx )) tabs |> Dict.fromList
+
+
+e404 : Model -> Html Msg
+e404 _ =
+    div
+        []
+        [ Options.styled Html.h1
+            [ Options.cs "mdl-typography--display-4"
+            , Typography.center
+            ]
+            [ text "404" ]
+        ]
