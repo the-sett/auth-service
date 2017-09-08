@@ -9,11 +9,13 @@ import Permissions.Types exposing (..)
 import Utils exposing (..)
 import Model
 import Permission.Service
+import Config exposing (Config)
 
 
-init : Model
-init =
+init : Config -> Model
+init config =
     { mdl = Material.model
+    , config = config
     , selected = Dict.empty
     , permissions = Dict.empty
     , permissionName = Nothing
@@ -170,8 +172,8 @@ update action model =
         Init ->
             ( { model | permissionToEdit = None }
             , Cmd.batch
-                [ Permission.Service.invokeFindAll PermissionApi
-                , Permission.Service.invokeFindAll PermissionApi
+                [ Permission.Service.invokeFindAll model.config.apiRoot PermissionApi
+                , Permission.Service.invokeFindAll model.config.apiRoot PermissionApi
                 ]
             )
 
@@ -276,7 +278,7 @@ updateConfirmDelete model =
           }
         , List.map
             (\id ->
-                Permission.Service.invokeDelete PermissionApi id
+                Permission.Service.invokeDelete model.config.apiRoot PermissionApi id
             )
             toDelete
             |> Cmd.batch
@@ -297,12 +299,17 @@ updateSave model =
                         }
             in
                 ( model
-                , Permission.Service.invokeUpdate PermissionApi id modifiedPermission
+                , Permission.Service.invokeUpdate
+                    model.config.apiRoot
+                    PermissionApi
+                    id
+                    modifiedPermission
                 )
 
         New ->
             ( model
-            , Permission.Service.invokeCreate PermissionApi
+            , Permission.Service.invokeCreate model.config.apiRoot
+                PermissionApi
                 (Model.Permission
                     { id = Nothing
                     , name = model.permissionName

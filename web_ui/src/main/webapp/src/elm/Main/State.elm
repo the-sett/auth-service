@@ -37,9 +37,9 @@ init =
             , authApiRoot = config.apiRoot
             }
     , mdl = Layout.setTabsWidth 1384 Material.model
-    , accounts = Accounts.State.init
-    , roles = Roles.State.init
-    , permissions = Permissions.State.init
+    , accounts = Accounts.State.init config
+    , roles = Roles.State.init config
+    , permissions = Permissions.State.init config
     , layout = Layout.State.init
     , menus = Menu.State.init
     , selectedTab = 0

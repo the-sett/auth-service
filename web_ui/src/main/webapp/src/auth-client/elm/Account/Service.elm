@@ -19,43 +19,43 @@ type Msg
     | Delete (Result.Result Http.Error String)
 
 
-invokeFindAll : (Msg -> msg) -> Cmd msg
-invokeFindAll msg =
-    findAllTask
+invokeFindAll : String -> (Msg -> msg) -> Cmd msg
+invokeFindAll root msg =
+    findAllTask root 
         |> Http.send FindAll
         |> Cmd.map msg
 
-invokeFindByExample : (Msg -> msg) -> Model.Account -> Cmd msg
-invokeFindByExample msg example =
-    findByExampleTask example
+invokeFindByExample : String -> (Msg -> msg) -> Model.Account -> Cmd msg
+invokeFindByExample root msg example =
+    findByExampleTask root example
         |> Http.send FindByExample
         |> Cmd.map msg
 
 
-invokeCreate : (Msg -> msg) -> Model.Account -> Cmd msg
-invokeCreate msg model =
-    createTask model
+invokeCreate : String -> (Msg -> msg) -> Model.Account -> Cmd msg
+invokeCreate root msg model =
+    createTask root model
         |> Http.send Create
         |> Cmd.map msg
 
-invokeRetrieve : (Msg -> msg) -> String -> Cmd msg
-invokeRetrieve msg id =
-    retrieveTask id
+invokeRetrieve : String -> (Msg -> msg) -> String -> Cmd msg
+invokeRetrieve root msg id =
+    retrieveTask root id
         |> Http.send Retrieve
         |> Cmd.map msg
 
-invokeUpdate : (Msg -> msg) -> String -> Model.Account -> Cmd msg
-invokeUpdate msg id model =
-    updateTask id model
+invokeUpdate : String -> (Msg -> msg) -> String -> Model.Account -> Cmd msg
+invokeUpdate root msg id model =
+    updateTask root id model
         |> Http.send Update
         |> Cmd.map msg
 
-invokeDelete : (Msg -> msg) -> String -> Cmd msg
-invokeDelete msg id =
+invokeDelete : String -> (Msg -> msg) -> String -> Cmd msg
+invokeDelete root msg id =
     let
        delete result = Delete <| Result.map (\() -> id) result
     in
-     deleteTask id
+     deleteTask root id
         |> Http.send delete
         |> Cmd.map msg
 
@@ -174,47 +174,45 @@ update callbacks action model =
                       (modelGeneral, Cmd.batch [cmdSpecific, cmdGeneral])
             )
 
-api =  "/api/"
-
-routes =
-    { findAll = api ++ "account"
-    , findByExample = api ++ "account/example"
-    , create = api ++ "account"
-    , retrieve = api ++ "account/"
-    , update = api ++ "account/"
-    , delete = api ++ "account/"
+routes root =
+    { findAll = root ++ "account"
+    , findByExample = root ++ "account/example"
+    , create = root ++ "account"
+    , retrieve = root ++ "account/"
+    , update = root ++ "account/"
+    , delete = root ++ "account/"
     }
 
-findAllTask : Http.Request (List Account)
-findAllTask =
+findAllTask : String -> Http.Request (List Account)
+findAllTask root =
     Http.request
     { method = "GET"
     , headers = []
-    , url = routes.findAll
+    , url = routes root |> .findAll
     , body = Http.emptyBody
     , expect = Http.expectJson (Decode.list accountDecoder)
     , timeout = Nothing
     , withCredentials = False
     }
 
-findByExampleTask : Account -> Http.Request (List Account)
-findByExampleTask model =
+findByExampleTask : String -> Account -> Http.Request (List Account)
+findByExampleTask root model =
     Http.request
     { method = "POST"
     , headers = []
-    , url = routes.findByExample
+    , url = routes root |> .findByExample
     , body = Http.jsonBody <| accountEncoder model
     , expect = Http.expectJson (Decode.list accountDecoder)
     , timeout = Nothing
     , withCredentials = False
     }
 
-createTask : Account -> Http.Request Account
-createTask model =
+createTask : String -> Account -> Http.Request Account
+createTask root model =
     Http.request
     { method = "POST"
     , headers = []
-    , url = routes.create
+    , url = routes root |> .create
     , body = Http.jsonBody <| accountEncoder model
     , expect = Http.expectJson accountDecoder
     , timeout = Nothing
@@ -222,12 +220,12 @@ createTask model =
     }
 
 
-retrieveTask : String -> Http.Request Account
-retrieveTask id =
+retrieveTask : String -> String -> Http.Request Account
+retrieveTask root id =
     Http.request
     { method = "GET"
     , headers = []
-    , url = routes.retrieve ++ id
+    , url = (routes root |> .retrieve) ++ id
     , body = Http.emptyBody
     , expect = Http.expectJson accountDecoder
     , timeout = Nothing
@@ -235,12 +233,12 @@ retrieveTask id =
     }
 
 
-updateTask : String -> Account -> Http.Request Account
-updateTask id model =
+updateTask : String -> String -> Account -> Http.Request Account
+updateTask root id model =
     Http.request
-    { method = "POST"
+    { method = "PUT"
     , headers = []
-    , url = routes.update ++ id
+    , url = (routes root |> .update) ++ id
     , body = Http.jsonBody <| accountEncoder model
     , expect = Http.expectJson accountDecoder
     , timeout = Nothing
@@ -248,12 +246,12 @@ updateTask id model =
     }
 
 
-deleteTask : String -> Http.Request ()
-deleteTask id =
+deleteTask : String -> String -> Http.Request ()
+deleteTask root id =
     Http.request
    { method = "DELETE"
    , headers = []
-   , url = routes.delete ++ id
+   , url = (routes root |> .delete) ++ id
    , body = Http.emptyBody
    , expect = Http.expectStringResponse (\_ -> Ok ())
    , timeout = Nothing

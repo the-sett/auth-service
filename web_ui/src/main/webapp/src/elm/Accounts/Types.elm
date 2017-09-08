@@ -9,6 +9,7 @@ import Model
 import Account.Service
 import Role.Service
 import Auth
+import Config exposing (Config)
 
 
 type ViewState
@@ -19,6 +20,7 @@ type ViewState
 
 type alias Model =
     { mdl : Material.Model
+    , config : Config
     , selected : Dict String Model.Account
     , accounts : Dict String Model.Account
     , accountToEdit : Maybe Model.Account

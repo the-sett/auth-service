@@ -19,43 +19,43 @@ type Msg
     | Delete (Result.Result Http.Error String)
 
 
-invokeFindAll : (Msg -> msg) -> Cmd msg
-invokeFindAll msg =
-    findAllTask
+invokeFindAll : String -> (Msg -> msg) -> Cmd msg
+invokeFindAll root msg =
+    findAllTask root 
         |> Http.send FindAll
         |> Cmd.map msg
 
-invokeFindByExample : (Msg -> msg) -> Model.Role -> Cmd msg
-invokeFindByExample msg example =
-    findByExampleTask example
+invokeFindByExample : String -> (Msg -> msg) -> Model.Role -> Cmd msg
+invokeFindByExample root msg example =
+    findByExampleTask root example
         |> Http.send FindByExample
         |> Cmd.map msg
 
 
-invokeCreate : (Msg -> msg) -> Model.Role -> Cmd msg
-invokeCreate msg model =
-    createTask model
+invokeCreate : String -> (Msg -> msg) -> Model.Role -> Cmd msg
+invokeCreate root msg model =
+    createTask root model
         |> Http.send Create
         |> Cmd.map msg
 
-invokeRetrieve : (Msg -> msg) -> String -> Cmd msg
-invokeRetrieve msg id =
-    retrieveTask id
+invokeRetrieve : String -> (Msg -> msg) -> String -> Cmd msg
+invokeRetrieve root msg id =
+    retrieveTask root id
         |> Http.send Retrieve
         |> Cmd.map msg
 
-invokeUpdate : (Msg -> msg) -> String -> Model.Role -> Cmd msg
-invokeUpdate msg id model =
-    updateTask id model
+invokeUpdate : String -> (Msg -> msg) -> String -> Model.Role -> Cmd msg
+invokeUpdate root msg id model =
+    updateTask root id model
         |> Http.send Update
         |> Cmd.map msg
 
-invokeDelete : (Msg -> msg) -> String -> Cmd msg
-invokeDelete msg id =
+invokeDelete : String -> (Msg -> msg) -> String -> Cmd msg
+invokeDelete root msg id =
     let
        delete result = Delete <| Result.map (\() -> id) result
     in
-     deleteTask id
+     deleteTask root id
         |> Http.send delete
         |> Cmd.map msg
 
@@ -174,47 +174,45 @@ update callbacks action model =
                       (modelGeneral, Cmd.batch [cmdSpecific, cmdGeneral])
             )
 
-api =  "/api/"
-
-routes =
-    { findAll = api ++ "role"
-    , findByExample = api ++ "role/example"
-    , create = api ++ "role"
-    , retrieve = api ++ "role/"
-    , update = api ++ "role/"
-    , delete = api ++ "role/"
+routes root =
+    { findAll = root ++ "role"
+    , findByExample = root ++ "role/example"
+    , create = root ++ "role"
+    , retrieve = root ++ "role/"
+    , update = root ++ "role/"
+    , delete = root ++ "role/"
     }
 
-findAllTask : Http.Request (List Role)
-findAllTask =
+findAllTask : String -> Http.Request (List Role)
+findAllTask root =
     Http.request
     { method = "GET"
     , headers = []
-    , url = routes.findAll
+    , url = routes root |> .findAll
     , body = Http.emptyBody
     , expect = Http.expectJson (Decode.list roleDecoder)
     , timeout = Nothing
     , withCredentials = False
     }
 
-findByExampleTask : Role -> Http.Request (List Role)
-findByExampleTask model =
+findByExampleTask : String -> Role -> Http.Request (List Role)
+findByExampleTask root model =
     Http.request
     { method = "POST"
     , headers = []
-    , url = routes.findByExample
+    , url = routes root |> .findByExample
     , body = Http.jsonBody <| roleEncoder model
     , expect = Http.expectJson (Decode.list roleDecoder)
     , timeout = Nothing
     , withCredentials = False
     }
 
-createTask : Role -> Http.Request Role
-createTask model =
+createTask : String -> Role -> Http.Request Role
+createTask root model =
     Http.request
     { method = "POST"
     , headers = []
-    , url = routes.create
+    , url = routes root |> .create
     , body = Http.jsonBody <| roleEncoder model
     , expect = Http.expectJson roleDecoder
     , timeout = Nothing
@@ -222,12 +220,12 @@ createTask model =
     }
 
 
-retrieveTask : String -> Http.Request Role
-retrieveTask id =
+retrieveTask : String -> String -> Http.Request Role
+retrieveTask root id =
     Http.request
     { method = "GET"
     , headers = []
-    , url = routes.retrieve ++ id
+    , url = (routes root |> .retrieve) ++ id
     , body = Http.emptyBody
     , expect = Http.expectJson roleDecoder
     , timeout = Nothing
@@ -235,12 +233,12 @@ retrieveTask id =
     }
 
 
-updateTask : String -> Role -> Http.Request Role
-updateTask id model =
+updateTask : String -> String -> Role -> Http.Request Role
+updateTask root id model =
     Http.request
     { method = "PUT"
     , headers = []
-    , url = routes.update ++ id
+    , url = (routes root |> .update) ++ id
     , body = Http.jsonBody <| roleEncoder model
     , expect = Http.expectJson roleDecoder
     , timeout = Nothing
@@ -248,12 +246,12 @@ updateTask id model =
     }
 
 
-deleteTask : String -> Http.Request ()
-deleteTask id =
+deleteTask : String -> String -> Http.Request ()
+deleteTask root id =
     Http.request
    { method = "DELETE"
    , headers = []
-   , url = routes.delete ++ id
+   , url = (routes root |> .delete) ++ id
    , body = Http.emptyBody
    , expect = Http.expectStringResponse (\_ -> Ok ())
    , timeout = Nothing

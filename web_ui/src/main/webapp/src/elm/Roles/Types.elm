@@ -7,6 +7,7 @@ import Model
 import Role.Service
 import Permission.Service
 import Auth
+import Config exposing (Config)
 
 
 type ItemToEdit
@@ -17,6 +18,7 @@ type ItemToEdit
 
 type alias Model =
     { mdl : Material.Model
+    , config : Config
     , selected : Dict String Model.Role
     , roles : Dict String Model.Role
     , roleName : Maybe String

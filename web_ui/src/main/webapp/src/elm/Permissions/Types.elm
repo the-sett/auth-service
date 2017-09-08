@@ -6,6 +6,7 @@ import Maybe
 import Model
 import Permission.Service
 import Auth
+import Config exposing (Config)
 
 
 type ItemToEdit
@@ -16,6 +17,7 @@ type ItemToEdit
 
 type alias Model =
     { mdl : Material.Model
+    , config : Config
     , selected : Dict String Model.Permission
     , permissions : Dict String Model.Permission
     , permissionName : Maybe String

@@ -28,6 +28,12 @@
                         <artifactId>jenerator_custom</artifactId>
                         <version>${jenerator.utils.version}</version>
                     </dependency>
+
+                    <dependency>
+                        <groupId>com.thesett.codegens</groupId>
+                        <artifactId>codegens-elm</artifactId>
+                        <version>${codegens.version}</version>
+                    </dependency>
                 </dependencies>
 
                 <groupId>com.thesett</groupId>
@@ -56,6 +62,15 @@
                                         <viewImplementations>false</viewImplementations>
                                     </config>
                                 </generator>
+
+                                <!--
+                                <generator>
+                                    <config>
+                                        <type>com.thesett.jenerator.ElmRESTServiceGenerator</type>
+                                        <outputDir>${topdir}/web_ui/src/main/webapp/src/auth-client/elm</outputDir>
+                                    </config>
+                                </generator>
+                                -->
 
                                 <generator>
                                     <config>
@@ -97,7 +112,7 @@
                                         <apiOutputDir>${topdir}/data_access_api/src/generated/java</apiOutputDir>
                                     </config>
                                 </generator>
-                                
+
                                 <generator>
                                     <config>
                                         <type>com.thesett.catalogue.generator.HibernateGenerator</type>
@@ -126,7 +141,7 @@
                                     </config>
                                 </generator>
                                 -->
-                                
+
                                 <generator>
                                     <config>
                                         <type>com.thesett.jenerator.TestStackGenerator</type>

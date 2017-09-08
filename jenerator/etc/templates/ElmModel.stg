@@ -1,0 +1,447 @@
+import "ElmCommon.stg"
+
+componentDocsTypeMap ::= [
+    "ViewTypeImpl":"docsNone",
+    default:"docsComponent"
+]
+        
+component_docs(catalogue, comp) ::= <<
+<(componentDocsTypeMap.(comp.class.simpleName))(comp)>
+>>
+
+docsNone(comp) ::= << >>
+
+docsComponent(comp) ::= <<
+@docs <comp.name; format="ccu">, <comp.name; format="cc">Encoder, <comp.name; format="cc">Decoder
+>>
+                
+/*
+ * Creates the opening section of an output file, if one is required.
+ */
+file_open(catalogue, package) ::= <<
+module Model exposing(..)
+
+{-|
+<catalogue.allEnumTypes:{it|@docs <it.name; format="ccu">, <it.name; format="cc">Encoder, <it.name; format="cc">Decoder}; separator="\n">
+        
+<catalogue.allComponentTypes:{it|<component_docs(catalogue, it)>}; separator="\n">
+
+<catalogue.allViewTypes:{it|<if(it.descendants)>@docs <it.name; format="ccu">, <it.name; format="cc">Encoder, <it.name; format="cc">Decoder<endif>}; separator="\n">        
+-}
+
+import Set exposing (Set)
+import Dict exposing (Dict)
+import Json.Decode as Decode exposing (..)
+import Json.Decode.Extra exposing ((|:), withDefault)
+import Json.Encode as Encode exposing (..)
+import Exts.Maybe exposing (catMaybes)
+
+>>
+
+/*
+ * Generates the output for a bean in the specified catalogue.
+ */
+for_bean(catalogue, package, decorator, fields, extraFields) ::= <<
+<if(decorator.entitySubType)>
+<model_component(catalogue=catalogue, package=package, decorator=decorator,
+    name=decorator.name, fields=fields, typeMap=componentBeanTypeMap, id_fields=true)>
+<elseif(decorator.view)>
+<view_component(catalogue=catalogue, package=package, decorator=decorator,
+    name=decorator.name, fields=fields, typeMap=componentBeanTypeMap)>
+<elseif(decorator.componentSubType)>
+<model_component(catalogue=catalogue, package=package, decorator=decorator,
+    name=decorator.name, fields=fields, typeMap=componentBeanTypeMap)>
+<elseif(decorator.enumerationType)>
+<model_component(catalogue=catalogue, package=package, decorator=decorator,
+    name=decorator.name, fields=fields, typeMap=componentBeanTypeMap, id_fields=true)>
+<endif>
+>>
+
+/*
+ * Creates the closing section of an output file, if one is required.
+ */
+file_close() ::= <<
+>>
+
+view_component(catalogue, package, decorator, name, fields, typeMap, id_fields=false) ::= <<
+
+<if(decorator.descendants)>
+{-|
+Describes the <name; format="ccu"> view type.
+-}
+type <name; format="ccu"> =
+    <decorator.descendants:{it|<it.name; format="ccu">As<name; format="ccu"> <it.name; format="ccu">}; separator="\n| ">
+
+{-|
+A JSON encoder for the <name; format="ccu"> type.
+-}
+<name; format="cc">Encoder : <name; format="ccu"> -> Encode.Value
+<name; format="cc">Encoder model =
+  case model of
+    <decorator.descendants:{it|<it.name; format="ccu">As<name; format="ccu"> <it.name; format="cc"> -> <it.name; format="cc">Encoder <it.name; format="cc">}; separator="\n">
+
+{-|
+A JSON decoder for the <name; format="ccu"> type.
+-}
+<name; format="cc">Decoder : Decoder <name; format="ccu">
+<name; format="cc">Decoder =
+  let
+    to<name; format="ccu"> typeName =
+      case typeName of
+        <decorator.descendants:{it|"<it.name; format="ccu">" -> map <it.name; format="ccu">As<name; format="ccu"> <it.name; format="cc">Decoder}; separator="\n">
+        _ -> Decode.fail ("unknown type: " ++ typeName)
+  in
+    field "@type" Decode.string
+      |> andThen to<name; format="ccu">
+
+
+<endif>
+>>
+
+model_component(catalogue, package, decorator, name, fields, typeMap, id_fields=false) ::= <<
+
+{-|
+Describes the <name; format="ccu"> component type.
+-}
+type <name; format="ccu"> =
+    <name; format="ccu">
+    {
+    <fields.keys:{it|<if(decorator.propertyPresentAsAliases.(it))><field_with_type(decorator.propertyPresentAsAliases.(it), fields.(it), decorator.optionalProperties.(it))><else><field_with_type(it, fields.(it), decorator.optionalProperties.(it))><endif>}; separator="\n, ">
+    <if(id_fields)>, id : Maybe String<endif>
+    }
+
+
+{-|
+A JSON encoder for the <name; format="ccu"> type.
+-}        
+<name; format="cc">Encoder : <name; format="ccu"> -> Encode.Value
+<name; format="cc">Encoder (<name; format="ccu"> model) =
+        [
+        <if(decorator.immediateAncestors)>Just ( "@type", Encode.string "<name; format="ccu">" ),<endif>
+        <fields.keys:{it|<if(decorator.propertyPresentAsAliases.(it))><encode_field(decorator.propertyPresentAsAliases.(it), fields.(it), decorator.optionalProperties.(it))><else><encode_field(it, fields.(it), decorator.optionalProperties.(it))><endif>}; separator="\n, ">
+        <if(id_fields)>, Maybe.map (\id -> ( "id", Encode.string id )) model.id<endif>
+        ]
+          |> catMaybes
+          |> Encode.object
+
+{-|
+A JSON decoder for the <name; format="ccu"> type.
+-}        
+<name; format="cc">Decoder : Decoder <name; format="ccu">
+<name; format="cc">Decoder =
+    (Decode.succeed
+        (\\<fields_as_args(fields, decorator)><if(id_fields)> id<endif> ->
+            <name; format="ccu">
+                {
+                <fields_as_model_value(fields, decorator)>
+                <if(id_fields)>, id = id<endif>
+                }
+        )
+    )
+        <fields.keys:{it|<if(decorator.propertyPresentAsAliases.(it))><decode_field(decorator.propertyPresentAsAliases.(it), fields.(it), decorator.optionalProperties.(it))><else><decode_field(it, fields.(it), decorator.optionalProperties.(it))><endif>}; separator="\n">
+        <if(id_fields)>|: Decode.maybe (field "id" Decode.int |> Decode.map toString)<endif>
+
+
+>>
+
+field_present_as(field, decorator) ::= <<
+<if(decorator.propertyPresentAsAliases.(field))><\\>
+<decorator.propertyPresentAsAliases.(it)><\\>
+<else><\\>
+<field><\\>
+<endif>
+>>
+
+fields_as_args(fields, decorator) ::= <<
+<fields.keys:{it|<field_present_as(it, decorator)>}; separator=" ">
+>>
+
+fields_as_model_value(fields, decorator) ::= <<
+<fields.keys:{it|<field_present_as(it, decorator)> = <field_present_as(it, decorator)>}; separator="\n,">
+>>
+
+/*
+ * Creates the Elm type definition of a field.
+ */
+field_with_type(name, decorator, optional) ::= <<
+<name; format="cc"> : <field_type(decorator, optional)>
+>>
+
+field_type(decorator, optional) ::= "<is_reference(decorator, is_optional(optional, maybe_brace()))><non_reference(decorator, is_optional(optional, maybe()))><(typeMap.(decorator.kind))(decorator)><is_reference(decorator, is_optional(optional, close_brace()))>"
+
+maybe() ::= "Maybe "
+
+maybe_brace() ::= "Maybe ("
+
+close_brace() ::= ")"
+
+/*
+ * Renders the template iff the optional flag is set.
+ */
+is_optional(optional, template) ::= <<
+<if(optional)><\\>
+<template><\\>
+<endif>
+>>
+
+/*
+ * Renders the template iff the decorator describes an entity or collection
+ * of entities by reference.
+ */
+is_reference(decorator, template) ::= <<
+<if(decorator.entitySubType)><\\>
+<template><\\>
+<elseif(decorator.collection)><\\>
+<template><\\>
+<endif>
+>>
+
+/*
+ * Renders the template iff the decorator does not describe an entity or
+ * collection of entities by reference.
+ */
+non_reference(decorator, template) ::= <<
+<if(decorator.entitySubType)><\\>
+<elseif(decorator.collection)><\\>
+<else><\\>
+<template><\\>
+<endif>
+>>
+
+/* =============== Encoders */
+
+/*
+ * Holds a mapping from kinds of catalogue fields to templates for generating
+ * Elm Encoder functions for them.
+ */
+encoderKindMap ::= [
+    "Component":"encode_object",
+    "Entity":"encode_object",
+    "Dimension":"encode_object",
+    "View":"encode_object",
+    "Fact":"encode_object",
+    "Collection":"encode_collection",
+    "Enumeration":"encode_enum",
+    "String":"encode_string",
+    "DateOnly":"encode_string",
+    "TimeOnly":"encode_string",
+    "Timestamp":"encode_string",
+    "BigDecimal":"encode_string",
+    default:"encode_primitive"
+]
+
+/*
+ * Holds a mapping from primitive field types to templates for generating
+ * Elm Encoder functions for them.
+ */
+encoderPrimitiveMap ::= [
+    "Boolean":"encode_bool",
+    "Char":"encode_string",
+    "Short":"encode_int",
+    "Int":"encode_int",
+    "Long":"encode_int",
+    "Float":"encode_float",
+    "Double":"encode_float"
+]
+
+/*
+ * Holds a mapping from kinds of collection to templates for generating
+ * Elm Encoder functions for them.
+ */
+encoderCollectionMap ::= [
+    "Set":"encode_set",
+    "List":"encode_list",
+    "Bag":"encode_dict",
+    "Map":"encode_dict"
+]
+
+encode_field(name, decorator, optional) ::= <<
+<(encoderKindMap.(decorator.kind))(name, decorator, optional)>
+>>
+
+encode_object(name, decorator, optional) ::= <<
+<if(optional)><\\>
+Maybe.map (\\<name; format="cc"> -> ( "<name; format="cc">", <decorator.name; format="cc">Encoder <name; format="cc"> )) model.<name; format="cc"><\\>
+<else><\\>
+Just ( "<name; format="cc">", <decorator.name; format="cc">Encoder model.<name; format="cc"> )<\\>
+<endif>
+>>
+
+encode_collection(name, decorator, optional) ::= <<
+<if(decorator.map)><\\>
+<(encoderCollectionMap.(decorator.collectionKind))()><\\>
+<else><\\>
+<(encoderCollectionMap.(decorator.collectionKind))(name, decorator, optional)><\\>
+<endif>
+>>
+
+encode_string(name, decorator, optional) ::= <<
+<if(optional)><\\>
+Maybe.map (\\<name; format="cc"> -> ( "<name; format="cc">", Encode.string <name; format="cc"> )) model.<name; format="cc"><\\>
+<else><\\>
+Just ( "<name; format="cc">", Encode.string model.<name; format="cc"> )<\\>
+<endif>
+>>
+
+encode_primitive(name, decorator, optional) ::= <<
+<(encoderPrimitiveMap.(decorator.primitiveKind))(name, decorator, optional)>
+>>
+
+encode_bool(name, decorator, optional) ::= <<
+<if(optional)><\\>
+Maybe.map (\\<name; format="cc"> -> ( "<name; format="cc">", Encode.bool <name; format="cc"> )) model.<name; format="cc"><\\>
+<else><\\>
+Just ( "<name; format="cc">", Encode.bool model.<name; format="cc"> )<\\>
+<endif>
+>>
+
+encode_int(name, decorator, optional) ::= <<
+<if(optional)><\\>
+Maybe.map (\\<name; format="cc"> -> ( "<name; format="cc">", Encode.int <name; format="cc"> )) model.<name; format="cc"><\\>
+<else><\\>
+Just ( "<name; format="cc">", Encode.int model.<name; format="cc"> )<\\>
+<endif>
+>>
+
+encode_float(name, decorator, optional) ::= <<
+<if(optional)><\\>
+Maybe.map (\\<name; format="cc"> -> ( "<name; format="cc">", Encode.float <name; format="cc"> )) model.<name; format="cc"><\\>
+<else><\\>
+Just ( "<name; format="cc">", Encode.float model.<name; format="cc"> )<\\>
+<endif>            
+>>
+
+encode_set(name, decorator, optional) ::= <<
+<if(optional)><\\>
+Maybe.map (\\<name; format="cc"> -> ( "<name>", <name> |> List.map <decorator.elementType.name>Encoder |> Encode.list )) model.<name; format="cc"><\\>
+<else><\\>
+Just ( "<name>", <name> |> List.map <decorator.elementType.name>Encoder |> Encode.list )<\\>
+<endif>
+>>
+
+encode_list(name, decorator, optional) ::= <<
+<if(optional)><\\>
+Maybe.map (\\<name; format="cc"> -> ( "<name>", <name> |> List.map <decorator.elementType.name>Encoder |> Encode.list )) model.<name; format="cc"><\\>
+<else><\\>
+Just ( "<name>", <name> |> List.map <decorator.elementType.name>Encoder |> Encode.list )<\\>
+<endif>
+>>
+
+encode_dict(name, decorator, optional) ::= <<
+encode_dict
+>>
+
+encode_enum(name, decorator, optional) ::= <<
+<if(optional)><\\>
+Maybe.map (\\<name; format="cc"> -> ( "<name; format="cc">", <decorator.name; format="cc">Encoder <name; format="cc"> )) model.<name; format="cc"><\\>
+<else><\\>
+Just ( "<name; format="cc">", <decorator.name; format="cc">Encoder <name; format="cc"> )<\\>
+<endif>
+>>
+
+/* =============== Decoders */
+
+/*
+ * Holds a mapping from kinds of catalogue fields to templates for generating
+ * Elm Decoder functions for them.
+ */
+decoderKindMap ::= [
+    "Component":"decode_object",
+    "Entity":"decode_object",
+    "Dimension":"decode_object",
+    "View":"decode_object",
+    "Fact":"decode_object",
+    "Collection":"decode_collection",
+    "Enumeration":"decode_enum",
+    "String":"decode_string",
+    "DateOnly":"decode_string",
+    "TimeOnly":"decode_string",
+    "Timestamp":"decode_string",
+    "BigDecimal":"decode_string",
+    default:"decode_primitive"
+]
+
+/*
+ * Holds a mapping from primitive field types to templates for generating
+ * Elm Decoder functions for them.
+ */
+decoderPrimitiveMap ::= [
+    "Boolean":"decode_bool",
+    "Char":"decode_string",
+    "Short":"decode_int",
+    "Int":"decode_int",
+    "Long":"decode_int",
+    "Float":"decode_float",
+    "Double":"decode_float"
+]
+
+/*
+ * Holds a mapping from kinds of collection to templates for generating
+ * Elm Decoder functions for them.
+ */
+decoderCollectionMap ::= [
+    "Set":"decode_set",
+    "List":"decode_list",
+    "Bag":"decode_dict",
+    "Map":"decode_dict"
+]
+
+decode_field(name, decorator, optional) ::= <<
+<(decoderKindMap.(decorator.kind))(name, decorator, optional)>
+>>
+
+decode_object(name, decorator, optional) ::= <<
+<if(optional)><\\>
+|: Decode.maybe (field "<name; format="cc">" (Decode.lazy (\_ -> <decorator.name; format="cc">Decoder)))<\\>
+<else><\\>
+|: field "<name; format="cc">" (Decode.lazy (\_ -> <decorator.name; format="cc">Decoder))<\\>
+<endif>
+>>
+
+decode_collection(name, decorator, optional) ::= <<
+<if(decorator.map)><\\>
+<(decoderCollectionMap.(decorator.collectionKind))()><\\>
+<else><\\>
+<(decoderCollectionMap.(decorator.collectionKind))(name, decorator, optional)><\\>
+<endif>
+>>
+
+decode_string(name, decorator, optional) ::= <<
+<if(optional)><\\>
+|: Decode.maybe (field "<name; format="cc">" Decode.string)<\\>
+<else><\\>
+|: field "<name; format="cc">" Decode.string<\\>
+<endif>
+>>
+
+decode_primitive(name, decorator, optional) ::= <<
+<(decoderPrimitiveMap.(decorator.primitiveKind))(name, decorator, optional)>
+>>
+
+decode_bool(name, decorator, optional) ::= <<
+|: Decode.maybe (field "<name; format="cc">" Decode.bool)
+>>
+
+decode_int(name, decorator, optional) ::= <<
+|: Decode.maybe (field "<name; format="cc">" Decode.int)
+>>
+
+decode_float(name, decorator, optional) ::= <<
+|: Decode.maybe (field "<name; format="cc">" Decode.float)
+>>
+
+decode_set(name, decorator, optional) ::= <<
+|: ((field "<name; format="cc">" (Decode.maybe (Decode.list (Decode.lazy (\_ -> <decorator.elementType.name>Decoder))))) |> withDefault Nothing)
+>>
+
+decode_list(name, decorator, optional) ::= <<
+|: ((field "<name; format="cc">" (Decode.maybe (Decode.list (Decode.lazy (\_ -> <decorator.elementType.name>Decoder))))) |> withDefault Nothing)
+>>
+
+decode_dict(name, decorator, optional) ::= <<
+decode_dict
+>>
+
+decode_enum(name, decorator, optional) ::= <<
+|: Decode.maybe (field "<name; format="cc">" <decorator.name; format="cc">Decoder)
+>>

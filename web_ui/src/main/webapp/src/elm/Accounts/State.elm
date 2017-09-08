@@ -16,14 +16,16 @@ import Accounts.Types exposing (..)
 import Model
 import Account.Service
 import Role.Service
+import Config exposing (Config)
 
 
 -- Model and its manipulations
 
 
-init : Model
-init =
+init : Config -> Model
+init config =
     { mdl = Material.model
+    , config = config
     , selected = Dict.empty
     , accounts = Dict.empty
     , accountToEdit = Nothing
@@ -363,7 +365,7 @@ updateInit model =
         , accountToEdit = Nothing
         , moreStatus = Set.empty
       }
-    , Account.Service.invokeFindAll AccountApi
+    , Account.Service.invokeFindAll model.config.apiRoot AccountApi
     )
 
 
@@ -407,7 +409,7 @@ updateAdd model =
             resetAccountForm model
     in
         ( { resetModel | viewState = CreateView }
-        , Role.Service.invokeFindAll RoleApi
+        , Role.Service.invokeFindAll model.config.apiRoot RoleApi
         )
 
 
@@ -430,7 +432,7 @@ updateConfirmDelete model =
           }
         , List.map
             (\id ->
-                Account.Service.invokeDelete AccountApi id
+                Account.Service.invokeDelete model.config.apiRoot AccountApi id
             )
             (toDelete)
             |> Cmd.batch
@@ -463,8 +465,8 @@ updateEdit id model =
                         , selectedRoles = selectedRoles
                       }
                     , Cmd.batch
-                        [ Account.Service.invokeRetrieve AccountApi id
-                        , Role.Service.invokeFindAll RoleApi
+                        [ Account.Service.invokeRetrieve model.config.apiRoot AccountApi id
+                        , Role.Service.invokeFindAll model.config.apiRoot RoleApi
                         ]
                     )
 
@@ -472,7 +474,8 @@ updateEdit id model =
 updateCreate : Model -> ( Model, Cmd Msg )
 updateCreate model =
     ( model
-    , Account.Service.invokeCreate AccountApi
+    , Account.Service.invokeCreate model.config.apiRoot
+        AccountApi
         (Model.Account
             { id = Nothing
             , username = model.username
@@ -509,5 +512,9 @@ updateSave model =
                                 }
                     in
                         ( model
-                        , Account.Service.invokeUpdate AccountApi id modifiedAccount
+                        , Account.Service.invokeUpdate
+                            model.config.apiRoot
+                            AccountApi
+                            id
+                            modifiedAccount
                         )

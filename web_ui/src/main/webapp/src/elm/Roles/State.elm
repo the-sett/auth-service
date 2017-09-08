@@ -10,11 +10,13 @@ import Utils exposing (..)
 import Model
 import Role.Service
 import Permission.Service
+import Config exposing (Config)
 
 
-init : Model
-init =
+init : Config -> Model
+init config =
     { mdl = Material.model
+    , config = config
     , selected = Dict.empty
     , roles = Dict.empty
     , roleName = Nothing
@@ -236,8 +238,8 @@ update action model =
         Init ->
             ( { model | roleToEdit = None }
             , Cmd.batch
-                [ Role.Service.invokeFindAll RoleApi
-                , Permission.Service.invokeFindAll PermissionApi
+                [ Role.Service.invokeFindAll model.config.apiRoot RoleApi
+                , Permission.Service.invokeFindAll model.config.apiRoot PermissionApi
                 ]
             )
 
@@ -350,7 +352,7 @@ updateConfirmDelete model =
           }
         , List.map
             (\id ->
-                Role.Service.invokeDelete RoleApi id
+                Role.Service.invokeDelete model.config.apiRoot RoleApi id
             )
             toDelete
             |> Cmd.batch
@@ -372,12 +374,13 @@ updateSave model =
                         }
             in
                 ( model
-                , Role.Service.invokeUpdate RoleApi id modifiedRole
+                , Role.Service.invokeUpdate model.config.apiRoot RoleApi id modifiedRole
                 )
 
         New ->
             ( model
-            , Role.Service.invokeCreate RoleApi
+            , Role.Service.invokeCreate model.config.apiRoot
+                RoleApi
                 (Model.Role
                     { id = Nothing
                     , name = model.roleName
