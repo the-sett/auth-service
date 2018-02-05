@@ -46,7 +46,7 @@ type alias Model =
 
 type Msg
     = Mdl (Material.Msg Msg)
-    | AuthMsg Auth.AuthCmd
+    | AuthMsg Auth.Msg
     | PermissionApi Permission.Service.Msg
     | Init
     | Toggle String

@@ -74,7 +74,7 @@ type alias Model =
 
 type Msg
     = Mdl (Material.Msg Msg)
-    | AuthMsg Auth.AuthCmd
+    | AuthMsg Auth.Msg
     | AccountApi Account.Service.Msg
     | RoleApi Role.Service.Msg
     | Init

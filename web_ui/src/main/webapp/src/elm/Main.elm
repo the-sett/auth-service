@@ -3,7 +3,6 @@ module Main exposing (main)
 import Accounts
 import Array exposing (Array)
 import Auth
-import AuthController
 import Config exposing (config)
 import Config exposing (Config)
 import Dict exposing (Dict)
@@ -36,7 +35,7 @@ import Welcome
 
 type alias Model =
     { welcome : Welcome.Model
-    , auth : AuthController.Model
+    , auth : Auth.Model
     , mdl : Material.Model
     , accounts : Accounts.Model
     , roles : Roles.Model

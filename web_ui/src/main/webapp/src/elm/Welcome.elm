@@ -1,4 +1,4 @@
-module Welcome exposing (init, update, root, notPermitted, Model, Msg, OutMsg(..))
+module Welcome exposing (init, update, root, notPermitted, Model, Msg)
 
 import Platform.Cmd exposing (Cmd)
 import Material
@@ -30,10 +30,6 @@ type Msg
     | UpdatePassword String
 
 
-type OutMsg
-    = AuthMsg Auth.AuthCmd
-
-
 init : Model
 init =
     { mdl = Material.model
@@ -42,7 +38,7 @@ init =
     }
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Maybe OutMsg )
+update : Msg -> Model -> ( Model, Cmd Msg, Cmd Auth.Msg )
 update action model =
     case (Debug.log "welcome" action) of
         Mdl action_ ->
@@ -50,25 +46,25 @@ update action model =
                 ( newModel, cmd ) =
                     Material.update Mdl action_ model
             in
-                ( newModel, cmd, Nothing )
+                ( newModel, cmd, Cmd.none )
 
         GetStarted ->
-            ( model, Cmd.none, Nothing )
+            ( model, Cmd.none, Cmd.none )
 
         LogIn ->
-            ( model, Cmd.none, Just (AuthMsg (Auth.login { username = model.username, password = model.password })) )
+            ( model, Cmd.none, Auth.login { username = model.username, password = model.password } )
 
         TryAgain ->
-            ( model, Cmd.none, Just (AuthMsg Auth.unauthed) )
+            ( model, Cmd.none, Auth.unauthed )
 
         Cancel ->
-            ( model, Cmd.none, Nothing )
+            ( model, Cmd.none, Cmd.none )
 
         UpdateUsername str ->
-            ( { model | username = str }, Cmd.none, Nothing )
+            ( { model | username = str }, Cmd.none, Cmd.none )
 
         UpdatePassword str ->
-            ( { model | password = str }, Cmd.none, Nothing )
+            ( { model | password = str }, Cmd.none, Cmd.none )
 
 
 root : Model -> Html Msg
