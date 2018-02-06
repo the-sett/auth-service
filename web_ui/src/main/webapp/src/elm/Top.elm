@@ -49,8 +49,6 @@ type alias Model =
     , roles : Roles.Model
     , permissions : Permissions.Model
     , selectedTab : Int
-    , transparentHeader : Bool
-    , debugStylesheet : Bool
     , forwardLocation : String
     , layout : Layout
     }
@@ -62,6 +60,7 @@ type alias Layout =
     , fixedTabs : Bool
     , header : HeaderType
     , withHeader : Bool
+    , debugStylesheet : Bool
     }
 
 
@@ -81,7 +80,6 @@ type Msg
     | PermissionsMsg Permissions.Msg
     | SelectLocation String
     | SelectTab Int
-    | ToggleHeader
     | ToggleDebug
     | LogOut
 
@@ -95,8 +93,6 @@ init config =
       , roles = Roles.init config
       , permissions = Permissions.init config
       , selectedTab = 0
-      , transparentHeader = False
-      , debugStylesheet = False
       , forwardLocation = ""
       , layout = layout
       }
@@ -115,6 +111,7 @@ layout =
     , fixedDrawer = False
     , header = Standard
     , withHeader = True
+    , debugStylesheet = False
     }
 
 
@@ -162,11 +159,8 @@ update action model =
         SelectTab k ->
             ( { model | selectedTab = k }, urlOfTab k |> Navigation.newUrl )
 
-        ToggleHeader ->
-            ( { model | transparentHeader = not model.transparentHeader }, Cmd.none )
-
         ToggleDebug ->
-            ( { model | debugStylesheet = not model.debugStylesheet }, Cmd.none )
+            ( { model | layout = { layout | debugStylesheet = not model.layout.debugStylesheet } }, Cmd.none )
 
         LogOut ->
             ( model, Auth.logout |> Cmd.map AuthMsg )
@@ -260,17 +254,13 @@ layoutOptions model =
             Material.Layout.scrolling
       )
         |> Options.when model.layout.withHeader
-    , if model.transparentHeader then
-        Material.Layout.transparentHeader
-      else
-        Options.nop
     ]
 
 
 framing : Model -> Html Msg -> Html Msg
 framing model contents =
     div []
-        [ if model.debugStylesheet then
+        [ if model.layout.debugStylesheet then
             Html.node "link"
                 [ Html.Attributes.attribute "rel" "stylesheet"
                 , Html.Attributes.attribute "href" "styles/debug.css"
@@ -381,7 +371,7 @@ header authenticated model =
                     [ 0 ]
                     model.mdl
                     [ Toggles.ripple
-                    , Toggles.value model.debugStylesheet
+                    , Toggles.value model.layout.debugStylesheet
                     , Options.onClick ToggleDebug
                     ]
                     [ text "Debug Style" ]
