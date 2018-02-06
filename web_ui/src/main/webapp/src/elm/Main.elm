@@ -81,9 +81,13 @@ init config =
     }
 
 
+noop model =
+    ( model, Cmd.none )
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
-    case action of
+    case (Debug.log "Main.update" action) of
         Mdl msg ->
             Material.update Mdl msg model
 
@@ -137,91 +141,52 @@ urlOfTab tabNo =
     "#" ++ (Array.get tabNo tabUrls |> Maybe.withDefault "")
 
 
+{-| This is the main router for the application, invoked on all url location changes.
 
-{-
-   This is the main router for the application, invoked on all url location changes.
+When not logged in and not already on the welcome page, this will forward to the welcome
+page to log in. The location being requested will be saved in the auth forward location, so
+that it can be forwarded to upon succesfull login.
 
-   When not logged in and not already on the welcome page, this will forward to the welcome
-   page to log in. The location being requested will be saved in the auth forward location, so
-   that it can be forwarded to upon succesfull login.
+When forwarding to a location with an *Init* event available, this will be triggered
+in order that a particular location can initialize itself.
 
-   When forwarding to a location with an _Init_ event available, this will be triggered
-   in order that a particular location can initialize itself.
 -}
-
-
 selectLocation : Model -> String -> ( Model, Cmd Msg )
 selectLocation model location =
-    let
-        -- A command to jump to the welcome location.
-        jumpToWelcomeCmd =
-            Navigation.newUrl "#welcome"
+    case (Debug.log "selectLocation" Auth.getStatus model.auth) of
+        Auth.LoggedOut ->
+            ( { model | forwardLocation = "#" ++ location }
+            , if location /= "welcome" then
+                Navigation.newUrl "#welcome"
+              else
+                Cmd.none
+            )
 
-        -- Saves the location as the current forward location on the model.
-        forwardLocation =
-            { model | forwardLocation = "#" ++ location }
+        Auth.Failed ->
+            noop model
 
-        -- Choses which tab is currently active.
-        tabNo =
-            Dict.get location urlTabs
-                |> Maybe.withDefault -1
+        Auth.LoggedIn _ ->
+            ( { model
+                | selectedTab =
+                    Dict.get location urlTabs
+                        |> Maybe.withDefault -1
+              }
+            , case location of
+                "accounts" ->
+                    Utils.message (AccountsMsg Accounts.Init)
 
-        -- The authentication status.
-        status =
-            Auth.getStatus model.auth
+                "roles" ->
+                    Utils.message (RolesMsg Roles.Init)
 
-        noop =
-            ( model, Cmd.none )
-    in
-        case (Debug.log "selectLocation" status) of
-            Auth.LoggedOut ->
-                noop
+                "permissions" ->
+                    Utils.message (PermissionsMsg Permissions.Init)
 
-            Auth.Failed ->
-                noop
-
-            Auth.LoggedIn _ ->
-                noop
+                _ ->
+                    Cmd.none
+            )
 
 
 
---     -- Flag indicating whether the welcome location should be navigated to.
---     jumpToWelcome =
---         ((not authenticated) || (not hasPermission)) && location /= "welcome"
---
---     -- When not on the welcome location, the current location is saved as the
---     -- current auth forwarding location, so that it can be restored after a
---     -- login.
---     jumpToWelcomeModel =
---         if location /= "welcome" then
---             { model | auth = forwardLocation model.auth }
---         else
---             model
---
---     -- Maybe a command to trigger the _Init_ event when navigating to a location
---     -- with such an event.
---     initCmd =
---         if not jumpToWelcome then
---             case location of
---                 "accounts" ->
---                     Utils.message (AccountsMsg Accounts.Init) |> Just
---
---                 "roles" ->
---                     Utils.message (RolesMsg Roles.Init) |> Just
---
---                 "permissions" ->
---                     Utils.message (PermissionsMsg Permissions.Init) |> Just
---
---                 _ ->
---                     Nothing
---         else
---             Nothing
---
---     -- The model updated with the currently selected tab.
---     selectTabModel =
---         { jumpToWelcomeModel | selectedTab = tabNo }
--- in
---     ( selectTabModel, Cmd.batch (catMaybes [ jumpToWelcomeCmd, initCmd ]) )
 -- Views
 
 
