@@ -11,6 +11,7 @@ module Utils
         , symDiff
         , toggleSet
         , valOrEmpty
+        , lift
         )
 
 import Dict exposing (Dict)
@@ -212,3 +213,22 @@ by an external trigger.
 message : msg -> Cmd msg
 message x =
     Task.perform identity (Task.succeed x)
+
+
+{-| Convenience function for lifting an update function for an inner model
+and messages into a parent one.
+-}
+lift :
+    (model -> submodel)
+    -> (submodel -> model -> model)
+    -> (subaction -> action)
+    -> (subaction -> submodel -> ( submodel, Cmd subaction ))
+    -> subaction
+    -> model
+    -> ( model, Cmd action )
+lift get set tagger update action model =
+    let
+        ( updatedSubModel, msg ) =
+            update action (get model)
+    in
+        ( set updatedSubModel model, Cmd.map tagger msg )

@@ -14,7 +14,6 @@ import Html.Lazy
 import Layout
 import Material
 import Material.Button as Button
-import Material.Helpers exposing (pure, lift, lift_)
 import Material.Layout
 import Material.Menu
 import Material.Options as Options exposing (css)
@@ -28,7 +27,7 @@ import Permissions
 import Roles
 import RouteUrl as Routing
 import String
-import Utils exposing (nth)
+import Utils exposing (nth, lift)
 import ViewUtils
 import Welcome
 
@@ -45,13 +44,13 @@ type alias Model =
     , selectedTab : Int
     , transparentHeader : Bool
     , debugStylesheet : Bool
+    , forwardLocation : String
     }
 
 
 type Msg
     = Mdl (Material.Msg Msg)
-    | AuthCmdMsg Auth.AuthCmd
-    | AuthMsg AuthController.Msg
+    | AuthMsg Auth.Msg
     | SelectTab Int
     | SelectLocation String
     | WelcomeMsg Welcome.Msg
@@ -68,12 +67,7 @@ type Msg
 init : Config -> Model
 init config =
     { welcome = Welcome.init
-    , auth =
-        AuthController.init
-            { logoutLocation = "#welcome"
-            , forwardLocation = "#accounts"
-            , authApiRoot = config.authRoot
-            }
+    , auth = Auth.init { authApiRoot = config.authRoot }
     , mdl = Material.Layout.setTabsWidth 1384 Material.model
     , accounts = Accounts.init config
     , roles = Roles.init config
@@ -83,6 +77,7 @@ init config =
     , selectedTab = 0
     , transparentHeader = False
     , debugStylesheet = False
+    , forwardLocation = ""
     }
 
 
@@ -97,13 +92,8 @@ update_ action model =
         Mdl msg ->
             Material.update Mdl msg model
 
-        AuthMsg a ->
-            lift .auth (\m x -> { m | auth = x }) AuthMsg AuthController.update a model
-
-        AuthCmdMsg a ->
-            AuthController.updateFromAuthCmd a model.auth
-                |> Tuple.mapFirst (\auth -> { model | auth = auth })
-                |> Tuple.mapSecond (Cmd.map AuthMsg)
+        AuthMsg msg ->
+            lift .auth (\x m -> { m | auth = x }) AuthMsg Auth.update msg model
 
         SelectLocation location ->
             selectLocation model location
@@ -118,33 +108,34 @@ update_ action model =
             ( { model | debugStylesheet = not model.debugStylesheet }, Cmd.none )
 
         LogOut ->
-            ( model, Auth.logout |> AuthCmdMsg |> Utils.message )
+            ( model, Auth.logout |> Cmd.map AuthMsg )
 
         WelcomeMsg a ->
-            let
-                interpretOutMsg : Welcome.OutMsg -> Model -> ( Model, Cmd Msg )
-                interpretOutMsg (Welcome.AuthMsg outMsg) model =
-                    ( model, AuthCmdMsg outMsg |> Utils.message )
-            in
-                Welcome.update a model.welcome
-                    |> OutMessage.mapComponent (\welcome -> { model | welcome = welcome })
-                    |> OutMessage.mapCmd WelcomeMsg
-                    |> OutMessage.evaluateMaybe interpretOutMsg Cmd.none
+            -- let
+            --     interpretOutMsg : Welcome.OutMsg -> Model -> ( Model, Cmd Msg )
+            --     interpretOutMsg (Welcome.AuthMsg outMsg) model =
+            --         ( model, AuthCmdMsg outMsg |> Utils.message )
+            -- in
+            --     Welcome.update a model.welcome
+            --         |> OutMessage.mapComponent (\welcome -> { model | welcome = welcome })
+            --         |> OutMessage.mapCmd WelcomeMsg
+            --         |> OutMessage.evaluateMaybe interpretOutMsg Cmd.none
+            ( model, Cmd.none )
 
         AccountsMsg a ->
-            lift .accounts (\m x -> { m | accounts = x }) AccountsMsg Accounts.update a model
+            lift .accounts (\x m -> { m | accounts = x }) AccountsMsg Accounts.update a model
 
         RolesMsg a ->
-            lift .roles (\m x -> { m | roles = x }) RolesMsg Roles.update a model
+            lift .roles (\x m -> { m | roles = x }) RolesMsg Roles.update a model
 
         PermissionsMsg a ->
-            lift .permissions (\m x -> { m | permissions = x }) PermissionsMsg Permissions.update a model
+            lift .permissions (\x m -> { m | permissions = x }) PermissionsMsg Permissions.update a model
 
         LayoutMsg a ->
-            lift .layout (\m x -> { m | layout = x }) LayoutMsg Layout.update a model
+            lift .layout (\x m -> { m | layout = x }) LayoutMsg Layout.update a model
 
         MenusMsg a ->
-            lift .menus (\m x -> { m | menus = x }) MenusMsg Menu.update a model
+            lift .menus (\x m -> { m | menus = x }) MenusMsg Menu.update a model
 
 
 urlOfTab : Int -> String
@@ -167,97 +158,89 @@ urlOfTab tabNo =
 
 selectLocation : Model -> String -> ( Model, Cmd Msg )
 selectLocation model location =
-    let
-        authenticated =
-            AuthController.extractAuthState model.auth |> Auth.isLoggedIn
-
-        hasPermission =
-            AuthController.extractAuthState model.auth |> Auth.hasPermission "auth-admin"
-
-        -- Flag indicating whether the welcome location should be navigated to.
-        jumpToWelcome =
-            ((not authenticated) || (not hasPermission)) && location /= "welcome"
-
-        -- Maybe a command to jump to the welcome location.
-        jumpToWelcomeCmd =
-            if jumpToWelcome then
-                Navigation.newUrl "#welcome" |> Just
-            else
-                Nothing
-
-        -- Saves the location as the current forward location on the auth state.
-        forwardLocation =
-            "#" ++ location |> AuthController.updateForwardLocation
-
-        -- When not on the welcome location, the current location is saved as the
-        -- current auth forwarding location, so that it can be restored after a
-        -- login.
-        jumpToWelcomeModel =
-            if location /= "welcome" then
-                { model | auth = forwardLocation model.auth }
-            else
-                model
-
-        -- Choses which tab is currently active.
-        tabNo =
-            Dict.get location urlTabs
-                |> Maybe.withDefault -1
-
-        -- Maybe a command to trigger the _Init_ event when navigating to a location
-        -- with such an event.
-        initCmd =
-            if not jumpToWelcome then
-                case location of
-                    "accounts" ->
-                        Utils.message (AccountsMsg Accounts.Init) |> Just
-
-                    "roles" ->
-                        Utils.message (RolesMsg Roles.Init) |> Just
-
-                    "permissions" ->
-                        Utils.message (PermissionsMsg Permissions.Init) |> Just
-
-                    _ ->
-                        Nothing
-            else
-                Nothing
-
-        -- The model updated with the currently selected tab.
-        selectTabModel =
-            { jumpToWelcomeModel | selectedTab = tabNo }
-    in
-        ( selectTabModel, Cmd.batch (catMaybes [ jumpToWelcomeCmd, initCmd ]) )
+    -- let
+    --     authenticated =
+    --         AuthController.extractAuthState model.auth |> Auth.isLoggedIn
+    --
+    --     hasPermission =
+    --         AuthController.extractAuthState model.auth |> Auth.hasPermission "auth-admin"
+    --
+    --     -- Flag indicating whether the welcome location should be navigated to.
+    --     jumpToWelcome =
+    --         ((not authenticated) || (not hasPermission)) && location /= "welcome"
+    --
+    --     -- Maybe a command to jump to the welcome location.
+    --     jumpToWelcomeCmd =
+    --         if jumpToWelcome then
+    --             Navigation.newUrl "#welcome" |> Just
+    --         else
+    --             Nothing
+    --
+    --     -- Saves the location as the current forward location on the auth state.
+    --     forwardLocation =
+    --         "#" ++ location |> AuthController.updateForwardLocation
+    --
+    --     -- When not on the welcome location, the current location is saved as the
+    --     -- current auth forwarding location, so that it can be restored after a
+    --     -- login.
+    --     jumpToWelcomeModel =
+    --         if location /= "welcome" then
+    --             { model | auth = forwardLocation model.auth }
+    --         else
+    --             model
+    --
+    --     -- Choses which tab is currently active.
+    --     tabNo =
+    --         Dict.get location urlTabs
+    --             |> Maybe.withDefault -1
+    --
+    --     -- Maybe a command to trigger the _Init_ event when navigating to a location
+    --     -- with such an event.
+    --     initCmd =
+    --         if not jumpToWelcome then
+    --             case location of
+    --                 "accounts" ->
+    --                     Utils.message (AccountsMsg Accounts.Init) |> Just
+    --
+    --                 "roles" ->
+    --                     Utils.message (RolesMsg Roles.Init) |> Just
+    --
+    --                 "permissions" ->
+    --                     Utils.message (PermissionsMsg Permissions.Init) |> Just
+    --
+    --                 _ ->
+    --                     Nothing
+    --         else
+    --             Nothing
+    --
+    --     -- The model updated with the currently selected tab.
+    --     selectTabModel =
+    --         { jumpToWelcomeModel | selectedTab = tabNo }
+    -- in
+    --     ( selectTabModel, Cmd.batch (catMaybes [ jumpToWelcomeCmd, initCmd ]) )
+    ( model, Cmd.none )
 
 
 
 -- Views
 
 
-view : Auth.AuthState -> Model -> Html Msg
+view : Auth.Status -> Model -> Html Msg
 view =
     Html.Lazy.lazy2 view_
 
 
-view_ : Auth.AuthState -> Model -> Html Msg
+view_ : Auth.Status -> Model -> Html Msg
 view_ authState model =
-    let
-        authenticated =
-            Auth.isLoggedIn authState
-
-        logonAttempted =
-            AuthController.logonAttempted model.auth
-
-        hasPermission =
-            Auth.hasPermission "auth-admin" authState
-    in
-        if authenticated && hasPermission then
-            app model
-        else if authenticated && not hasPermission then
-            notPermitted model
-        else if not authenticated && logonAttempted then
-            notPermitted model
-        else
+    case Auth.getStatus model.auth of
+        Auth.LoggedOut ->
             welcome model
+
+        Auth.Failed ->
+            notPermitted model
+
+        Auth.LoggedIn state ->
+            app model
 
 
 layoutOptions : Model -> List (Material.Layout.Property Msg)
@@ -478,7 +461,7 @@ main =
         { delta2url = delta2url
         , location2messages = location2messages
         , init = init_
-        , view = \model -> view (AuthController.extractAuthState model.auth) model
+        , view = \model -> view (Auth.getStatus model.auth) model
         , subscriptions =
             \init ->
                 Sub.batch
