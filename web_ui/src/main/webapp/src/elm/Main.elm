@@ -46,44 +46,20 @@ type alias Model =
     }
 
 
+type alias Layout =
+    { fixedHeader : Bool
+    , fixedDrawer : Bool
+    , fixedTabs : Bool
+    , header : HeaderType
+    , withHeader : Bool
+    }
+
+
 type HeaderType
     = Waterfall Bool
     | Seamed
     | Standard
     | Scrolling
-
-
-type alias Layout =
-    { mdl : Material.Model
-    , fixedHeader : Bool
-    , fixedDrawer : Bool
-    , fixedTabs : Bool
-    , header : HeaderType
-    , rippleTabs : Bool
-    , transparentHeader : Bool
-    , withDrawer : Bool
-    , withHeader : Bool
-    , withTabs : Bool
-    , primary : Color.Hue
-    , accent : Color.Hue
-    }
-
-
-layout : Layout
-layout =
-    { mdl = Material.model
-    , fixedHeader = True
-    , fixedTabs = False
-    , fixedDrawer = False
-    , header = Standard
-    , rippleTabs = True
-    , transparentHeader = False
-    , withDrawer = False
-    , withHeader = True
-    , withTabs = True
-    , primary = Color.Green
-    , accent = Color.Indigo
-    }
 
 
 type Msg
@@ -113,6 +89,16 @@ init config =
     , debugStylesheet = False
     , forwardLocation = ""
     , layout = layout
+    }
+
+
+layout : Layout
+layout =
+    { fixedHeader = True
+    , fixedTabs = False
+    , fixedDrawer = False
+    , header = Standard
+    , withHeader = True
     }
 
 
