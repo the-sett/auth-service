@@ -20,6 +20,7 @@
     "elm-community/maybe-extra": "3.0.0 <= v < 4.0.0",
     "debois/elm-mdl": "8.1.0 <= v < 9.0.0",
     "folkertdev/outmessage": "1.1.1 <= v < 2.0.0",
+    "jinjor/elm-time-travel" : "2.0.0 <= v < 3.0.0",
     "krisajenkins/elm-exts": "26.1.0 <= v < 27.0.0",
     "rgrempel/elm-http-decorators": "2.0.0 <= v < 3.0.0",
     "rgrempel/elm-route-url": "3.0.0 <= v < 4.0.0",
