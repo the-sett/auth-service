@@ -11,7 +11,6 @@ import Html as App
 import Html.Attributes exposing (href, class, style, id)
 import Html exposing (Html, div, text, a)
 import Html.Lazy
-import Layout
 import Material
 import Material.Button as Button
 import Material.Layout
@@ -29,6 +28,7 @@ import String
 import Utils exposing (nth, lift)
 import ViewUtils
 import Welcome
+import Material.Color as Color
 
 
 type alias Model =
@@ -38,11 +38,51 @@ type alias Model =
     , accounts : Accounts.Model
     , roles : Roles.Model
     , permissions : Permissions.Model
-    , layout : Layout.Model
     , selectedTab : Int
     , transparentHeader : Bool
     , debugStylesheet : Bool
     , forwardLocation : String
+    , layout : Layout
+    }
+
+
+type HeaderType
+    = Waterfall Bool
+    | Seamed
+    | Standard
+    | Scrolling
+
+
+type alias Layout =
+    { mdl : Material.Model
+    , fixedHeader : Bool
+    , fixedDrawer : Bool
+    , fixedTabs : Bool
+    , header : HeaderType
+    , rippleTabs : Bool
+    , transparentHeader : Bool
+    , withDrawer : Bool
+    , withHeader : Bool
+    , withTabs : Bool
+    , primary : Color.Hue
+    , accent : Color.Hue
+    }
+
+
+layout : Layout
+layout =
+    { mdl = Material.model
+    , fixedHeader = True
+    , fixedTabs = False
+    , fixedDrawer = False
+    , header = Standard
+    , rippleTabs = True
+    , transparentHeader = False
+    , withDrawer = False
+    , withHeader = True
+    , withTabs = True
+    , primary = Color.Green
+    , accent = Color.Indigo
     }
 
 
@@ -53,7 +93,6 @@ type Msg
     | AccountsMsg Accounts.Msg
     | RolesMsg Roles.Msg
     | PermissionsMsg Permissions.Msg
-    | LayoutMsg Layout.Msg
     | SelectLocation String
     | SelectTab Int
     | ToggleHeader
@@ -69,11 +108,11 @@ init config =
     , accounts = Accounts.init config
     , roles = Roles.init config
     , permissions = Permissions.init config
-    , layout = Layout.init
     , selectedTab = 0
     , transparentHeader = False
     , debugStylesheet = False
     , forwardLocation = ""
+    , layout = layout
     }
 
 
@@ -109,9 +148,6 @@ update action model =
 
         PermissionsMsg a ->
             lift .permissions (\x m -> { m | permissions = x }) PermissionsMsg Permissions.update a model
-
-        LayoutMsg a ->
-            lift .layout (\x m -> { m | layout = x }) LayoutMsg Layout.update a model
 
         SelectLocation location ->
             selectLocation model location
@@ -209,16 +245,16 @@ layoutOptions model =
     , Material.Layout.fixedDrawer |> Options.when model.layout.fixedDrawer
     , Material.Layout.fixedTabs |> Options.when model.layout.fixedTabs
     , (case model.layout.header of
-        Layout.Waterfall x ->
+        Waterfall x ->
             Material.Layout.waterfall x
 
-        Layout.Seamed ->
+        Seamed ->
             Material.Layout.seamed
 
-        Layout.Standard ->
+        Standard ->
             Options.nop
 
-        Layout.Scrolling ->
+        Scrolling ->
             Material.Layout.scrolling
       )
         |> Options.when model.layout.withHeader
