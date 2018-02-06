@@ -20,7 +20,6 @@ import Material.Options as Options exposing (css)
 import Material.Toggles as Toggles
 import Material.Typography as Typography
 import Maybe exposing (Maybe)
-import Menu
 import Navigation
 import OutMessage
 import Permissions
@@ -40,7 +39,6 @@ type alias Model =
     , roles : Roles.Model
     , permissions : Permissions.Model
     , layout : Layout.Model
-    , menus : Menu.Model
     , selectedTab : Int
     , transparentHeader : Bool
     , debugStylesheet : Bool
@@ -56,7 +54,6 @@ type Msg
     | RolesMsg Roles.Msg
     | PermissionsMsg Permissions.Msg
     | LayoutMsg Layout.Msg
-    | MenusMsg Menu.Msg
     | SelectLocation String
     | SelectTab Int
     | ToggleHeader
@@ -73,7 +70,6 @@ init config =
     , roles = Roles.init config
     , permissions = Permissions.init config
     , layout = Layout.init
-    , menus = Menu.init
     , selectedTab = 0
     , transparentHeader = False
     , debugStylesheet = False
@@ -116,9 +112,6 @@ update action model =
 
         LayoutMsg a ->
             lift .layout (\x m -> { m | layout = x }) LayoutMsg Layout.update a model
-
-        MenusMsg a ->
-            lift .menus (\x m -> { m | menus = x }) MenusMsg Menu.update a model
 
         SelectLocation location ->
             selectLocation model location
@@ -427,12 +420,7 @@ main =
         , location2messages = location2messages
         , init = init_
         , view = \model -> view (Auth.getStatus model.auth) model
-        , subscriptions =
-            \init ->
-                Sub.batch
-                    [ Sub.map MenusMsg (Material.Menu.subs Menu.Mdl init.menus.mdl)
-                    , Material.Layout.subs Mdl init.mdl
-                    ]
+        , subscriptions = \init -> Sub.batch [ Material.Layout.subs Mdl init.mdl ]
         , update = update
         }
 

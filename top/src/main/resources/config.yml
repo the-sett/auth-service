@@ -19,7 +19,7 @@ server:
 
 assets:
  overrides:
-   /auth-service: web_ui/src/main/webapp/app/
+   /admin: web_ui/src/main/webapp/app/
 
 logging:
   level: INFO

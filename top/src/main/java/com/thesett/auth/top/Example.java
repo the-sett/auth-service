@@ -106,9 +106,10 @@ public class Example
     {
         bootstrap.addBundle(shiroBundle);
         bootstrap.addBundle(swaggerBundle);
+        bootstrap.addBundle(infinispanBundle);
+
         bootstrap.addBundle(new ConfiguredAssetsBundle("/webapp/app/", CacheBuilderSpec.disableCaching(),
                 "/admin", "index.html"));
-        bootstrap.addBundle(infinispanBundle);
 
         ModelConverters.getInstance().addConverter(new EnumTypeModelConverter());
     }
