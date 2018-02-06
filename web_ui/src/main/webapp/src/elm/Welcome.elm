@@ -40,7 +40,7 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Auth.Msg )
 update action model =
-    case (Debug.log "welcome" action) of
+    case action of
         Mdl action_ ->
             let
                 ( newModel, cmd ) =
