@@ -83,7 +83,7 @@ init config =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
-    update_ (Debug.log "top" action) model
+    update_ (Debug.log "test" action) model
 
 
 update_ : Msg -> Model -> ( Model, Cmd Msg )
@@ -111,16 +111,15 @@ update_ action model =
             ( model, Auth.logout |> Cmd.map AuthMsg )
 
         WelcomeMsg a ->
-            -- let
-            --     interpretOutMsg : Welcome.OutMsg -> Model -> ( Model, Cmd Msg )
-            --     interpretOutMsg (Welcome.AuthMsg outMsg) model =
-            --         ( model, AuthCmdMsg outMsg |> Utils.message )
-            -- in
-            --     Welcome.update a model.welcome
-            --         |> OutMessage.mapComponent (\welcome -> { model | welcome = welcome })
-            --         |> OutMessage.mapCmd WelcomeMsg
-            --         |> OutMessage.evaluateMaybe interpretOutMsg Cmd.none
-            ( model, Cmd.none )
+            let
+                interpretOutMsg : Cmd Auth.Msg -> Model -> ( Model, Cmd Msg )
+                interpretOutMsg outMsg model =
+                    ( model, outMsg |> Cmd.map AuthMsg )
+            in
+                Welcome.update a model.welcome
+                    |> OutMessage.mapComponent (\welcome -> { model | welcome = welcome })
+                    |> OutMessage.mapCmd WelcomeMsg
+                    |> OutMessage.evaluate interpretOutMsg
 
         AccountsMsg a ->
             lift .accounts (\x m -> { m | accounts = x }) AccountsMsg Accounts.update a model
