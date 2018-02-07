@@ -445,11 +445,6 @@ e404 _ =
         ]
 
 
-log : a -> a
-log =
-    Debug.log "top"
-
-
 
 -- ROUTING
 
