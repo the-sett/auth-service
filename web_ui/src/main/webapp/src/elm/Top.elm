@@ -131,7 +131,7 @@ update action model =
 
         WelcomeMsg msg ->
             Update3.lift .welcome (\x m -> { m | welcome = x }) WelcomeMsg Welcome.update msg model
-                |> Update3.eval redirectAuthCmd
+                |> Update3.evalCmds AuthMsg
 
         AccountsMsg msg ->
             Update2.lift .accounts (\x m -> { m | accounts = x }) AccountsMsg Accounts.update msg model
@@ -158,11 +158,6 @@ update action model =
 noop : a -> ( a, Cmd msg )
 noop model =
     ( model, Cmd.none )
-
-
-redirectAuthCmd : Cmd Auth.Msg -> a -> ( a, Cmd Msg )
-redirectAuthCmd outMsg model =
-    ( model, outMsg |> Cmd.map AuthMsg )
 
 
 {-| Navigates to #acounts on log in, and to #welcome on log out.
