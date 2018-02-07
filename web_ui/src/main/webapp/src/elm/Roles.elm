@@ -17,13 +17,23 @@ import Material.Options as Options exposing (Style, cs, css, nop, disabled, attr
 import Material.Table as Table
 import Material.Textfield as Textfield
 import Material.Toggles as Toggles
-import Maybe
 import Model
 import Permission.Service
 import Platform.Cmd exposing (Cmd)
 import Role.Service
-import String
-import Utils exposing (indexedFoldr, error, checkAll)
+import Update exposing (message)
+import Utils
+    exposing
+        ( error
+        , checkAll
+        , indexedFoldr
+        , valOrEmpty
+        , leftIntersect
+        , cleanString
+        , toggleSet
+        , dictifyEntities
+        , symDiff
+        )
 import ViewUtils
 
 
@@ -99,7 +109,7 @@ permissionDictFromRole (Model.Role role) =
 
 permissionListToDict : List Model.Permission -> Dict String Model.Permission
 permissionListToDict permissions =
-    Utils.dictifyEntities unwrapPermission Model.Permission permissions
+    dictifyEntities unwrapPermission Model.Permission permissions
 
 
 unwrapRole (Model.Role role) =
@@ -168,7 +178,7 @@ isChangePermissions model =
             False
 
         WithId _ role ->
-            not (Dict.isEmpty (Utils.symDiff (permissionDictFromRole role) (model.selectedPermissions)))
+            not (Dict.isEmpty (symDiff (permissionDictFromRole role) (model.selectedPermissions)))
 
 
 isEditedAndValid : Model -> Bool
@@ -199,19 +209,19 @@ roleCallbacks =
 
 roleList : List Model.Role -> Model -> ( Model, Cmd msg )
 roleList roles model =
-    ( { model | roles = Utils.dictifyEntities unwrapRole Model.Role roles }
+    ( { model | roles = dictifyEntities unwrapRole Model.Role roles }
     , Cmd.none
     )
 
 
 roleCreate : Model.Role -> Model -> ( Model, Cmd Msg )
 roleCreate role model =
-    ( model, Utils.message Init )
+    ( model, message Init )
 
 
 roleSaved : Model.Role -> model -> ( model, Cmd Msg )
 roleSaved role model =
-    ( model, Utils.message Init )
+    ( model, message Init )
 
 
 roleDelete : String -> Model -> ( Model, Cmd Msg )
@@ -225,7 +235,7 @@ roleDelete id model =
     in
         ( { model | roles = newRoles }
         , if numToDelete == 0 then
-            Utils.message Init
+            message Init
           else
             Cmd.none
         )
@@ -239,7 +249,7 @@ roleDeleteError error model =
     in
         ( { model | numToDelete = numToDelete }
         , if numToDelete == 0 then
-            Utils.message Init
+            message Init
           else
             Cmd.none
         )
@@ -300,10 +310,10 @@ update action model =
             updateToggle id model
 
         UpdateRoleName roleName ->
-            ( { model | roleName = Utils.cleanString roleName }, Cmd.none )
+            ( { model | roleName = cleanString roleName }, Cmd.none )
 
         SelectChanged permissions ->
-            ( { model | selectedPermissions = Utils.leftIntersect model.permissionLookup permissions }, Cmd.none )
+            ( { model | selectedPermissions = leftIntersect model.permissionLookup permissions }, Cmd.none )
 
         Add ->
             updateAdd model
@@ -484,8 +494,8 @@ permissionLookup : Model -> List (Html Msg)
 permissionLookup model =
     [ h4 [] [ text "Permissions" ]
     , listbox
-        [ items <| Dict.map (\id -> \(Model.Permission permission) -> Utils.valOrEmpty permission.name) model.permissionLookup
-        , initiallySelected <| Dict.map (\id -> \(Model.Permission permission) -> Utils.valOrEmpty permission.name) model.selectedPermissions
+        [ items <| Dict.map (\id -> \(Model.Permission permission) -> valOrEmpty permission.name) model.permissionLookup
+        , initiallySelected <| Dict.map (\id -> \(Model.Permission permission) -> valOrEmpty permission.name) model.selectedPermissions
         , onSelectedChanged SelectChanged
         ]
     ]
@@ -502,7 +512,7 @@ roleForm model isValid completeText =
                 , Textfield.floatingLabel
                 , Textfield.text_
                 , Options.onInput UpdateRoleName
-                , Textfield.value <| Utils.valOrEmpty model.roleName
+                , Textfield.value <| valOrEmpty model.roleName
                 ]
                 []
             ]
@@ -551,7 +561,7 @@ viewRow model idx id (Model.Role role) =
                 ]
                 []
             ]
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| Utils.valOrEmpty role.name ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| valOrEmpty role.name ]
         , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
             (List.foldr permissionToChip [] <| Maybe.withDefault [] role.permissions)
         , Table.td
@@ -602,7 +612,7 @@ roleToRow model idx id role items =
 permissionToChip : Model.Permission -> List (Html Msg) -> List (Html Msg)
 permissionToChip (Model.Permission permission) items =
     (span [ class "mdl-chip mdl-chip__text" ]
-        [ text <| Utils.valOrEmpty permission.name ]
+        [ text <| valOrEmpty permission.name ]
     )
         :: items
 

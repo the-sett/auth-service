@@ -1,7 +1,6 @@
 port module Listbox exposing (listbox, items, initiallySelected, onSelectedChanged)
 
 import Dict exposing (Dict)
-import Maybe exposing (Maybe)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Html exposing (Attribute, Html, text, button, span, div, node, program)

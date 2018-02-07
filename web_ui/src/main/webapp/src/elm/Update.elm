@@ -1,8 +1,10 @@
-module Update exposing (evaluate, lift)
+module Update exposing (evaluate, lift, message)
 
 {-| Convenience function for lifting an update function for an inner model
 and messages into a parent one.
 -}
+
+import Task
 
 
 lift :
@@ -31,3 +33,13 @@ evaluate func ( model, cmds ) =
             func model
     in
         ( newModel, Cmd.batch [ cmds, moreCmds ] )
+
+
+{-| A command to generate a message without performing any action.
+This is useful for implementing components that generate events in the manner
+of HTML elements, but where the event fires from within Elm code, rather than
+by an external trigger.
+-}
+message : msg -> Cmd msg
+message x =
+    Task.perform identity (Task.succeed x)

@@ -13,33 +13,24 @@ module Top
 import Accounts
 import Array exposing (Array)
 import Auth
-import Config exposing (config)
 import Config exposing (Config)
 import Dict exposing (Dict)
-import Exts.Maybe exposing (catMaybes)
-import Html as App
-import Html.Attributes exposing (href, class, style, id)
-import Html exposing (Html, div, text, a)
-import Html.Lazy
+import Html exposing (Html, div, text, a, h1)
+import Html.Attributes exposing (href, id, attribute)
 import Material
 import Material.Button as Button
 import Material.Layout
-import Material.Menu
-import Material.Options as Options exposing (css)
+import Material.Options as Options
 import Material.Toggles as Toggles
 import Material.Typography as Typography
-import Maybe exposing (Maybe)
 import Navigation
 import OutMessage
 import Permissions
 import Roles
 import RouteUrl as Routing
-import String
+import Update exposing (lift, message)
 import Utils exposing (nth)
-import ViewUtils
 import Welcome
-import Material.Color as Color
-import Update exposing (lift)
 
 
 type alias Model =
@@ -223,13 +214,13 @@ selectLocation model location =
               }
             , case location of
                 "accounts" ->
-                    Utils.message (AccountsMsg Accounts.Init)
+                    message (AccountsMsg Accounts.Init)
 
                 "roles" ->
-                    Utils.message (RolesMsg Roles.Init)
+                    message (RolesMsg Roles.Init)
 
                 "permissions" ->
-                    Utils.message (PermissionsMsg Permissions.Init)
+                    message (PermissionsMsg Permissions.Init)
 
                 _ ->
                     Cmd.none
@@ -282,8 +273,8 @@ framing model contents =
     div []
         [ if model.layout.debugStylesheet then
             Html.node "link"
-                [ Html.Attributes.attribute "rel" "stylesheet"
-                , Html.Attributes.attribute "href" "styles/debug.css"
+                [ attribute "rel" "stylesheet"
+                , attribute "href" "styles/debug.css"
                 ]
                 []
           else
@@ -296,13 +287,13 @@ framing model contents =
         -}
         , case nth model.selectedTab tabs of
             Just ( "Accounts", _, _ ) ->
-                App.map AccountsMsg (Accounts.dialog model.accounts)
+                Html.map AccountsMsg (Accounts.dialog model.accounts)
 
             Just ( "Roles", _, _ ) ->
-                App.map RolesMsg (Roles.dialog model.roles)
+                Html.map RolesMsg (Roles.dialog model.roles)
 
             Just ( "Permissions", _, _ ) ->
-                App.map PermissionsMsg (Permissions.dialog model.permissions)
+                Html.map PermissionsMsg (Permissions.dialog model.permissions)
 
             _ ->
                 div [] []
@@ -368,7 +359,7 @@ header authenticated model =
         [ Material.Layout.row
             []
             [ a
-                [ Html.Attributes.id "thesett-logo"
+                [ id "thesett-logo"
                 , href "http://"
                 ]
                 []
@@ -404,19 +395,19 @@ header authenticated model =
 
 welcomeView : Model -> Html Msg
 welcomeView =
-    .welcome >> Welcome.root >> App.map WelcomeMsg
+    .welcome >> Welcome.root >> Html.map WelcomeMsg
 
 
 notPermittedView : Model -> Html Msg
 notPermittedView =
-    .welcome >> Welcome.notPermitted >> App.map WelcomeMsg
+    .welcome >> Welcome.notPermitted >> Html.map WelcomeMsg
 
 
 tabs : List ( String, String, Model -> Html Msg )
 tabs =
-    [ ( "Accounts", "accounts", .accounts >> Accounts.root >> App.map AccountsMsg )
-    , ( "Roles", "roles", .roles >> Roles.root >> App.map RolesMsg )
-    , ( "Permissions", "permissions", .permissions >> Permissions.root >> App.map PermissionsMsg )
+    [ ( "Accounts", "accounts", .accounts >> Accounts.root >> Html.map AccountsMsg )
+    , ( "Roles", "roles", .roles >> Roles.root >> Html.map RolesMsg )
+    , ( "Permissions", "permissions", .permissions >> Permissions.root >> Html.map PermissionsMsg )
     ]
 
 
@@ -444,7 +435,7 @@ e404 : Model -> Html Msg
 e404 _ =
     div
         []
-        [ Options.styled Html.h1
+        [ Options.styled h1
             [ Options.cs "mdl-typography--display-4"
             , Typography.center
             ]

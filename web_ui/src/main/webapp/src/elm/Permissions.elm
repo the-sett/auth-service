@@ -2,7 +2,6 @@ module Permissions exposing (Model, Msg(..), init, update, root, dialog)
 
 import Auth
 import Config exposing (Config)
-import Dict
 import Dict exposing (Dict)
 import Html.Attributes exposing (title, class, action, colspan)
 import Html exposing (Html, div, text, span)
@@ -18,12 +17,22 @@ import Material.Options as Options exposing (Style, cs, css, nop, disabled, attr
 import Material.Table as Table
 import Material.Textfield as Textfield
 import Material.Toggles as Toggles
-import Maybe
 import Model
 import Permission.Service
 import Platform.Cmd exposing (Cmd)
-import String
-import Utils exposing (indexedFoldr, error, checkAll)
+import Update exposing (message)
+import Utils
+    exposing
+        ( error
+        , checkAll
+        , indexedFoldr
+        , valOrEmpty
+        , leftIntersect
+        , cleanString
+        , toggleSet
+        , dictifyEntities
+        , symDiff
+        )
 import ViewUtils
 
 
@@ -83,7 +92,7 @@ someSelected model =
 
 permissionListToDict : List Model.Permission -> Dict String Model.Permission
 permissionListToDict permissions =
-    Utils.dictifyEntities unwrapPermission Model.Permission permissions
+    dictifyEntities unwrapPermission Model.Permission permissions
 
 
 unwrapPermission (Model.Permission permission) =
@@ -158,19 +167,19 @@ permissionCallbacks =
 
 permissionList : List Model.Permission -> Model -> ( Model, Cmd msg )
 permissionList permissions model =
-    ( { model | permissions = Utils.dictifyEntities unwrapPermission Model.Permission permissions }
+    ( { model | permissions = dictifyEntities unwrapPermission Model.Permission permissions }
     , Cmd.none
     )
 
 
 permissionCreate : Model.Permission -> Model -> ( Model, Cmd Msg )
 permissionCreate permission model =
-    ( model, Utils.message Init )
+    ( model, message Init )
 
 
 permissionSaved : Model.Permission -> model -> ( model, Cmd Msg )
 permissionSaved permission model =
-    ( model, Utils.message Init )
+    ( model, message Init )
 
 
 permissionDelete : String -> Model -> ( Model, Cmd Msg )
@@ -184,7 +193,7 @@ permissionDelete id model =
     in
         ( { model | permissions = newPermissions }
         , if numToDelete == 0 then
-            Utils.message Init
+            message Init
           else
             Cmd.none
         )
@@ -198,7 +207,7 @@ permissionDeleteError error model =
     in
         ( { model | numToDelete = numToDelete }
         , if numToDelete == 0 then
-            Utils.message Init
+            message Init
           else
             Cmd.none
         )
@@ -231,7 +240,7 @@ update action model =
             updateToggle id model
 
         UpdatePermissionName permissionName ->
-            ( { model | permissionName = Utils.cleanString permissionName }, Cmd.none )
+            ( { model | permissionName = cleanString permissionName }, Cmd.none )
 
         Add ->
             updateAdd model
@@ -415,7 +424,7 @@ permissionForm model isValid completeText =
                 , Textfield.floatingLabel
                 , Textfield.text_
                 , Options.onInput UpdatePermissionName
-                , Textfield.value <| Utils.valOrEmpty model.permissionName
+                , Textfield.value <| valOrEmpty model.permissionName
                 ]
                 []
             ]
@@ -463,7 +472,7 @@ viewRow model idx id (Model.Permission permission) =
                 ]
                 []
             ]
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| Utils.valOrEmpty permission.name ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| valOrEmpty permission.name ]
         , Table.td
             [ cs "mdl-data-table__cell--non-numeric"
             , css "width" "20%"
@@ -512,7 +521,7 @@ permissionToRow model idx id permission items =
 permissionToChip : Model.Permission -> List (Html Msg) -> List (Html Msg)
 permissionToChip (Model.Permission permission) items =
     (span [ class "mdl-chip mdl-chip__text" ]
-        [ text <| Utils.valOrEmpty permission.name ]
+        [ text <| valOrEmpty permission.name ]
     )
         :: items
 

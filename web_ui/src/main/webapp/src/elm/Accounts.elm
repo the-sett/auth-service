@@ -9,24 +9,18 @@ module Accounts
         )
 
 import Account.Service
-import Array
 import Array exposing (Array)
 import Auth
 import Config exposing (Config)
-import Dict
 import Dict exposing (Dict)
-import Dict.Extra
-import Exts.Maybe exposing (catMaybes)
 import Html.Attributes exposing (title, class, action, attribute, colspan)
 import Html.Events exposing (on)
 import Html exposing (Html, div, span, h4, text)
 import Http
-import Json.Decode as Decode
 import Listbox exposing (listbox, onSelectedChanged, items, initiallySelected)
 import List.Extra
 import Material
 import Material.Button as Button
-import Material.Chip as Chip
 import Material.Dialog as Dialog
 import Material.Grid as Grid
 import Material.Icon as Icon
@@ -34,15 +28,22 @@ import Material.Options as Options exposing (Style, cs, nop, disabled, css)
 import Material.Table as Table
 import Material.Textfield as Textfield
 import Material.Toggles as Toggles
-import Maybe
 import Model
-import Platform.Cmd exposing (Cmd)
 import Role.Service
-import Set
-import Set as Set
 import Set exposing (Set)
-import String
-import Utils exposing (error, checkAll, indexedFoldr)
+import Update exposing (message)
+import Utils
+    exposing
+        ( error
+        , checkAll
+        , indexedFoldr
+        , valOrEmpty
+        , leftIntersect
+        , cleanString
+        , toggleSet
+        , dictifyEntities
+        , symDiff
+        )
 import ViewUtils
 
 
@@ -143,7 +144,7 @@ roleDictFromAccount (Model.Account account) =
 
 roleListToDict : List Model.Role -> Dict String Model.Role
 roleListToDict roles =
-    Utils.dictifyEntities unwrapRole Model.Role roles
+    dictifyEntities unwrapRole Model.Role roles
 
 
 isAccountRoot (Model.Account account) =
@@ -259,7 +260,7 @@ isChangeRoles model =
             False
 
         Just account ->
-            not (Dict.isEmpty (Utils.symDiff (roleDictFromAccount account) (model.selectedRoles)))
+            not (Dict.isEmpty (symDiff (roleDictFromAccount account) (model.selectedRoles)))
 
 
 isEditedAndValid : Model -> Bool
@@ -292,14 +293,14 @@ accountCallbacks =
 
 accountList : List Model.Account -> Model -> ( Model, Cmd msg )
 accountList accounts model =
-    ( { model | accounts = Utils.dictifyEntities unwrapAccount Model.Account accounts }
+    ( { model | accounts = dictifyEntities unwrapAccount Model.Account accounts }
     , Cmd.none
     )
 
 
 accountCreate : Model.Account -> Model -> ( Model, Cmd Msg )
 accountCreate account model =
-    ( model, Utils.message Init )
+    ( model, message Init )
 
 
 accountToEdit : Model.Account -> Model -> ( Model, Cmd msg )
@@ -311,7 +312,7 @@ accountToEdit account model =
 
 accountSaved : Model.Account -> model -> ( model, Cmd Msg )
 accountSaved account model =
-    ( model, Utils.message Init )
+    ( model, message Init )
 
 
 accountDelete : String -> Model -> ( Model, Cmd Msg )
@@ -325,7 +326,7 @@ accountDelete id model =
     in
         ( { model | accounts = newAccounts, numToDelete = numToDelete }
         , if numToDelete == 0 then
-            Utils.message Init
+            message Init
           else
             Cmd.none
         )
@@ -339,7 +340,7 @@ accountDeleteError error model =
     in
         ( { model | numToDelete = numToDelete }
         , if numToDelete == 0 then
-            Utils.message Init
+            message Init
           else
             Cmd.none
         )
@@ -395,7 +396,7 @@ update action model =
             updateToggle k model
 
         ToggleMore id ->
-            ( { model | moreStatus = Utils.toggleSet id model.moreStatus }, Cmd.none )
+            ( { model | moreStatus = toggleSet id model.moreStatus }, Cmd.none )
 
         Add ->
             updateAdd model
@@ -410,16 +411,16 @@ update action model =
             updateEdit id model
 
         UpdateUsername username ->
-            ( { model | username = Utils.cleanString username }, Cmd.none )
+            ( { model | username = cleanString username }, Cmd.none )
 
         UpdatePassword1 password ->
-            ( { model | password1 = Utils.cleanString password }, Cmd.none )
+            ( { model | password1 = cleanString password }, Cmd.none )
 
         UpdatePassword2 password ->
-            ( { model | password2 = Utils.cleanString password }, Cmd.none )
+            ( { model | password2 = cleanString password }, Cmd.none )
 
         SelectChanged roles ->
-            ( { model | selectedRoles = Utils.leftIntersect model.roleLookup roles }, Cmd.none )
+            ( { model | selectedRoles = leftIntersect model.roleLookup roles }, Cmd.none )
 
         Create ->
             updateCreate model
@@ -641,7 +642,7 @@ table model =
 roleToChip : Model.Role -> List (Html Msg) -> List (Html Msg)
 roleToChip (Model.Role role) items =
     (span [ class "mdl-chip mdl-chip__text" ]
-        [ text <| Utils.valOrEmpty role.name ]
+        [ text <| valOrEmpty role.name ]
     )
         :: items
 
@@ -649,7 +650,7 @@ roleToChip (Model.Role role) items =
 permissionToChip : Model.Permission -> List (Html Msg) -> List (Html Msg)
 permissionToChip (Model.Permission permission) items =
     (span [ class "mdl-chip mdl-chip__text" ]
-        [ text <| Utils.valOrEmpty permission.name ]
+        [ text <| valOrEmpty permission.name ]
     )
         :: items
 
@@ -667,7 +668,7 @@ viewRow model idx id (Model.Account account) =
                 ]
                 []
             ]
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| Utils.valOrEmpty account.username ]
+        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| valOrEmpty account.username ]
         , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
             (List.foldr roleToChip [] <| Maybe.withDefault [] account.roles)
         , Table.td
@@ -775,7 +776,7 @@ createAccountForm model =
                 , Textfield.floatingLabel
                 , Textfield.text_
                 , Options.onInput UpdateUsername
-                , Textfield.value <| Utils.valOrEmpty model.username
+                , Textfield.value <| valOrEmpty model.username
                 ]
                 []
             , password1Field model
@@ -803,7 +804,7 @@ editAccountForm model =
                 , Textfield.floatingLabel
                 , Textfield.text_
                 , Textfield.disabled
-                , Textfield.value <| Utils.valOrEmpty model.username
+                , Textfield.value <| valOrEmpty model.username
                 ]
                 []
             , password1Field model
@@ -830,7 +831,7 @@ password1Field model =
         , Textfield.floatingLabel
         , Textfield.password
         , Options.onInput UpdatePassword1
-        , Textfield.value <| Utils.valOrEmpty model.password1
+        , Textfield.value <| valOrEmpty model.password1
         ]
         []
 
@@ -845,7 +846,7 @@ password2Field model =
         , Textfield.floatingLabel
         , Textfield.password
         , Options.onInput UpdatePassword2
-        , Textfield.value <| Utils.valOrEmpty model.password2
+        , Textfield.value <| valOrEmpty model.password2
         , if checkPasswordMatch model then
             Options.nop
           else
@@ -858,8 +859,8 @@ roleLookup : Model -> List (Html Msg)
 roleLookup model =
     [ h4 [] [ text "Roles" ]
     , listbox
-        [ items <| Dict.map (\id -> \(Model.Role role) -> Utils.valOrEmpty role.name) model.roleLookup
-        , initiallySelected <| Dict.map (\id -> \(Model.Role role) -> Utils.valOrEmpty role.name) model.selectedRoles
+        [ items <| Dict.map (\id -> \(Model.Role role) -> valOrEmpty role.name) model.roleLookup
+        , initiallySelected <| Dict.map (\id -> \(Model.Role role) -> valOrEmpty role.name) model.selectedRoles
         , onSelectedChanged SelectChanged
         ]
     ]

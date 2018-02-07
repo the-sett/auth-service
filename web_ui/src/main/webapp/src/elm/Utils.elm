@@ -6,7 +6,6 @@ module Utils
         , error
         , indexedFoldr
         , leftIntersect
-        , message
         , nth
         , symDiff
         , toggleSet
@@ -15,11 +14,8 @@ module Utils
 
 import Dict exposing (Dict)
 import Set exposing (Set)
-import Maybe
 import Maybe.Extra exposing (isJust)
-import List
 import Http
-import Task
 import Auth
 
 
@@ -202,13 +198,3 @@ toggleSet key set =
         Set.remove key set
     else
         Set.insert key set
-
-
-{-| A command to generate a message without performing any action.
-This is useful for implementing components that generate events in the manner
-of HTML elements, but where the event fires from within Elm code, rather than
-by an external trigger.
--}
-message : msg -> Cmd msg
-message x =
-    Task.perform identity (Task.succeed x)
