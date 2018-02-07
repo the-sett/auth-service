@@ -43,7 +43,6 @@ type alias Model =
     , roles : Roles.Model
     , permissions : Permissions.Model
     , selectedTab : Int
-    , forwardLocation : String
     , layout : Layout
     }
 
@@ -88,7 +87,6 @@ init config =
       , roles = Roles.init config
       , permissions = Permissions.init config
       , selectedTab = 0
-      , forwardLocation = ""
       , layout = layout
       }
     , Cmd.batch
@@ -187,9 +185,8 @@ urlOfTab tabNo =
 
 {-| This is the main router for the application, invoked on all url location changes.
 
-When not logged in and not already on the welcome page, this will forward to the welcome
-page to log in. The location being requested will be saved in the auth forward location, so
-that it can be forwarded to upon succesfull login.
+When not logged in and not already on the welcome page, this navigate to the #weclome
+location.
 
 When forwarding to a location with an *Init* event available, this will be triggered
 in order that a particular location can initialize itself.
@@ -197,37 +194,39 @@ in order that a particular location can initialize itself.
 -}
 selectLocation : Model -> String -> ( Model, Cmd Msg )
 selectLocation model location =
-    case (Debug.log "selectLocation" model.authStatus) of
-        Auth.LoggedOut ->
-            ( { model | forwardLocation = "#" ++ location }
-            , if location /= "welcome" then
+    let
+        toWelcomeCmd location =
+            if location /= "welcome" then
                 Navigation.newUrl "#welcome"
-              else
+            else
                 Cmd.none
-            )
+    in
+        case (Debug.log "selectLocation" model.authStatus) of
+            Auth.LoggedOut ->
+                ( model, toWelcomeCmd location )
 
-        Auth.Failed ->
-            noop model
+            Auth.Failed ->
+                ( model, toWelcomeCmd location )
 
-        Auth.LoggedIn _ ->
-            ( { model
-                | selectedTab =
-                    Dict.get location urlTabs
-                        |> Maybe.withDefault -1
-              }
-            , case location of
-                "accounts" ->
-                    message (AccountsMsg Accounts.Init)
+            Auth.LoggedIn _ ->
+                ( { model
+                    | selectedTab =
+                        Dict.get location urlTabs
+                            |> Maybe.withDefault -1
+                  }
+                , case location of
+                    "accounts" ->
+                        message (AccountsMsg Accounts.Init)
 
-                "roles" ->
-                    message (RolesMsg Roles.Init)
+                    "roles" ->
+                        message (RolesMsg Roles.Init)
 
-                "permissions" ->
-                    message (PermissionsMsg Permissions.Init)
+                    "permissions" ->
+                        message (PermissionsMsg Permissions.Init)
 
-                _ ->
-                    Cmd.none
-            )
+                    _ ->
+                        Cmd.none
+                )
 
 
 
