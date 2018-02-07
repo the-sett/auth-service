@@ -24,11 +24,12 @@ import Material.Options as Options
 import Material.Toggles as Toggles
 import Material.Typography as Typography
 import Navigation
-import OutMessage
 import Permissions
 import Roles
 import RouteUrl as Routing
-import Update exposing (lift, message)
+import Task.Extra exposing (message)
+import Update2
+import Update3
 import Utils exposing (nth)
 import Welcome
 
@@ -118,6 +119,11 @@ noop model =
     ( model, Cmd.none )
 
 
+redirectAuthCmd : Cmd Auth.Msg -> a -> ( a, Cmd Msg )
+redirectAuthCmd outMsg model =
+    ( model, outMsg |> Cmd.map AuthMsg )
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     case (Debug.log "Main.update" action) of
@@ -139,30 +145,21 @@ update action model =
                             Cmd.none
                     )
             in
-                Auth.update msg model.auth
-                    |> OutMessage.mapComponent (\auth -> { model | auth = auth })
-                    |> OutMessage.mapCmd AuthMsg
-                    |> OutMessage.evaluateMaybe interpretOutMsg Cmd.none
+                Update3.lift .auth (\x m -> { m | auth = x }) AuthMsg Auth.update msg model
+                    |> Update3.evalMaybe interpretOutMsg Cmd.none
 
         WelcomeMsg msg ->
-            let
-                interpretOutMsg : Cmd Auth.Msg -> Model -> ( Model, Cmd Msg )
-                interpretOutMsg outMsg model =
-                    ( model, outMsg |> Cmd.map AuthMsg )
-            in
-                Welcome.update msg model.welcome
-                    |> OutMessage.mapComponent (\welcome -> { model | welcome = welcome })
-                    |> OutMessage.mapCmd WelcomeMsg
-                    |> OutMessage.evaluate interpretOutMsg
+            Update3.lift .welcome (\x m -> { m | welcome = x }) WelcomeMsg Welcome.update msg model
+                |> Update3.eval redirectAuthCmd
 
         AccountsMsg msg ->
-            lift .accounts (\x m -> { m | accounts = x }) AccountsMsg Accounts.update msg model
+            Update2.lift .accounts (\x m -> { m | accounts = x }) AccountsMsg Accounts.update msg model
 
         RolesMsg msg ->
-            lift .roles (\x m -> { m | roles = x }) RolesMsg Roles.update msg model
+            Update2.lift .roles (\x m -> { m | roles = x }) RolesMsg Roles.update msg model
 
         PermissionsMsg msg ->
-            lift .permissions (\x m -> { m | permissions = x }) PermissionsMsg Permissions.update msg model
+            Update2.lift .permissions (\x m -> { m | permissions = x }) PermissionsMsg Permissions.update msg model
 
         SelectLocation location ->
             selectLocation model location
