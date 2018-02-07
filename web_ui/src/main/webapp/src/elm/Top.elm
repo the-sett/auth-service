@@ -115,13 +115,8 @@ subscriptions model =
     Sub.batch [ Material.Layout.subs Mdl model.mdl ]
 
 
-noop model =
-    ( model, Cmd.none )
 
-
-redirectAuthCmd : Cmd Auth.Msg -> a -> ( a, Cmd Msg )
-redirectAuthCmd outMsg model =
-    ( model, outMsg |> Cmd.map AuthMsg )
+-- Update Logic
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -131,22 +126,8 @@ update action model =
             Material.update Mdl msg model
 
         AuthMsg msg ->
-            let
-                interpretOutMsg status model =
-                    ( { model | authStatus = status }
-                    , case status of
-                        Auth.LoggedOut ->
-                            Navigation.newUrl "#welcome"
-
-                        Auth.LoggedIn _ ->
-                            Navigation.newUrl "#accounts"
-
-                        _ ->
-                            Cmd.none
-                    )
-            in
-                Update3.lift .auth (\x m -> { m | auth = x }) AuthMsg Auth.update msg model
-                    |> Update3.evalMaybe interpretOutMsg Cmd.none
+            Update3.lift .auth (\x m -> { m | auth = x }) AuthMsg Auth.update msg model
+                |> Update3.evalMaybe updateOnAuthStatus Cmd.none
 
         WelcomeMsg msg ->
             Update3.lift .welcome (\x m -> { m | welcome = x }) WelcomeMsg Welcome.update msg model
@@ -172,6 +153,31 @@ update action model =
 
         LogOut ->
             ( model, Auth.logout |> Cmd.map AuthMsg )
+
+
+noop : a -> ( a, Cmd msg )
+noop model =
+    ( model, Cmd.none )
+
+
+redirectAuthCmd : Cmd Auth.Msg -> a -> ( a, Cmd Msg )
+redirectAuthCmd outMsg model =
+    ( model, outMsg |> Cmd.map AuthMsg )
+
+
+updateOnAuthStatus : Auth.Status -> Model -> ( Model, Cmd msg )
+updateOnAuthStatus status model =
+    ( { model | authStatus = status }
+    , case status of
+        Auth.LoggedOut ->
+            Navigation.newUrl "#welcome"
+
+        Auth.LoggedIn _ ->
+            Navigation.newUrl "#accounts"
+
+        _ ->
+            Cmd.none
+    )
 
 
 urlOfTab : Int -> String
