@@ -165,6 +165,11 @@ redirectAuthCmd outMsg model =
     ( model, outMsg |> Cmd.map AuthMsg )
 
 
+{-| Navigates to #acounts on log in, and to #welcome on log out.
+
+The model is also updated to retain the new authentication status.
+
+-}
 updateOnAuthStatus : Auth.Status -> Model -> ( Model, Cmd msg )
 updateOnAuthStatus status model =
     ( { model | authStatus = status }
