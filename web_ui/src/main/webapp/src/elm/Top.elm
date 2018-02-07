@@ -35,15 +35,17 @@ import Permissions
 import Roles
 import RouteUrl as Routing
 import String
-import Utils exposing (nth, lift)
+import Utils exposing (nth)
 import ViewUtils
 import Welcome
 import Material.Color as Color
+import Update exposing (lift)
 
 
 type alias Model =
     { welcome : Welcome.Model
     , auth : Auth.Model
+    , authStatus : Auth.Status
     , mdl : Material.Model
     , accounts : Accounts.Model
     , roles : Roles.Model
@@ -88,6 +90,7 @@ init : Config -> ( Model, Cmd Msg )
 init config =
     ( { welcome = Welcome.init
       , auth = Auth.init { authApiRoot = config.authRoot }
+      , authStatus = Auth.LoggedOut
       , mdl = Material.Layout.setTabsWidth 1384 Material.model
       , accounts = Accounts.init config
       , roles = Roles.init config
@@ -131,7 +134,24 @@ update action model =
             Material.update Mdl msg model
 
         AuthMsg msg ->
-            lift .auth (\x m -> { m | auth = x }) AuthMsg Auth.update msg model
+            let
+                interpretOutMsg status model =
+                    ( { model | authStatus = status }
+                    , case status of
+                        Auth.LoggedOut ->
+                            Navigation.newUrl "#welcome"
+
+                        Auth.LoggedIn _ ->
+                            Navigation.newUrl "#accounts"
+
+                        _ ->
+                            Cmd.none
+                    )
+            in
+                Auth.update msg model.auth
+                    |> OutMessage.mapComponent (\auth -> { model | auth = auth })
+                    |> OutMessage.mapCmd AuthMsg
+                    |> OutMessage.evaluateMaybe interpretOutMsg Cmd.none
 
         WelcomeMsg msg ->
             let
@@ -183,7 +203,7 @@ in order that a particular location can initialize itself.
 -}
 selectLocation : Model -> String -> ( Model, Cmd Msg )
 selectLocation model location =
-    case (Debug.log "selectLocation" Auth.getStatus model.auth) of
+    case (Debug.log "selectLocation" model.authStatus) of
         Auth.LoggedOut ->
             ( { model | forwardLocation = "#" ++ location }
             , if location /= "welcome" then
@@ -222,7 +242,7 @@ selectLocation model location =
 
 view : Model -> Html Msg
 view model =
-    case Auth.getStatus model.auth of
+    case model.authStatus of
         Auth.LoggedOut ->
             welcome model
 
