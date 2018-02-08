@@ -90,6 +90,7 @@ root model =
                                 [ Textfield.label "Username"
                                 , Textfield.floatingLabel
                                 , Textfield.text_
+                                , Textfield.value model.username
                                 , Options.onInput UpdateUsername
                                 ]
                                 []
@@ -100,6 +101,7 @@ root model =
                                 , Textfield.floatingLabel
                                 , Textfield.text_
                                 , Textfield.password
+                                , Textfield.value model.password
                                 , Options.onInput UpdatePassword
                                 ]
                                 []
@@ -152,6 +154,7 @@ notPermitted model =
                                 , Textfield.floatingLabel
                                 , Textfield.text_
                                 , Textfield.disabled
+                                , Textfield.value model.username
                                 ]
                                 []
                             , Textfield.render Mdl
@@ -162,6 +165,7 @@ notPermitted model =
                                 , Textfield.text_
                                 , Textfield.password
                                 , Textfield.disabled
+                                , Textfield.value model.password
                                 ]
                                 []
                             ]

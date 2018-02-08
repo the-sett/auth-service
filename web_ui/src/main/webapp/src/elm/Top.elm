@@ -82,7 +82,7 @@ init config =
     ( { welcome = Welcome.init
       , auth = Auth.init { authApiRoot = config.authRoot }
       , authStatus = Auth.LoggedOut
-      , mdl = Material.Layout.setTabsWidth 1384 Material.model
+      , mdl = Material.Layout.setTabsWidth 600 Material.model
       , accounts = Accounts.init config
       , roles = Roles.init config
       , permissions = Permissions.init config
