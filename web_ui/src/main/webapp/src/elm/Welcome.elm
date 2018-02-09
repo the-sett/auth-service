@@ -1,16 +1,21 @@
-module Welcome exposing (init, update, root, notPermitted, Model, Msg)
+module Welcome
+    exposing
+        ( Model
+        , Msg
+        , init
+        , update
+        , loginView
+        , notPermittedView
+        )
 
-import Platform.Cmd exposing (Cmd)
-import Material
 import Auth
 import Html exposing (Html, div, text, h4, img, form)
-import Html.Lazy
 import Html.Attributes exposing (title, class, href, src, action)
+import Material
 import Material.Button as Button
 import Material.Icon as Icon
 import Material.Textfield as Textfield
 import Material.Options as Options
-import ViewUtils
 
 
 type alias Model =
@@ -67,11 +72,16 @@ update action model =
             ( { model | password = str }, Cmd.none, Cmd.none )
 
 
-root : Model -> Html Msg
-root model =
+rhythm1SpacerDiv : Html msg
+rhythm1SpacerDiv =
+    div [ class "layout-spacer" ] []
+
+
+loginView : Model -> Html Msg
+loginView model =
     div []
         [ div [ class "layout-fixed-width--one-card" ]
-            [ ViewUtils.rhythm1SpacerDiv
+            [ rhythm1SpacerDiv
             , div [ class "mdl-grid" ]
                 [ div [ class "mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp" ]
                     [ div [ class "mdl-card__media" ]
@@ -130,11 +140,11 @@ root model =
         ]
 
 
-notPermitted : Model -> Html Msg
-notPermitted model =
+notPermittedView : Model -> Html Msg
+notPermittedView model =
     div []
         [ div [ class "layout-fixed-width--one-card" ]
-            [ ViewUtils.rhythm1SpacerDiv
+            [ rhythm1SpacerDiv
             , div [ class "mdl-grid" ]
                 [ div [ class "mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp" ]
                     [ div [ class "mdl-card__media" ]

@@ -397,12 +397,12 @@ header authenticated model =
 
 welcomeView : Model -> Html Msg
 welcomeView =
-    .welcome >> Welcome.root >> Html.map WelcomeMsg
+    .welcome >> Welcome.loginView >> Html.map WelcomeMsg
 
 
 notPermittedView : Model -> Html Msg
 notPermittedView =
-    .welcome >> Welcome.notPermitted >> Html.map WelcomeMsg
+    .welcome >> Welcome.notPermittedView >> Html.map WelcomeMsg
 
 
 tabs : List ( String, String, Model -> Html Msg )
