@@ -163,19 +163,28 @@ noop model =
 The model is also updated to retain the new authentication status.
 
 -}
-updateOnAuthStatus : Auth.Status -> Model -> ( Model, Cmd msg )
+updateOnAuthStatus : Auth.Status -> Model -> ( Model, Cmd Msg )
 updateOnAuthStatus status model =
-    ( { model | authStatus = status }
-    , case status of
+    case status of
         Auth.LoggedOut ->
-            Navigation.newUrl "#welcome"
+            ( { model | authStatus = status }
+            , Navigation.newUrl "#welcome"
+            )
 
-        Auth.LoggedIn _ ->
-            Navigation.newUrl "#accounts"
+        Auth.LoggedIn access ->
+            if List.member "auth-admin" access.scopes then
+                ( { model | authStatus = status }
+                , Navigation.newUrl "#accounts"
+                )
+            else
+                ( { model | authStatus = Auth.Failed }
+                , Navigation.newUrl "#welcome"
+                )
 
         _ ->
-            Cmd.none
-    )
+            ( { model | authStatus = status }
+            , Cmd.none
+            )
 
 
 urlOfTab : Int -> String

@@ -20,7 +20,7 @@ import Top
 
 
 main =
-    debugMain
+    routeMain
 
 
 debugMain =
