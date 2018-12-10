@@ -17,7 +17,6 @@ import Html.Attributes exposing (action, attribute, class, colspan, title)
 import Html.Events exposing (on)
 import Http
 import List.Extra
-import Listbox exposing (initiallySelected, items, listbox, onSelectedChanged)
 import Model
 import Role.Service
 import Set exposing (Set)
@@ -34,7 +33,6 @@ import Utils
         , toggleSet
         , valOrEmpty
         )
-import ViewUtils
 
 
 
@@ -48,8 +46,7 @@ type ViewState
 
 
 type alias Model =
-    { mdl : Material.Model
-    , config : Config
+    { config : Config
     , selected : Dict String Model.Account
     , accounts : Dict String Model.Account
     , accountToEdit : Maybe Model.Account
@@ -65,8 +62,7 @@ type alias Model =
 
 
 type Msg
-    = Mdl (Material.Msg Msg)
-    | AuthMsg Auth.Msg
+    = AuthMsg Auth.Msg
     | AccountApi Account.Service.Msg
     | RoleApi Role.Service.Msg
     | Init

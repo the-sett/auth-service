@@ -6,7 +6,6 @@ import Dict exposing (Dict)
 import Html exposing (Html, div, h4, span, text)
 import Html.Attributes exposing (action, class, colspan, title)
 import Http
-import Listbox exposing (initiallySelected, items, listbox, onSelectedChanged)
 import Model
 import Permission.Service
 import Platform.Cmd exposing (Cmd)
@@ -24,7 +23,6 @@ import Utils
         , toggleSet
         , valOrEmpty
         )
-import ViewUtils
 
 
 type ItemToEdit
