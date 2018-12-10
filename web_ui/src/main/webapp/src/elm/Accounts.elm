@@ -3,8 +3,8 @@ module Accounts exposing
     , Msg(..)
     , dialog
     , init
-    , root
     , update
+    , view
     )
 
 import Account.Service
@@ -63,8 +63,8 @@ type alias Model =
 
 type Msg
     = AuthMsg Auth.Msg
-    | AccountApi Account.Service.Msg
-    | RoleApi Role.Service.Msg
+    | AccountApi
+    | RoleApi
     | Init
     | Toggle String
     | ToggleAll
@@ -257,24 +257,16 @@ isEditedAndValid model =
 
 
 -- Account REST API calls
-
-
-accountCallbacks : Account.Service.Callbacks Model Msg
-accountCallbacks =
-    let
-        default =
-            Account.Service.callbacks
-    in
-    { default
-        | findAll = accountList
-        , findByExample = accountList
-        , create = accountCreate
-        , retrieve = accountToEdit
-        , update = accountSaved
-        , delete = accountDelete
-        , deleteError = accountDeleteError
-        , error = error AuthMsg
-    }
+-- { default
+--     | findAll = accountList
+--     , findByExample = accountList
+--     , create = accountCreate
+--     , retrieve = accountToEdit
+--     , update = accountSaved
+--     , delete = accountDelete
+--     , deleteError = accountDeleteError
+--     , error = error AuthMsg
+-- }
 
 
 accountList : List Model.Account -> Model -> ( Model, Cmd msg )
@@ -336,18 +328,10 @@ accountDeleteError error model =
 
 
 -- Role REST API calls
-
-
-roleCallbacks : Role.Service.Callbacks Model Msg
-roleCallbacks =
-    let
-        default =
-            Role.Service.callbacks
-    in
-    { default
-        | findAll = roleList
-        , error = error AuthMsg
-    }
+-- { default
+--     | findAll = roleList
+--     , error = error AuthMsg
+-- }
 
 
 roleList : List Model.Role -> Model -> ( Model, Cmd msg )
@@ -365,11 +349,11 @@ update action model =
         AuthMsg authMsg ->
             ( model, Cmd.none )
 
-        AccountApi action_ ->
-            Account.Service.update accountCallbacks action_ model
+        AccountApi ->
+            ( model, Cmd.none )
 
-        RoleApi action_ ->
-            Role.Service.update roleCallbacks action_ model
+        RoleApi ->
+            ( model, Cmd.none )
 
         Init ->
             updateInit model
@@ -428,37 +412,39 @@ updateInit model =
 
 updateToggleAll : Model -> ( Model, Cmd Msg )
 updateToggleAll model =
-    { model
+    ( { model
         | selected =
             if allSelected model then
                 Dict.empty
 
             else
                 model.accounts
-    }
-        ! []
+      }
+    , Cmd.none
+    )
 
 
 updateToggle : String -> Model -> ( Model, Cmd Msg )
 updateToggle k model =
     let
-        item =
+        maybeItem =
             Dict.get k model.accounts
     in
-    case item of
+    case maybeItem of
         Nothing ->
             ( model, Cmd.none )
 
         Just item ->
-            { model
+            ( { model
                 | selected =
                     if Dict.member k model.selected then
                         Dict.remove k model.selected
 
                     else
                         Dict.insert k item model.selected
-            }
-                ! []
+              }
+            , Cmd.none
+            )
 
 
 updateAdd : Model -> ( Model, Cmd Msg )
@@ -568,6 +554,7 @@ updateSave model =
                                 , root = Just False
                                 , roles = Just <| Dict.values model.selectedRoles
                                 , salt = Nothing
+                                , uuid = account.uuid
                                 }
                     in
                     ( model
@@ -583,11 +570,10 @@ updateSave model =
 -- Views
 
 
-root : Model -> Html Msg
-root model =
+view : Model -> Html Msg
+view model =
     div [ class "layout-fixed-width" ]
-        [ ViewUtils.rhythm1SpacerDiv
-        , case model.viewState of
+        [ case model.viewState of
             ListView ->
                 table model
 
@@ -601,29 +587,30 @@ root model =
 
 table : Model -> Html Msg
 table model =
-    div [ class "data-table__apron mdl-shadow--2dp" ]
-        [ Table.table [ cs "mdl-data-table mdl-js-data-table mdl-data-table--selectable" ]
-            [ Table.thead []
-                [ Table.tr []
-                    [ Table.th []
-                        [ Toggles.checkbox Mdl
-                            [ -1 ]
-                            model.mdl
-                            [ Options.onClick ToggleAll
-                            , Toggles.value (allSelected model)
-                            ]
-                            []
-                        ]
-                    , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Username" ]
-                    , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Roles" ]
-                    , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Actions" ]
-                    ]
-                ]
-            , Table.tbody []
-                (indexedFoldr (accountToRow model) [] model.accounts)
-            ]
-        , controlBar model
-        ]
+    -- div [ class "data-table__apron mdl-shadow--2dp" ]
+    --     [ Table.table [ cs "mdl-data-table mdl-js-data-table mdl-data-table--selectable" ]
+    --         [ Table.thead []
+    --             [ Table.tr []
+    --                 [ Table.th []
+    --                     [ Toggles.checkbox Mdl
+    --                         [ -1 ]
+    --                         model.mdl
+    --                         [ Options.onClick ToggleAll
+    --                         , Toggles.value (allSelected model)
+    --                         ]
+    --                         []
+    --                     ]
+    --                 , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Username" ]
+    --                 , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Roles" ]
+    --                 , Table.th [ cs "mdl-data-table__cell--non-numeric" ] [ text "Actions" ]
+    --                 ]
+    --             ]
+    --         , Table.tbody []
+    --             (indexedFoldr (accountToRow model) [] model.accounts)
+    --         ]
+    --     , controlBar model
+    --     ]
+    div [] []
 
 
 roleToChip : Model.Role -> List (Html Msg) -> List (Html Msg)
@@ -642,56 +629,58 @@ permissionToChip (Model.Permission permission) items =
 
 viewRow : Model -> Int -> String -> Model.Account -> Html Msg
 viewRow model idx id (Model.Account account) =
-    Table.tr
-        [ Table.selected |> Options.when (Dict.member id model.selected) ]
-        [ Table.td []
-            [ Toggles.checkbox Mdl
-                [ idx ]
-                model.mdl
-                [ Options.onClick (Toggle id)
-                , Toggles.value <| Dict.member id model.selected
-                ]
-                []
-            ]
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| valOrEmpty account.username ]
-        , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
-            (List.foldr roleToChip [] <| Maybe.withDefault [] account.roles)
-        , Table.td
-            [ cs "mdl-data-table__cell--non-numeric"
-            , css "width" "20%"
-            ]
-            [ Button.render Mdl
-                [ 0, idx ]
-                model.mdl
-                [ Button.accent
-                , Button.ripple
-                , Options.onClick (Edit id)
-                ]
-                [ text "Edit" ]
-            , Button.render Mdl
-                [ 0, 1, idx ]
-                model.mdl
-                [ Button.ripple
-                , Options.onClick (ToggleMore id)
-                ]
-                [ if moreSelected id model then
-                    Icon.i "expand_less"
-
-                  else
-                    Icon.i "expand_more"
-                ]
-            ]
-        ]
+    -- Table.tr
+    --     [ Table.selected |> Options.when (Dict.member id model.selected) ]
+    --     [ Table.td []
+    --         [ Toggles.checkbox Mdl
+    --             [ idx ]
+    --             model.mdl
+    --             [ Options.onClick (Toggle id)
+    --             , Toggles.value <| Dict.member id model.selected
+    --             ]
+    --             []
+    --         ]
+    --     , Table.td [ cs "mdl-data-table__cell--non-numeric" ] [ text <| valOrEmpty account.username ]
+    --     , Table.td [ cs "mdl-data-table__cell--non-numeric" ]
+    --         (List.foldr roleToChip [] <| Maybe.withDefault [] account.roles)
+    --     , Table.td
+    --         [ cs "mdl-data-table__cell--non-numeric"
+    --         , css "width" "20%"
+    --         ]
+    --         [ Button.render Mdl
+    --             [ 0, idx ]
+    --             model.mdl
+    --             [ Button.accent
+    --             , Button.ripple
+    --             , Options.onClick (Edit id)
+    --             ]
+    --             [ text "Edit" ]
+    --         , Button.render Mdl
+    --             [ 0, 1, idx ]
+    --             model.mdl
+    --             [ Button.ripple
+    --             , Options.onClick (ToggleMore id)
+    --             ]
+    --             [ if moreSelected id model then
+    --                 Icon.i "expand_less"
+    --
+    --               else
+    --                 Icon.i "expand_more"
+    --             ]
+    --         ]
+    --     ]
+    div [] []
 
 
 moreRow : Model -> Int -> String -> Model.Account -> Html Msg
 moreRow model idx id (Model.Account account) =
-    Table.tr []
-        [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric data-table__active-row" ]
-            (text "Permissions: "
-                :: (List.foldr permissionToChip [] <| conflatePermissions (Model.Account account))
-            )
-        ]
+    -- Table.tr []
+    --     [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric data-table__active-row" ]
+    --         (text "Permissions: "
+    --             :: (List.foldr permissionToChip [] <| conflatePermissions (Model.Account account))
+    --         )
+    --     ]
+    div [] []
 
 
 accountToRow : Model -> Int -> String -> Model.Account -> List (Html Msg) -> List (Html Msg)
@@ -712,143 +701,150 @@ accountToRow model idx id account items =
 
 controlBar : Model -> Html Msg
 controlBar model =
-    div [ class "control-bar" ]
-        [ div [ class "control-bar__row" ]
-            [ div [ class "control-bar__left-0" ]
-                [ span [ class "mdl-chip mdl-chip__text" ]
-                    [ text (toString (Dict.size model.accounts) ++ " items") ]
-                ]
-            , div [ class "control-bar__right-0" ]
-                [ Button.render Mdl
-                    [ 1, 0 ]
-                    model.mdl
-                    [ Button.fab
-                    , Button.colored
-                    , Button.ripple
-                    , Options.onClick Add
-                    ]
-                    [ Icon.i "add" ]
-                ]
-            , div [ class "control-bar__right-0" ]
-                [ Button.render Mdl
-                    [ 1, 1 ]
-                    model.mdl
-                    [ cs "mdl-button--warn"
-                    , if someSelected model then
-                        Button.ripple
-
-                      else
-                        Button.disabled
-                    , Options.onClick Delete
-                    , Dialog.openOn "click"
-                    ]
-                    [ text "Delete" ]
-                ]
-            ]
-        ]
+    -- div [ class "control-bar" ]
+    --     [ div [ class "control-bar__row" ]
+    --         [ div [ class "control-bar__left-0" ]
+    --             [ span [ class "mdl-chip mdl-chip__text" ]
+    --                 [ text (toString (Dict.size model.accounts) ++ " items") ]
+    --             ]
+    --         , div [ class "control-bar__right-0" ]
+    --             [ Button.render Mdl
+    --                 [ 1, 0 ]
+    --                 model.mdl
+    --                 [ Button.fab
+    --                 , Button.colored
+    --                 , Button.ripple
+    --                 , Options.onClick Add
+    --                 ]
+    --                 [ Icon.i "add" ]
+    --             ]
+    --         , div [ class "control-bar__right-0" ]
+    --             [ Button.render Mdl
+    --                 [ 1, 1 ]
+    --                 model.mdl
+    --                 [ cs "mdl-button--warn"
+    --                 , if someSelected model then
+    --                     Button.ripple
+    --
+    --                   else
+    --                     Button.disabled
+    --                 , Options.onClick Delete
+    --                 , Dialog.openOn "click"
+    --                 ]
+    --                 [ text "Delete" ]
+    --             ]
+    --         ]
+    --     ]
+    div [] []
 
 
 dialog model =
-    ViewUtils.confirmDialog model "Delete" Mdl ConfirmDelete
+    -- ViewUtils.confirmDialog model "Delete" Mdl ConfirmDelete
+    div [] []
 
 
 createAccountForm : Model -> Html Msg
 createAccountForm model =
-    Grid.grid []
-        [ ViewUtils.column644
-            [ Textfield.render Mdl
-                [ 1 ]
-                model.mdl
-                [ Textfield.label "Username"
-                , Textfield.floatingLabel
-                , Textfield.text_
-                , Options.onInput UpdateUsername
-                , Textfield.value <| valOrEmpty model.username
-                ]
-                []
-            , password1Field model
-            , password2Field model
-            ]
-        , ViewUtils.column644 (roleLookup model)
-        , ViewUtils.columnAll12
-            [ ViewUtils.okCancelControlBar
-                model.mdl
-                Mdl
-                (ViewUtils.completeButton model.mdl Mdl "Create" (validateCreateAccount model) Create)
-                (ViewUtils.cancelButton model.mdl Mdl "Back" Init)
-            ]
-        ]
+    -- Grid.grid []
+    --     [ ViewUtils.column644
+    --         [ Textfield.render Mdl
+    --             [ 1 ]
+    --             model.mdl
+    --             [ Textfield.label "Username"
+    --             , Textfield.floatingLabel
+    --             , Textfield.text_
+    --             , Options.onInput UpdateUsername
+    --             , Textfield.value <| valOrEmpty model.username
+    --             ]
+    --             []
+    --         , password1Field model
+    --         , password2Field model
+    --         ]
+    --     , ViewUtils.column644 (roleLookup model)
+    --     , ViewUtils.columnAll12
+    --         [ ViewUtils.okCancelControlBar
+    --             model.mdl
+    --             Mdl
+    --             (ViewUtils.completeButton model.mdl Mdl "Create" (validateCreateAccount model) Create)
+    --             (ViewUtils.cancelButton model.mdl Mdl "Back" Init)
+    --         ]
+    --     ]
+    div [] []
 
 
 editAccountForm : Model -> Html Msg
 editAccountForm model =
-    Grid.grid []
-        [ ViewUtils.column644
-            [ Textfield.render Mdl
-                [ 1 ]
-                model.mdl
-                [ Textfield.label "Username"
-                , Textfield.floatingLabel
-                , Textfield.text_
-                , Textfield.disabled
-                , Textfield.value <| valOrEmpty model.username
-                ]
-                []
-            , password1Field model
-            , password2Field model
-            ]
-        , ViewUtils.column644 (roleLookup model)
-        , ViewUtils.columnAll12
-            [ ViewUtils.okCancelControlBar
-                model.mdl
-                Mdl
-                (ViewUtils.completeButton model.mdl Mdl "Save" (isEditedAndValid model) Save)
-                (ViewUtils.cancelButton model.mdl Mdl "Back" Init)
-            ]
-        ]
+    -- Grid.grid []
+    --     [ ViewUtils.column644
+    --         [ Textfield.render Mdl
+    --             [ 1 ]
+    --             model.mdl
+    --             [ Textfield.label "Username"
+    --             , Textfield.floatingLabel
+    --             , Textfield.text_
+    --             , Textfield.disabled
+    --             , Textfield.value <| valOrEmpty model.username
+    --             ]
+    --             []
+    --         , password1Field model
+    --         , password2Field model
+    --         ]
+    --     , ViewUtils.column644 (roleLookup model)
+    --     , ViewUtils.columnAll12
+    --         [ ViewUtils.okCancelControlBar
+    --             model.mdl
+    --             Mdl
+    --             (ViewUtils.completeButton model.mdl Mdl "Save" (isEditedAndValid model) Save)
+    --             (ViewUtils.cancelButton model.mdl Mdl "Back" Init)
+    --         ]
+    --     ]
+    div [] []
 
 
 password1Field : Model -> Html Msg
 password1Field model =
-    Textfield.render
-        Mdl
-        [ 2 ]
-        model.mdl
-        [ Textfield.label "Password"
-        , Textfield.floatingLabel
-        , Textfield.password
-        , Options.onInput UpdatePassword1
-        , Textfield.value <| valOrEmpty model.password1
-        ]
-        []
+    -- Textfield.render
+    --     Mdl
+    --     [ 2 ]
+    --     model.mdl
+    --     [ Textfield.label "Password"
+    --     , Textfield.floatingLabel
+    --     , Textfield.password
+    --     , Options.onInput UpdatePassword1
+    --     , Textfield.value <| valOrEmpty model.password1
+    --     ]
+    --     []
+    div [] []
 
 
 password2Field : Model -> Html Msg
 password2Field model =
-    Textfield.render
-        Mdl
-        [ 3 ]
-        model.mdl
-        [ Textfield.label "Repeat Password"
-        , Textfield.floatingLabel
-        , Textfield.password
-        , Options.onInput UpdatePassword2
-        , Textfield.value <| valOrEmpty model.password2
-        , if checkPasswordMatch model then
-            Options.nop
-
-          else
-            Textfield.error <| "Passwords do not match."
-        ]
-        []
+    -- Textfield.render
+    --     Mdl
+    --     [ 3 ]
+    --     model.mdl
+    --     [ Textfield.label "Repeat Password"
+    --     , Textfield.floatingLabel
+    --     , Textfield.password
+    --     , Options.onInput UpdatePassword2
+    --     , Textfield.value <| valOrEmpty model.password2
+    --     , if checkPasswordMatch model then
+    --         Options.nop
+    --
+    --       else
+    --         Textfield.error <| "Passwords do not match."
+    --     ]
+    --     []
+    div [] []
 
 
 roleLookup : Model -> List (Html Msg)
 roleLookup model =
-    [ h4 [] [ text "Roles" ]
-    , listbox
-        [ items <| Dict.map (\id -> \(Model.Role role) -> valOrEmpty role.name) model.roleLookup
-        , initiallySelected <| Dict.map (\id -> \(Model.Role role) -> valOrEmpty role.name) model.selectedRoles
-        , onSelectedChanged SelectChanged
-        ]
-    ]
+    -- [ h4 [] [ text "Roles" ]
+    -- , listbox
+    --     [ items <| Dict.map (\id -> \(Model.Role role) -> valOrEmpty role.name) model.roleLookup
+    --     , initiallySelected <| Dict.map (\id -> \(Model.Role role) -> valOrEmpty role.name) model.selectedRoles
+    --     , onSelectedChanged SelectChanged
+    --     ]
+    -- ]
+    div [] []
