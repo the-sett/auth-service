@@ -168,7 +168,8 @@ verifierDecoder =
 -}
 type Account
     = Account
-        { username : Maybe String
+        { uuid : String
+        , username : Maybe String
         , password : Maybe String
         , salt : Maybe String
         , root : Maybe Bool
@@ -181,7 +182,8 @@ type Account
 -}
 accountEncoder : Account -> Encode.Value
 accountEncoder (Account model) =
-    [ Maybe.map (\username -> ( "username", Encode.string username )) model.username
+    [ Just ( "uuid", Encode.string model.uuid )
+    , Maybe.map (\username -> ( "username", Encode.string username )) model.username
     , Maybe.map (\password -> ( "password", Encode.string password )) model.password
     , Maybe.map (\salt -> ( "salt", Encode.string salt )) model.salt
     , Maybe.map (\root -> ( "root", Encode.bool root )) model.root
@@ -197,9 +199,10 @@ accountEncoder (Account model) =
 accountDecoder : Decoder Account
 accountDecoder =
     Decode.succeed
-        (\username password salt root roles id ->
+        (\uuid username password salt root roles id ->
             Account
-                { username = username
+                { uuid = uuid
+                , username = username
                 , password = password
                 , salt = salt
                 , root = root
@@ -207,6 +210,7 @@ accountDecoder =
                 , id = id
                 }
         )
+        |> andMap (field "uuid" Decode.string)
         |> andMap (Decode.maybe (field "username" Decode.string))
         |> andMap (Decode.maybe (field "password" Decode.string))
         |> andMap (Decode.maybe (field "salt" Decode.string))
