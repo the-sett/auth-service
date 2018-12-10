@@ -1,37 +1,27 @@
-module Permissions exposing (Model, Msg(..), init, update, root, dialog)
+module Permissions exposing (Model, Msg(..), dialog, init, root, update)
 
 import Auth
 import Config exposing (Config)
 import Dict exposing (Dict)
-import Html.Attributes exposing (title, class, action, colspan)
-import Html exposing (Html, div, text, span)
+import Html exposing (Html, div, span, text)
+import Html.Attributes exposing (action, class, colspan, title)
 import Http
-import Listbox exposing (listbox, onSelectedChanged, items, initiallySelected)
-import Material
-import Material.Button as Button
-import Material.Chip as Chip
-import Material.Dialog as Dialog
-import Material.Grid as Grid
-import Material.Icon as Icon
-import Material.Options as Options exposing (Style, cs, css, nop, disabled, attribute)
-import Material.Table as Table
-import Material.Textfield as Textfield
-import Material.Toggles as Toggles
+import Listbox exposing (initiallySelected, items, listbox, onSelectedChanged)
 import Model
 import Permission.Service
 import Platform.Cmd exposing (Cmd)
 import Task.Extra exposing (message)
 import Utils
     exposing
-        ( error
-        , checkAll
-        , indexedFoldr
-        , valOrEmpty
-        , leftIntersect
+        ( checkAll
         , cleanString
-        , toggleSet
         , dictifyEntities
+        , error
+        , indexedFoldr
+        , leftIntersect
         , symDiff
+        , toggleSet
+        , valOrEmpty
         )
 import ViewUtils
 
@@ -142,7 +132,7 @@ isChangePermissionName model =
 
 isEditedAndValid : Model -> Bool
 isEditedAndValid model =
-    (validateEditAccount model) && (isChangePermissionName model)
+    validateEditAccount model && isChangePermissionName model
 
 
 
@@ -155,14 +145,14 @@ permissionCallbacks =
         default =
             Permission.Service.callbacks
     in
-        { default
-            | findAll = permissionList
-            , create = permissionCreate
-            , update = permissionSaved
-            , delete = permissionDelete
-            , deleteError = permissionDeleteError
-            , error = error AuthMsg
-        }
+    { default
+        | findAll = permissionList
+        , create = permissionCreate
+        , update = permissionSaved
+        , delete = permissionDelete
+        , deleteError = permissionDeleteError
+        , error = error AuthMsg
+    }
 
 
 permissionList : List Model.Permission -> Model -> ( Model, Cmd msg )
@@ -191,12 +181,13 @@ permissionDelete id model =
         numToDelete =
             model.numToDelete - 1
     in
-        ( { model | permissions = newPermissions }
-        , if numToDelete == 0 then
-            message Init
-          else
-            Cmd.none
-        )
+    ( { model | permissions = newPermissions }
+    , if numToDelete == 0 then
+        message Init
+
+      else
+        Cmd.none
+    )
 
 
 permissionDeleteError : Http.Error -> Model -> ( Model, Cmd Msg )
@@ -205,17 +196,18 @@ permissionDeleteError error model =
         numToDelete =
             model.numToDelete - 1
     in
-        ( { model | numToDelete = numToDelete }
-        , if numToDelete == 0 then
-            message Init
-          else
-            Cmd.none
-        )
+    ( { model | numToDelete = numToDelete }
+    , if numToDelete == 0 then
+        message Init
+
+      else
+        Cmd.none
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
-    case (Debug.log "permissions" action) of
+    case Debug.log "permissions" action of
         Mdl action_ ->
             Material.update Mdl action_ model
 
@@ -264,6 +256,7 @@ updateToggleAll model =
         | selected =
             if allSelected model then
                 Dict.empty
+
             else
                 model.permissions
     }
@@ -276,19 +269,20 @@ updateToggle id model =
         item =
             Dict.get id model.permissions
     in
-        case item of
-            Nothing ->
-                ( model, Cmd.none )
+    case item of
+        Nothing ->
+            ( model, Cmd.none )
 
-            Just item ->
-                { model
-                    | selected =
-                        if Dict.member id model.selected then
-                            Dict.remove id model.selected
-                        else
-                            Dict.insert id item model.selected
-                }
-                    ! []
+        Just item ->
+            { model
+                | selected =
+                    if Dict.member id model.selected then
+                        Dict.remove id model.selected
+
+                    else
+                        Dict.insert id item model.selected
+            }
+                ! []
 
 
 updateAdd model =
@@ -306,39 +300,39 @@ updateEdit id model =
         item =
             Dict.get id model.permissions
     in
-        case item of
-            Nothing ->
-                ( model, Cmd.none )
+    case item of
+        Nothing ->
+            ( model, Cmd.none )
 
-            Just permissionRec ->
-                let
-                    (Model.Permission permission) =
-                        permissionRec
-                in
-                    ( { model
-                        | permissionName = permission.name
-                        , permissionToEdit = WithId id permissionRec
-                      }
-                    , Cmd.none
-                    )
+        Just permissionRec ->
+            let
+                (Model.Permission permission) =
+                    permissionRec
+            in
+            ( { model
+                | permissionName = permission.name
+                , permissionToEdit = WithId id permissionRec
+              }
+            , Cmd.none
+            )
 
 
 updateConfirmDelete model =
     let
         toDelete =
-            (Dict.keys <| Dict.intersect model.permissions model.selected)
+            Dict.keys <| Dict.intersect model.permissions model.selected
     in
-        ( { model
-            | selected = Dict.empty
-            , numToDelete = model.numToDelete + List.length toDelete
-          }
-        , List.map
-            (\id ->
-                Permission.Service.invokeDelete model.config.apiRoot PermissionApi id
-            )
-            toDelete
-            |> Cmd.batch
+    ( { model
+        | selected = Dict.empty
+        , numToDelete = model.numToDelete + List.length toDelete
+      }
+    , List.map
+        (\id ->
+            Permission.Service.invokeDelete model.config.apiRoot PermissionApi id
         )
+        toDelete
+        |> Cmd.batch
+    )
 
 
 updateSave model =
@@ -354,13 +348,13 @@ updateSave model =
                         , name = model.permissionName
                         }
             in
-                ( model
-                , Permission.Service.invokeUpdate
-                    model.config.apiRoot
-                    PermissionApi
-                    id
-                    modifiedPermission
-                )
+            ( model
+            , Permission.Service.invokeUpdate
+                model.config.apiRoot
+                PermissionApi
+                id
+                modifiedPermission
+            )
 
         New ->
             ( model
@@ -404,9 +398,10 @@ table model =
                 ]
             , Table.tbody []
                 (if model.permissionToEdit == New then
-                    (indexedFoldr (permissionToRow model) [ addRow model ] model.permissions)
+                    indexedFoldr (permissionToRow model) [ addRow model ] model.permissions
+
                  else
-                    (indexedFoldr (permissionToRow model) [] model.permissions)
+                    indexedFoldr (permissionToRow model) [] model.permissions
                 )
             ]
         , controlBar model
@@ -432,7 +427,7 @@ permissionForm model isValid completeText =
             [ ViewUtils.okCancelControlBar
                 model.mdl
                 Mdl
-                (ViewUtils.completeButton model.mdl Mdl completeText (isValid) Save)
+                (ViewUtils.completeButton model.mdl Mdl completeText isValid Save)
                 (ViewUtils.cancelButton model.mdl Mdl "Cancel" Init)
             ]
         ]
@@ -458,7 +453,7 @@ editRow model idx id (Model.Permission permission) =
 
 viewRow : Model -> Int -> String -> Model.Permission -> Html Msg
 viewRow model idx id (Model.Permission permission) =
-    (Table.tr
+    Table.tr
         [ Table.selected |> Options.when (Dict.member id model.selected)
         , cs "data-table__inactive-row" |> Options.when (model.permissionToEdit /= None)
         ]
@@ -483,6 +478,7 @@ viewRow model idx id (Model.Permission permission) =
                 [ Button.accent
                 , if model.permissionToEdit /= None then
                     Button.disabled
+
                   else
                     Button.ripple
                 , Options.onClick (Edit id)
@@ -490,7 +486,6 @@ viewRow model idx id (Model.Permission permission) =
                 [ text "Edit" ]
             ]
         ]
-    )
 
 
 permissionToRow : Model -> Int -> String -> Model.Permission -> List (Html Msg) -> List (Html Msg)
@@ -502,27 +497,27 @@ permissionToRow model idx id permission items =
         showAsView =
             viewRow model idx id permission
     in
-        (case model.permissionToEdit of
-            WithId editId _ ->
-                if (editId == id) then
-                    showAsEdit
-                else
-                    showAsView
+    (case model.permissionToEdit of
+        WithId editId _ ->
+            if editId == id then
+                showAsEdit
 
-            New ->
+            else
                 showAsView
 
-            None ->
-                showAsView
-        )
-            :: items
+        New ->
+            showAsView
+
+        None ->
+            showAsView
+    )
+        :: items
 
 
 permissionToChip : Model.Permission -> List (Html Msg) -> List (Html Msg)
 permissionToChip (Model.Permission permission) items =
-    (span [ class "mdl-chip mdl-chip__text" ]
+    span [ class "mdl-chip mdl-chip__text" ]
         [ text <| valOrEmpty permission.name ]
-    )
         :: items
 
 
@@ -542,6 +537,7 @@ controlBar model =
                     , Button.colored
                     , if model.permissionToEdit /= None then
                         Button.disabled
+
                       else
                         Button.ripple
                     , Options.onClick Add
@@ -553,8 +549,9 @@ controlBar model =
                     [ 1, 1 ]
                     model.mdl
                     [ cs "mdl-button--warn"
-                    , if (someSelected model) && (model.permissionToEdit == None) then
+                    , if someSelected model && (model.permissionToEdit == None) then
                         Button.ripple
+
                       else
                         Button.disabled
                     , Options.onClick Delete

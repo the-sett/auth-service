@@ -1,50 +1,41 @@
-module Accounts
-    exposing
-        ( Model
-        , Msg(..)
-        , init
-        , update
-        , root
-        , dialog
-        )
+module Accounts exposing
+    ( Model
+    , Msg(..)
+    , dialog
+    , init
+    , root
+    , update
+    )
 
 import Account.Service
 import Array exposing (Array)
 import Auth
 import Config exposing (Config)
 import Dict exposing (Dict)
-import Html.Attributes exposing (title, class, action, attribute, colspan)
+import Html exposing (Html, div, h4, span, text)
+import Html.Attributes exposing (action, attribute, class, colspan, title)
 import Html.Events exposing (on)
-import Html exposing (Html, div, span, h4, text)
 import Http
-import Listbox exposing (listbox, onSelectedChanged, items, initiallySelected)
 import List.Extra
-import Material
-import Material.Button as Button
-import Material.Dialog as Dialog
-import Material.Grid as Grid
-import Material.Icon as Icon
-import Material.Options as Options exposing (Style, cs, nop, disabled, css)
-import Material.Table as Table
-import Material.Textfield as Textfield
-import Material.Toggles as Toggles
+import Listbox exposing (initiallySelected, items, listbox, onSelectedChanged)
 import Model
 import Role.Service
 import Set exposing (Set)
 import Task.Extra exposing (message)
 import Utils
     exposing
-        ( error
-        , checkAll
-        , indexedFoldr
-        , valOrEmpty
-        , leftIntersect
+        ( checkAll
         , cleanString
-        , toggleSet
         , dictifyEntities
+        , error
+        , indexedFoldr
+        , leftIntersect
         , symDiff
+        , toggleSet
+        , valOrEmpty
         )
 import ViewUtils
+
 
 
 -- Model and its manipulations
@@ -184,13 +175,13 @@ conflatePermissions (Model.Account account) =
                 Just permissions ->
                     permissions
     in
-        case account.roles of
-            Nothing ->
-                []
+    case account.roles of
+        Nothing ->
+            []
 
-            Just roles ->
-                List.concatMap conflateRoles roles
-                    |> List.Extra.uniqueBy (unwrapPermission >> .id >> (Maybe.withDefault ""))
+        Just roles ->
+            List.concatMap conflateRoles roles
+                |> List.Extra.uniqueBy (unwrapPermission >> .id >> Maybe.withDefault "")
 
 
 
@@ -260,13 +251,13 @@ isChangeRoles model =
             False
 
         Just account ->
-            not (Dict.isEmpty (symDiff (roleDictFromAccount account) (model.selectedRoles)))
+            not (Dict.isEmpty (symDiff (roleDictFromAccount account) model.selectedRoles))
 
 
 isEditedAndValid : Model -> Bool
 isEditedAndValid model =
-    (validateEditAccount model)
-        && ((isChangePassword model) || (isChangeRoles model))
+    validateEditAccount model
+        && (isChangePassword model || isChangeRoles model)
 
 
 
@@ -279,16 +270,16 @@ accountCallbacks =
         default =
             Account.Service.callbacks
     in
-        { default
-            | findAll = accountList
-            , findByExample = accountList
-            , create = accountCreate
-            , retrieve = accountToEdit
-            , update = accountSaved
-            , delete = accountDelete
-            , deleteError = accountDeleteError
-            , error = error AuthMsg
-        }
+    { default
+        | findAll = accountList
+        , findByExample = accountList
+        , create = accountCreate
+        , retrieve = accountToEdit
+        , update = accountSaved
+        , delete = accountDelete
+        , deleteError = accountDeleteError
+        , error = error AuthMsg
+    }
 
 
 accountList : List Model.Account -> Model -> ( Model, Cmd msg )
@@ -324,12 +315,13 @@ accountDelete id model =
         numToDelete =
             model.numToDelete - 1
     in
-        ( { model | accounts = newAccounts, numToDelete = numToDelete }
-        , if numToDelete == 0 then
-            message Init
-          else
-            Cmd.none
-        )
+    ( { model | accounts = newAccounts, numToDelete = numToDelete }
+    , if numToDelete == 0 then
+        message Init
+
+      else
+        Cmd.none
+    )
 
 
 accountDeleteError : Http.Error -> Model -> ( Model, Cmd Msg )
@@ -338,12 +330,13 @@ accountDeleteError error model =
         numToDelete =
             model.numToDelete - 1
     in
-        ( { model | numToDelete = numToDelete }
-        , if numToDelete == 0 then
-            message Init
-          else
-            Cmd.none
-        )
+    ( { model | numToDelete = numToDelete }
+    , if numToDelete == 0 then
+        message Init
+
+      else
+        Cmd.none
+    )
 
 
 
@@ -356,10 +349,10 @@ roleCallbacks =
         default =
             Role.Service.callbacks
     in
-        { default
-            | findAll = roleList
-            , error = error AuthMsg
-        }
+    { default
+        | findAll = roleList
+        , error = error AuthMsg
+    }
 
 
 roleList : List Model.Role -> Model -> ( Model, Cmd msg )
@@ -373,7 +366,7 @@ roleList roles model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
-    case (Debug.log "accounts" action) of
+    case Debug.log "accounts" action of
         Mdl action_ ->
             Material.update Mdl action_ model
 
@@ -447,6 +440,7 @@ updateToggleAll model =
         | selected =
             if allSelected model then
                 Dict.empty
+
             else
                 model.accounts
     }
@@ -459,19 +453,20 @@ updateToggle k model =
         item =
             Dict.get k model.accounts
     in
-        case item of
-            Nothing ->
-                ( model, Cmd.none )
+    case item of
+        Nothing ->
+            ( model, Cmd.none )
 
-            Just item ->
-                { model
-                    | selected =
-                        if Dict.member k model.selected then
-                            Dict.remove k model.selected
-                        else
-                            Dict.insert k item model.selected
-                }
-                    ! []
+        Just item ->
+            { model
+                | selected =
+                    if Dict.member k model.selected then
+                        Dict.remove k model.selected
+
+                    else
+                        Dict.insert k item model.selected
+            }
+                ! []
 
 
 updateAdd : Model -> ( Model, Cmd Msg )
@@ -480,9 +475,9 @@ updateAdd model =
         resetModel =
             resetAccountForm model
     in
-        ( { resetModel | viewState = CreateView }
-        , Role.Service.invokeFindAll model.config.apiRoot RoleApi
-        )
+    ( { resetModel | viewState = CreateView }
+    , Role.Service.invokeFindAll model.config.apiRoot RoleApi
+    )
 
 
 updateConfirmDelete : Model -> ( Model, Cmd Msg )
@@ -498,17 +493,17 @@ updateConfirmDelete model =
             Dict.filter (\_ -> nonRootFilter) selectedAccounts
                 |> Dict.keys
     in
-        ( { model
-            | selected = Dict.empty
-            , numToDelete = model.numToDelete + List.length toDelete
-          }
-        , List.map
-            (\id ->
-                Account.Service.invokeDelete model.config.apiRoot AccountApi id
-            )
-            (toDelete)
-            |> Cmd.batch
+    ( { model
+        | selected = Dict.empty
+        , numToDelete = model.numToDelete + List.length toDelete
+      }
+    , List.map
+        (\id ->
+            Account.Service.invokeDelete model.config.apiRoot AccountApi id
         )
+        toDelete
+        |> Cmd.batch
+    )
 
 
 updateEdit : String -> Model -> ( Model, Cmd Msg )
@@ -517,30 +512,30 @@ updateEdit id model =
         item =
             Dict.get id model.accounts
     in
-        case item of
-            Nothing ->
-                ( model, Cmd.none )
+    case item of
+        Nothing ->
+            ( model, Cmd.none )
 
-            Just accountRec ->
-                let
-                    (Model.Account account) =
-                        accountRec
+        Just accountRec ->
+            let
+                (Model.Account account) =
+                    accountRec
 
-                    resetModel =
-                        resetAccountForm model
+                resetModel =
+                    resetAccountForm model
 
-                    selectedRoles =
-                        roleDictFromAccount accountRec
-                in
-                    ( { resetModel
-                        | username = account.username
-                        , selectedRoles = selectedRoles
-                      }
-                    , Cmd.batch
-                        [ Account.Service.invokeRetrieve model.config.apiRoot AccountApi id
-                        , Role.Service.invokeFindAll model.config.apiRoot RoleApi
-                        ]
-                    )
+                selectedRoles =
+                    roleDictFromAccount accountRec
+            in
+            ( { resetModel
+                | username = account.username
+                , selectedRoles = selectedRoles
+              }
+            , Cmd.batch
+                [ Account.Service.invokeRetrieve model.config.apiRoot AccountApi id
+                , Role.Service.invokeFindAll model.config.apiRoot RoleApi
+                ]
+            )
 
 
 updateCreate : Model -> ( Model, Cmd Msg )
@@ -583,13 +578,13 @@ updateSave model =
                                 , salt = Nothing
                                 }
                     in
-                        ( model
-                        , Account.Service.invokeUpdate
-                            model.config.apiRoot
-                            AccountApi
-                            id
-                            modifiedAccount
-                        )
+                    ( model
+                    , Account.Service.invokeUpdate
+                        model.config.apiRoot
+                        AccountApi
+                        id
+                        modifiedAccount
+                    )
 
 
 
@@ -641,23 +636,21 @@ table model =
 
 roleToChip : Model.Role -> List (Html Msg) -> List (Html Msg)
 roleToChip (Model.Role role) items =
-    (span [ class "mdl-chip mdl-chip__text" ]
+    span [ class "mdl-chip mdl-chip__text" ]
         [ text <| valOrEmpty role.name ]
-    )
         :: items
 
 
 permissionToChip : Model.Permission -> List (Html Msg) -> List (Html Msg)
 permissionToChip (Model.Permission permission) items =
-    (span [ class "mdl-chip mdl-chip__text" ]
+    span [ class "mdl-chip mdl-chip__text" ]
         [ text <| valOrEmpty permission.name ]
-    )
         :: items
 
 
 viewRow : Model -> Int -> String -> Model.Account -> Html Msg
 viewRow model idx id (Model.Account account) =
-    (Table.tr
+    Table.tr
         [ Table.selected |> Options.when (Dict.member id model.selected) ]
         [ Table.td []
             [ Toggles.checkbox Mdl
@@ -691,19 +684,19 @@ viewRow model idx id (Model.Account account) =
                 ]
                 [ if moreSelected id model then
                     Icon.i "expand_less"
+
                   else
                     Icon.i "expand_more"
                 ]
             ]
         ]
-    )
 
 
 moreRow : Model -> Int -> String -> Model.Account -> Html Msg
 moreRow model idx id (Model.Account account) =
     Table.tr []
         [ Html.td [ colspan 4, class "mdl-data-table__cell--non-numeric data-table__active-row" ]
-            ((text "Permissions: ")
+            (text "Permissions: "
                 :: (List.foldr permissionToChip [] <| conflatePermissions (Model.Account account))
             )
         ]
@@ -715,13 +708,14 @@ accountToRow model idx id account items =
         more =
             moreRow model idx id account
     in
-        if moreSelected id model then
-            (viewRow model idx id account)
-                :: more
-                :: items
-        else
-            (viewRow model idx id account)
-                :: items
+    if moreSelected id model then
+        viewRow model idx id account
+            :: more
+            :: items
+
+    else
+        viewRow model idx id account
+            :: items
 
 
 controlBar : Model -> Html Msg
@@ -750,6 +744,7 @@ controlBar model =
                     [ cs "mdl-button--warn"
                     , if someSelected model then
                         Button.ripple
+
                       else
                         Button.disabled
                     , Options.onClick Delete
@@ -849,6 +844,7 @@ password2Field model =
         , Textfield.value <| valOrEmpty model.password2
         , if checkPasswordMatch model then
             Options.nop
+
           else
             Textfield.error <| "Passwords do not match."
         ]

@@ -1,13 +1,12 @@
-port module Listbox exposing (listbox, items, initiallySelected, onSelectedChanged)
+port module Listbox exposing (initiallySelected, items, listbox, onSelectedChanged)
 
 import Dict exposing (Dict)
+import Html exposing (Attribute, Html, button, div, node, program, span, text)
+import Html.Attributes exposing (attribute, class, property)
+import Html.Events exposing (on, onClick, onMouseOut, onMouseOver)
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Html exposing (Attribute, Html, text, button, span, div, node, program)
-import Html.Attributes exposing (attribute, class, property)
-import Html.Events exposing (on, onClick, onMouseOver, onMouseOut)
-import Material
-import Material.Toggles as Toggles
+
 
 
 -- The exposed API
@@ -20,12 +19,12 @@ listbox attrs =
 
 items : Dict String String -> Attribute msg
 items val =
-    property "items" <| (encodeItems (Dict.toList val))
+    property "items" <| encodeItems (Dict.toList val)
 
 
 initiallySelected : Dict String String -> Attribute msg
 initiallySelected val =
-    property "initiallySelected" <| (encodeItems (Dict.toList val))
+    property "initiallySelected" <| encodeItems (Dict.toList val)
 
 
 onItemArrayChanged : String -> (Dict String String -> msg) -> Attribute msg
@@ -127,29 +126,33 @@ itemsToList model listIdx ( idx, value ) =
         selectAttrs =
             if selected then
                 (onClick <| Deselect idx) :: attrs
+
             else
                 (onClick <| Select idx) :: attrs
 
         styleAttrs =
             if hover && selected then
                 class "wood-selected wood-highlight" :: selectAttrs
+
             else if hover && not selected then
                 class "wood-highlight" :: selectAttrs
+
             else if not hover && selected then
                 class "wood-selected" :: selectAttrs
+
             else
                 selectAttrs
     in
-        woodItem
-            styleAttrs
-            [ Toggles.checkbox Mdl
-                [ listIdx ]
-                model.mdl
-                [ Toggles.ripple
-                , Toggles.value selected
-                ]
-                [ text value ]
+    woodItem
+        styleAttrs
+        [ Toggles.checkbox Mdl
+            [ listIdx ]
+            model.mdl
+            [ Toggles.ripple
+            , Toggles.value selected
             ]
+            [ text value ]
+        ]
 
 
 type Msg
@@ -175,15 +178,15 @@ update msg model =
             ( { model | selectedItems = Dict.fromList items }, Cmd.none )
 
         Select idx ->
-            case (Dict.get idx model.items) of
+            case Dict.get idx model.items of
                 Just value ->
                     let
                         newSelection =
                             Dict.insert idx value model.selectedItems
                     in
-                        ( { model | selectedItems = newSelection }
-                        , Dict.toList newSelection |> setSelected
-                        )
+                    ( { model | selectedItems = newSelection }
+                    , Dict.toList newSelection |> setSelected
+                    )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -193,9 +196,9 @@ update msg model =
                 newSelection =
                     Dict.remove idx model.selectedItems
             in
-                ( { model | selectedItems = newSelection }
-                , Dict.toList newSelection |> setSelected
-                )
+            ( { model | selectedItems = newSelection }
+            , Dict.toList newSelection |> setSelected
+            )
 
         MouseOver idx ->
             ( { model | hoverItem = Just idx }, Cmd.none )

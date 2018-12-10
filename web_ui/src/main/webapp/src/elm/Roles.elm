@@ -1,22 +1,12 @@
-module Roles exposing (Model, Msg(..), init, update, root, dialog)
+module Roles exposing (Model, Msg(..), dialog, init, root, update)
 
 import Auth
 import Config exposing (Config)
 import Dict exposing (Dict)
-import Html.Attributes exposing (title, class, action, colspan)
-import Html exposing (Html, div, text, span, h4)
+import Html exposing (Html, div, h4, span, text)
+import Html.Attributes exposing (action, class, colspan, title)
 import Http
-import Listbox exposing (listbox, onSelectedChanged, items, initiallySelected)
-import Material
-import Material.Button as Button
-import Material.Chip as Chip
-import Material.Dialog as Dialog
-import Material.Grid as Grid
-import Material.Icon as Icon
-import Material.Options as Options exposing (Style, cs, css, nop, disabled, attribute)
-import Material.Table as Table
-import Material.Textfield as Textfield
-import Material.Toggles as Toggles
+import Listbox exposing (initiallySelected, items, listbox, onSelectedChanged)
 import Model
 import Permission.Service
 import Platform.Cmd exposing (Cmd)
@@ -24,15 +14,15 @@ import Role.Service
 import Task.Extra exposing (message)
 import Utils
     exposing
-        ( error
-        , checkAll
-        , indexedFoldr
-        , valOrEmpty
-        , leftIntersect
+        ( checkAll
         , cleanString
-        , toggleSet
         , dictifyEntities
+        , error
+        , indexedFoldr
+        , leftIntersect
         , symDiff
+        , toggleSet
+        , valOrEmpty
         )
 import ViewUtils
 
@@ -178,13 +168,13 @@ isChangePermissions model =
             False
 
         WithId _ role ->
-            not (Dict.isEmpty (symDiff (permissionDictFromRole role) (model.selectedPermissions)))
+            not (Dict.isEmpty (symDiff (permissionDictFromRole role) model.selectedPermissions))
 
 
 isEditedAndValid : Model -> Bool
 isEditedAndValid model =
-    (validateEditAccount model)
-        && ((isChangeRoleName model) || (isChangePermissions model))
+    validateEditAccount model
+        && (isChangeRoleName model || isChangePermissions model)
 
 
 
@@ -197,14 +187,14 @@ roleCallbacks =
         default =
             Role.Service.callbacks
     in
-        { default
-            | findAll = roleList
-            , create = roleCreate
-            , update = roleSaved
-            , delete = roleDelete
-            , deleteError = roleDeleteError
-            , error = error AuthMsg
-        }
+    { default
+        | findAll = roleList
+        , create = roleCreate
+        , update = roleSaved
+        , delete = roleDelete
+        , deleteError = roleDeleteError
+        , error = error AuthMsg
+    }
 
 
 roleList : List Model.Role -> Model -> ( Model, Cmd msg )
@@ -233,12 +223,13 @@ roleDelete id model =
         numToDelete =
             model.numToDelete - 1
     in
-        ( { model | roles = newRoles }
-        , if numToDelete == 0 then
-            message Init
-          else
-            Cmd.none
-        )
+    ( { model | roles = newRoles }
+    , if numToDelete == 0 then
+        message Init
+
+      else
+        Cmd.none
+    )
 
 
 roleDeleteError : Http.Error -> Model -> ( Model, Cmd Msg )
@@ -247,12 +238,13 @@ roleDeleteError error model =
         numToDelete =
             model.numToDelete - 1
     in
-        ( { model | numToDelete = numToDelete }
-        , if numToDelete == 0 then
-            message Init
-          else
-            Cmd.none
-        )
+    ( { model | numToDelete = numToDelete }
+    , if numToDelete == 0 then
+        message Init
+
+      else
+        Cmd.none
+    )
 
 
 
@@ -265,10 +257,10 @@ permissionCallbacks =
         default =
             Permission.Service.callbacks
     in
-        { default
-            | findAll = permissionList
-            , error = error AuthMsg
-        }
+    { default
+        | findAll = permissionList
+        , error = error AuthMsg
+    }
 
 
 permissionList : List Model.Permission -> Model -> ( Model, Cmd msg )
@@ -282,7 +274,7 @@ permissionList permissions model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
-    case (Debug.log "permissions" action) of
+    case Debug.log "permissions" action of
         Mdl action_ ->
             Material.update Mdl action_ model
 
@@ -337,6 +329,7 @@ updateToggleAll model =
         | selected =
             if allSelected model then
                 Dict.empty
+
             else
                 model.roles
     }
@@ -349,19 +342,20 @@ updateToggle id model =
         item =
             Dict.get id model.roles
     in
-        case item of
-            Nothing ->
-                ( model, Cmd.none )
+    case item of
+        Nothing ->
+            ( model, Cmd.none )
 
-            Just item ->
-                { model
-                    | selected =
-                        if Dict.member id model.selected then
-                            Dict.remove id model.selected
-                        else
-                            Dict.insert id item model.selected
-                }
-                    ! []
+        Just item ->
+            { model
+                | selected =
+                    if Dict.member id model.selected then
+                        Dict.remove id model.selected
+
+                    else
+                        Dict.insert id item model.selected
+            }
+                ! []
 
 
 updateAdd model =
@@ -380,43 +374,43 @@ updateEdit id model =
         item =
             Dict.get id model.roles
     in
-        case item of
-            Nothing ->
-                ( model, Cmd.none )
+    case item of
+        Nothing ->
+            ( model, Cmd.none )
 
-            Just roleRec ->
-                let
-                    (Model.Role role) =
-                        roleRec
+        Just roleRec ->
+            let
+                (Model.Role role) =
+                    roleRec
 
-                    selectedPermissions =
-                        permissionDictFromRole roleRec
-                in
-                    ( { model
-                        | roleName = role.name
-                        , selectedPermissions = selectedPermissions
-                        , roleToEdit = WithId id roleRec
-                      }
-                    , Cmd.none
-                    )
+                selectedPermissions =
+                    permissionDictFromRole roleRec
+            in
+            ( { model
+                | roleName = role.name
+                , selectedPermissions = selectedPermissions
+                , roleToEdit = WithId id roleRec
+              }
+            , Cmd.none
+            )
 
 
 updateConfirmDelete model =
     let
         toDelete =
-            (Dict.keys <| Dict.intersect model.roles model.selected)
+            Dict.keys <| Dict.intersect model.roles model.selected
     in
-        ( { model
-            | selected = Dict.empty
-            , numToDelete = model.numToDelete + List.length toDelete
-          }
-        , List.map
-            (\id ->
-                Role.Service.invokeDelete model.config.apiRoot RoleApi id
-            )
-            toDelete
-            |> Cmd.batch
+    ( { model
+        | selected = Dict.empty
+        , numToDelete = model.numToDelete + List.length toDelete
+      }
+    , List.map
+        (\id ->
+            Role.Service.invokeDelete model.config.apiRoot RoleApi id
         )
+        toDelete
+        |> Cmd.batch
+    )
 
 
 updateSave model =
@@ -433,9 +427,9 @@ updateSave model =
                         , permissions = Just <| Dict.values model.selectedPermissions
                         }
             in
-                ( model
-                , Role.Service.invokeUpdate model.config.apiRoot RoleApi id modifiedRole
-                )
+            ( model
+            , Role.Service.invokeUpdate model.config.apiRoot RoleApi id modifiedRole
+            )
 
         New ->
             ( model
@@ -481,9 +475,10 @@ table model =
                 ]
             , Table.tbody []
                 (if model.roleToEdit == New then
-                    (indexedFoldr (roleToRow model) [ addRow model ] model.roles)
+                    indexedFoldr (roleToRow model) [ addRow model ] model.roles
+
                  else
-                    (indexedFoldr (roleToRow model) [] model.roles)
+                    indexedFoldr (roleToRow model) [] model.roles
                 )
             ]
         , controlBar model
@@ -521,7 +516,7 @@ roleForm model isValid completeText =
             [ ViewUtils.okCancelControlBar
                 model.mdl
                 Mdl
-                (ViewUtils.completeButton model.mdl Mdl completeText (isValid) Save)
+                (ViewUtils.completeButton model.mdl Mdl completeText isValid Save)
                 (ViewUtils.cancelButton model.mdl Mdl "Cancel" Init)
             ]
         ]
@@ -547,7 +542,7 @@ editRow model idx id (Model.Role role) =
 
 viewRow : Model -> Int -> String -> Model.Role -> Html Msg
 viewRow model idx id (Model.Role role) =
-    (Table.tr
+    Table.tr
         [ Table.selected |> Options.when (Dict.member id model.selected)
         , cs "data-table__inactive-row" |> Options.when (model.roleToEdit /= None)
         ]
@@ -574,6 +569,7 @@ viewRow model idx id (Model.Role role) =
                 [ Button.accent
                 , if model.roleToEdit /= None then
                     Button.disabled
+
                   else
                     Button.ripple
                 , Options.onClick (Edit id)
@@ -581,7 +577,6 @@ viewRow model idx id (Model.Role role) =
                 [ text "Edit" ]
             ]
         ]
-    )
 
 
 roleToRow : Model -> Int -> String -> Model.Role -> List (Html Msg) -> List (Html Msg)
@@ -593,27 +588,27 @@ roleToRow model idx id role items =
         showAsView =
             viewRow model idx id role
     in
-        (case model.roleToEdit of
-            WithId editId _ ->
-                if (editId == id) then
-                    showAsEdit
-                else
-                    showAsView
+    (case model.roleToEdit of
+        WithId editId _ ->
+            if editId == id then
+                showAsEdit
 
-            New ->
+            else
                 showAsView
 
-            None ->
-                showAsView
-        )
-            :: items
+        New ->
+            showAsView
+
+        None ->
+            showAsView
+    )
+        :: items
 
 
 permissionToChip : Model.Permission -> List (Html Msg) -> List (Html Msg)
 permissionToChip (Model.Permission permission) items =
-    (span [ class "mdl-chip mdl-chip__text" ]
+    span [ class "mdl-chip mdl-chip__text" ]
         [ text <| valOrEmpty permission.name ]
-    )
         :: items
 
 
@@ -633,6 +628,7 @@ controlBar model =
                     , Button.colored
                     , if model.roleToEdit /= None then
                         Button.disabled
+
                       else
                         Button.ripple
                     , Options.onClick Add
@@ -644,8 +640,9 @@ controlBar model =
                     [ 1, 1 ]
                     model.mdl
                     [ cs "mdl-button--warn"
-                    , if (someSelected model) && (model.roleToEdit == None) then
+                    , if someSelected model && (model.roleToEdit == None) then
                         Button.ripple
+
                       else
                         Button.disabled
                     , Options.onClick Delete

@@ -1,21 +1,15 @@
-module Welcome
-    exposing
-        ( Model
-        , Msg
-        , init
-        , update
-        , loginView
-        , notPermittedView
-        )
+module Welcome exposing
+    ( Model
+    , Msg
+    , init
+    , loginView
+    , notPermittedView
+    , update
+    )
 
 import Auth
-import Html exposing (Html, div, text, h4, img, form)
-import Html.Attributes exposing (title, class, href, src, action)
-import Material
-import Material.Button as Button
-import Material.Icon as Icon
-import Material.Textfield as Textfield
-import Material.Options as Options
+import Html exposing (Html, div, form, h4, img, text)
+import Html.Attributes exposing (action, class, href, src, title)
 
 
 type alias Model =
@@ -51,7 +45,7 @@ update action model =
                 ( newModel, cmd ) =
                     Material.update Mdl action_ model
             in
-                ( newModel, cmd, Cmd.none )
+            ( newModel, cmd, Cmd.none )
 
         GetStarted ->
             ( model, Cmd.none, Cmd.none )

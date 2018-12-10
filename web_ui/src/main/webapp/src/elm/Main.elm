@@ -16,12 +16,6 @@ import Config exposing (Config)
 import Dict exposing (Dict)
 import Html exposing (Html, a, div, h1, text)
 import Html.Attributes exposing (attribute, href, id)
-import Material
-import Material.Button as Button
-import Material.Layout
-import Material.Options as Options
-import Material.Toggles as Toggles
-import Material.Typography as Typography
 import Navigation
 import Permissions
 import Roles
