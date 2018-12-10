@@ -11,42 +11,38 @@ import Task exposing (Task)
 invokeFindAll : String -> (Result.Result Http.Error (List Model.Permission) -> msg) -> Cmd msg
 invokeFindAll root tagger =
     findAllTask root 
-        |> Http.send FindAll
-        |> Cmd.map msg
+        |> Http.send tagger
+
 
 invokeFindByExample : String -> (Result.Result Http.Error (List Model.Permission) -> msg) -> Model.Permission -> Cmd msg
 invokeFindByExample root tagger example =
     findByExampleTask root example
-        |> Http.send FindByExample
-        |> Cmd.map msg
+        |> Http.send tagger
 
 
 invokeCreate : String -> (Result.Result Http.Error Model.Permission -> msg) -> Model.Permission -> Cmd msg
-invokeCreate root msg model =
+invokeCreate root tagger model =
     createTask root model
-        |> Http.send Create
-        |> Cmd.map msg
+        |> Http.send tagger        
+
 
 invokeRetrieve : String -> (Result.Result Http.Error Model.Permission -> msg) -> String -> Cmd msg
-invokeRetrieve root msg id =
+invokeRetrieve root tagger id =
     retrieveTask root id
-        |> Http.send Retrieve
-        |> Cmd.map msg
+        |> Http.send tagger        
+
 
 invokeUpdate : String -> (Result.Result Http.Error Model.Permission -> msg) -> String -> Model.Permission -> Cmd msg
-invokeUpdate root msg id model =
+invokeUpdate root tagger id model =
     updateTask root id model
-        |> Http.send Update
-        |> Cmd.map msg
+        |> Http.send tagger        
+
 
 invokeDelete : String ->  (Result.Result Http.Error String -> msg) -> String -> Cmd msg
-invokeDelete root msg id =
-    let
-       delete result = Delete <| Result.map (\() -> id) result
-    in
+invokeDelete root tagger id =
      deleteTask root id
-        |> Http.send delete
-        |> Cmd.map msg
+        |> Http.send tagger
+
 
 routes root =
     { findAll = root ++ "permission"
@@ -56,6 +52,7 @@ routes root =
     , update = root ++ "permission/"
     , delete = root ++ "permission/"
     }
+
 
 findAllTask : String -> Http.Request (List Permission)
 findAllTask root =
