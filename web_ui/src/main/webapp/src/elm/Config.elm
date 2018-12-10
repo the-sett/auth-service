@@ -9,7 +9,7 @@ decoder for config as json are provided.
 -}
 
 import Json.Decode as Decode exposing (..)
-import Json.Decode.Extra exposing ((|:), withDefault)
+import Json.Decode.Extra exposing (andMap, withDefault)
 
 
 {-| Defines the configuration that the content editor needs to run.
@@ -35,14 +35,13 @@ config =
 -}
 configDecoder : Decoder Config
 configDecoder =
-    (Decode.succeed
+    Decode.succeed
         (\applicationContextRoot apiRoot authRoot ->
             { applicationContextRoot = applicationContextRoot
             , apiRoot = apiRoot
             , authRoot = authRoot
             }
         )
-    )
-        |: field "applicationContextRoot" Decode.string
-        |: field "apiRoot" Decode.string
-        |: field "authRoot" Decode.string
+        |> andMap (field "applicationContextRoot" Decode.string)
+        |> andMap (field "apiRoot" Decode.string)
+        |> andMap (field "authRoot" Decode.string)
