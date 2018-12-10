@@ -185,7 +185,7 @@ accountEncoder (Account model) =
     , Maybe.map (\password -> ( "password", Encode.string password )) model.password
     , Maybe.map (\salt -> ( "salt", Encode.string salt )) model.salt
     , Maybe.map (\root -> ( "root", Encode.bool root )) model.root
-    , Maybe.map (\roles -> ( "roles", roles |> List.map roleEncoder |> Encode.list )) model.roles
+    , Maybe.map (\roles -> ( "roles", Encode.list roleEncoder roles )) model.roles
     , Maybe.map (\id -> ( "id", Encode.string id )) model.id
     ]
         |> catMaybes
@@ -212,7 +212,7 @@ accountDecoder =
         |> andMap (Decode.maybe (field "salt" Decode.string))
         |> andMap (Decode.maybe (field "root" Decode.bool))
         |> andMap (field "roles" (Decode.maybe (Decode.list (Decode.lazy (\_ -> roleDecoder)))) |> withDefault Nothing)
-        |> andMapp (Decode.maybe (field "id" Decode.int |> Decode.map toString))
+        |> andMap (Decode.maybe (field "id" Decode.int |> Decode.map String.fromInt))
 
 
 {-| Describes the Role component type.
@@ -230,7 +230,7 @@ type Role
 roleEncoder : Role -> Encode.Value
 roleEncoder (Role model) =
     [ Maybe.map (\name -> ( "name", Encode.string name )) model.name
-    , Maybe.map (\permissions -> ( "permissions", permissions |> List.map permissionEncoder |> Encode.list )) model.permissions
+    , Maybe.map (\permissions -> ( "permissions", Encode.list permissionEncoder permissions )) model.permissions
     , Maybe.map (\id -> ( "id", Encode.string id )) model.id
     ]
         |> catMaybes
@@ -251,7 +251,7 @@ roleDecoder =
         )
         |> andMap (Decode.maybe (field "name" Decode.string))
         |> andMap (field "permissions" (Decode.maybe (Decode.list (Decode.lazy (\_ -> permissionDecoder)))) |> withDefault Nothing)
-        |> andMap (Decode.maybe (field "id" Decode.int |> Decode.map toString))
+        |> andMap (Decode.maybe (field "id" Decode.int |> Decode.map String.fromInt))
 
 
 {-| Describes the Permission component type.
@@ -286,4 +286,4 @@ permissionDecoder =
                 }
         )
         |> andMap (Decode.maybe (field "name" Decode.string))
-        |> andMap (Decode.maybe (field "id" Decode.int |> Decode.map toString))
+        |> andMap (Decode.maybe (field "id" Decode.int |> Decode.map String.fromInt))
