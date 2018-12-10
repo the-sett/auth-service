@@ -83,8 +83,7 @@ type Msg
 
 init : Config -> Model
 init config =
-    { mdl = Material.model
-    , config = config
+    { config = config
     , selected = Dict.empty
     , accounts = Dict.empty
     , accountToEdit = Nothing
@@ -363,9 +362,6 @@ roleList roles model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     case Debug.log "accounts" action of
-        Mdl action_ ->
-            Material.update Mdl action_ model
-
         AuthMsg authMsg ->
             ( model, Cmd.none )
 

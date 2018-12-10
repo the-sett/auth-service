@@ -32,8 +32,7 @@ type ItemToEdit
 
 
 type alias Model =
-    { mdl : Material.Model
-    , config : Config
+    { config : Config
     , selected : Dict String Model.Role
     , roles : Dict String Model.Role
     , roleName : Maybe String
@@ -45,8 +44,7 @@ type alias Model =
 
 
 type Msg
-    = Mdl (Material.Msg Msg)
-    | AuthMsg Auth.Msg
+    = AuthMsg Auth.Msg
     | RoleApi Role.Service.Msg
     | PermissionApi Permission.Service.Msg
     | Init
@@ -63,8 +61,7 @@ type Msg
 
 init : Config -> Model
 init config =
-    { mdl = Material.model
-    , config = config
+    { config = config
     , selected = Dict.empty
     , roles = Dict.empty
     , roleName = Nothing
@@ -273,9 +270,6 @@ permissionList permissions model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     case Debug.log "permissions" action of
-        Mdl action_ ->
-            Material.update Mdl action_ model
-
         AuthMsg authMsg ->
             ( model, Cmd.none )
 

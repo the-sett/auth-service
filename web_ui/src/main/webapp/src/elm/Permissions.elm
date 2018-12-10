@@ -31,8 +31,7 @@ type ItemToEdit
 
 
 type alias Model =
-    { mdl : Material.Model
-    , config : Config
+    { config : Config
     , selected : Dict String Model.Permission
     , permissions : Dict String Model.Permission
     , permissionName : Maybe String
@@ -42,8 +41,7 @@ type alias Model =
 
 
 type Msg
-    = Mdl (Material.Msg Msg)
-    | AuthMsg Auth.Msg
+    = AuthMsg Auth.Msg
     | PermissionApi Permission.Service.Msg
     | Init
     | Toggle String
@@ -58,8 +56,7 @@ type Msg
 
 init : Config -> Model
 init config =
-    { mdl = Material.model
-    , config = config
+    { config = config
     , selected = Dict.empty
     , permissions = Dict.empty
     , permissionName = Nothing
@@ -206,9 +203,6 @@ permissionDeleteError error model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     case Debug.log "permissions" action of
-        Mdl action_ ->
-            Material.update Mdl action_ model
-
         AuthMsg authMsg ->
             ( model, Cmd.none )
 

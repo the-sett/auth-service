@@ -69,8 +69,7 @@ port initiallySelectedChanged : (List ( String, String ) -> msg) -> Sub msg
 
 
 type alias Model =
-    { mdl : Material.Model
-    , items : Dict String String
+    { items : Dict String String
     , selectedItems : Dict String String
     , hoverItem : Maybe String
     }
@@ -78,8 +77,7 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { mdl = Material.model
-      , items = Dict.empty
+    ( { items = Dict.empty
       , selectedItems = Dict.empty
       , hoverItem = Nothing
       }
