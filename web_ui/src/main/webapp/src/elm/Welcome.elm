@@ -13,15 +13,13 @@ import Html.Attributes exposing (action, class, href, src, title)
 
 
 type alias Model =
-    { mdl : Material.Model
-    , username : String
+    { username : String
     , password : String
     }
 
 
 type Msg
-    = Mdl (Material.Msg Msg)
-    | GetStarted
+    = GetStarted
     | LogIn
     | TryAgain
     | Cancel
@@ -31,8 +29,7 @@ type Msg
 
 init : Model
 init =
-    { mdl = Material.model
-    , username = ""
+    { username = ""
     , password = ""
     }
 
@@ -40,13 +37,6 @@ init =
 update : Msg -> Model -> ( Model, Cmd Msg, Cmd Auth.Msg )
 update action model =
     case action of
-        Mdl action_ ->
-            let
-                ( newModel, cmd ) =
-                    Material.update Mdl action_ model
-            in
-            ( newModel, cmd, Cmd.none )
-
         GetStarted ->
             ( model, Cmd.none, Cmd.none )
 
@@ -66,132 +56,129 @@ update action model =
             ( { model | password = str }, Cmd.none, Cmd.none )
 
 
-rhythm1SpacerDiv : Html msg
-rhythm1SpacerDiv =
-    div [ class "layout-spacer" ] []
-
-
 loginView : Model -> Html Msg
 loginView model =
-    div []
-        [ div [ class "layout-fixed-width--one-card" ]
-            [ rhythm1SpacerDiv
-            , div [ class "mdl-grid" ]
-                [ div [ class "mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp" ]
-                    [ div [ class "mdl-card__media" ]
-                        [ img [ src "images/data_center-large.png" ]
-                            []
-                        ]
-                    , div [ class "mdl-card__title" ]
-                        [ h4 [ class "mdl-card__title-text" ]
-                            [ text "Log In" ]
-                        ]
-                    , div [ class "mdl-card__supporting-text" ]
-                        [ form [ action "#" ]
-                            [ Textfield.render Mdl
-                                [ 1, 1 ]
-                                model.mdl
-                                [ Textfield.label "Username"
-                                , Textfield.floatingLabel
-                                , Textfield.text_
-                                , Textfield.value model.username
-                                , Options.onInput UpdateUsername
-                                ]
-                                []
-                            , Textfield.render Mdl
-                                [ 1, 2 ]
-                                model.mdl
-                                [ Textfield.label "Password"
-                                , Textfield.floatingLabel
-                                , Textfield.text_
-                                , Textfield.password
-                                , Textfield.value model.password
-                                , Options.onInput UpdatePassword
-                                ]
-                                []
-                            ]
-                        ]
-                    , div [ class "mdl-card__actions" ]
-                        [ div [ class "control-bar" ]
-                            [ div [ class "control-bar__row" ]
-                                [ div [ class "control-bar__left-0" ]
-                                    [ Button.render Mdl
-                                        [ 1, 2 ]
-                                        model.mdl
-                                        [ Button.colored
-                                        , Options.onClick LogIn
-                                        ]
-                                        [ text "Log In"
-                                        , Icon.i "chevron_right"
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ]
+    -- div []
+    --     [ div [ class "layout-fixed-width--one-card" ]
+    --         [ rhythm1SpacerDiv
+    --         , div [ class "mdl-grid" ]
+    --             [ div [ class "mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp" ]
+    --                 [ div [ class "mdl-card__media" ]
+    --                     [ img [ src "images/data_center-large.png" ]
+    --                         []
+    --                     ]
+    --                 , div [ class "mdl-card__title" ]
+    --                     [ h4 [ class "mdl-card__title-text" ]
+    --                         [ text "Log In" ]
+    --                     ]
+    --                 , div [ class "mdl-card__supporting-text" ]
+    --                     [ form [ action "#" ]
+    --                         [ Textfield.render Mdl
+    --                             [ 1, 1 ]
+    --                             model.mdl
+    --                             [ Textfield.label "Username"
+    --                             , Textfield.floatingLabel
+    --                             , Textfield.text_
+    --                             , Textfield.value model.username
+    --                             , Options.onInput UpdateUsername
+    --                             ]
+    --                             []
+    --                         , Textfield.render Mdl
+    --                             [ 1, 2 ]
+    --                             model.mdl
+    --                             [ Textfield.label "Password"
+    --                             , Textfield.floatingLabel
+    --                             , Textfield.text_
+    --                             , Textfield.password
+    --                             , Textfield.value model.password
+    --                             , Options.onInput UpdatePassword
+    --                             ]
+    --                             []
+    --                         ]
+    --                     ]
+    --                 , div [ class "mdl-card__actions" ]
+    --                     [ div [ class "control-bar" ]
+    --                         [ div [ class "control-bar__row" ]
+    --                             [ div [ class "control-bar__left-0" ]
+    --                                 [ Button.render Mdl
+    --                                     [ 1, 2 ]
+    --                                     model.mdl
+    --                                     [ Button.colored
+    --                                     , Options.onClick LogIn
+    --                                     ]
+    --                                     [ text "Log In"
+    --                                     , Icon.i "chevron_right"
+    --                                     ]
+    --                                 ]
+    --                             ]
+    --                         ]
+    --                     ]
+    --                 ]
+    --             ]
+    --         ]
+    --     ]
+    div [] []
 
 
 notPermittedView : Model -> Html Msg
 notPermittedView model =
-    div []
-        [ div [ class "layout-fixed-width--one-card" ]
-            [ rhythm1SpacerDiv
-            , div [ class "mdl-grid" ]
-                [ div [ class "mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp" ]
-                    [ div [ class "mdl-card__media" ]
-                        [ img [ src "images/data_center-large.png" ]
-                            []
-                        ]
-                    , div [ class "mdl-card__title" ]
-                        [ h4 [ class "mdl-card__title-text" ]
-                            [ text "Not Authorized" ]
-                        ]
-                    , div [ class "mdl-card__supporting-text" ]
-                        [ form [ action "#" ]
-                            [ Textfield.render Mdl
-                                [ 1, 1 ]
-                                model.mdl
-                                [ Textfield.label "Username"
-                                , Textfield.floatingLabel
-                                , Textfield.text_
-                                , Textfield.disabled
-                                , Textfield.value model.username
-                                ]
-                                []
-                            , Textfield.render Mdl
-                                [ 1, 2 ]
-                                model.mdl
-                                [ Textfield.label "Password"
-                                , Textfield.floatingLabel
-                                , Textfield.text_
-                                , Textfield.password
-                                , Textfield.disabled
-                                , Textfield.value model.password
-                                ]
-                                []
-                            ]
-                        ]
-                    , div [ class "mdl-card__actions" ]
-                        [ div [ class "control-bar" ]
-                            [ div [ class "control-bar__row" ]
-                                [ div [ class "control-bar__left-0" ]
-                                    [ Button.render Mdl
-                                        [ 2, 1 ]
-                                        model.mdl
-                                        [ Button.colored
-                                        , Options.onClick TryAgain
-                                        ]
-                                        [ Icon.i "chevron_left"
-                                        , text "Try Again"
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ]
+    -- div []
+    --     [ div [ class "layout-fixed-width--one-card" ]
+    --         [ rhythm1SpacerDiv
+    --         , div [ class "mdl-grid" ]
+    --             [ div [ class "mdl-cell mdl-cell--12-col mdl-cell--8-col-tablet mdl-cell--4-col-phone mdl-card mdl-shadow--3dp" ]
+    --                 [ div [ class "mdl-card__media" ]
+    --                     [ img [ src "images/data_center-large.png" ]
+    --                         []
+    --                     ]
+    --                 , div [ class "mdl-card__title" ]
+    --                     [ h4 [ class "mdl-card__title-text" ]
+    --                         [ text "Not Authorized" ]
+    --                     ]
+    --                 , div [ class "mdl-card__supporting-text" ]
+    --                     [ form [ action "#" ]
+    --                         [ Textfield.render Mdl
+    --                             [ 1, 1 ]
+    --                             model.mdl
+    --                             [ Textfield.label "Username"
+    --                             , Textfield.floatingLabel
+    --                             , Textfield.text_
+    --                             , Textfield.disabled
+    --                             , Textfield.value model.username
+    --                             ]
+    --                             []
+    --                         , Textfield.render Mdl
+    --                             [ 1, 2 ]
+    --                             model.mdl
+    --                             [ Textfield.label "Password"
+    --                             , Textfield.floatingLabel
+    --                             , Textfield.text_
+    --                             , Textfield.password
+    --                             , Textfield.disabled
+    --                             , Textfield.value model.password
+    --                             ]
+    --                             []
+    --                         ]
+    --                     ]
+    --                 , div [ class "mdl-card__actions" ]
+    --                     [ div [ class "control-bar" ]
+    --                         [ div [ class "control-bar__row" ]
+    --                             [ div [ class "control-bar__left-0" ]
+    --                                 [ Button.render Mdl
+    --                                     [ 2, 1 ]
+    --                                     model.mdl
+    --                                     [ Button.colored
+    --                                     , Options.onClick TryAgain
+    --                                     ]
+    --                                     [ Icon.i "chevron_left"
+    --                                     , text "Try Again"
+    --                                     ]
+    --                                 ]
+    --                             ]
+    --                         ]
+    --                     ]
+    --                 ]
+    --             ]
+    --         ]
+    --     ]
+    div [] []
