@@ -1,6 +1,7 @@
 module Role.Service exposing (..)
 
 import Http
+import Json.Decode as Decode
 import Json.Encode as Encode exposing (..)
 import Model exposing (..)
 import Platform.Cmd exposing (Cmd)
@@ -38,7 +39,7 @@ invokeUpdate root tagger id model =
         |> Http.send tagger        
 
 
-invokeDelete : String ->  (Result.Result Http.Error String -> msg) -> String -> Cmd msg
+invokeDelete : String ->  (Result.Result Http.Error () -> msg) -> String -> Cmd msg
 invokeDelete root tagger id =
      deleteTask root id
         |> Http.send tagger
