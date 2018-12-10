@@ -1,20 +1,31 @@
-module Model exposing (..)
+module Model exposing
+    ( AuthRequest(..), authRequestEncoder, authRequestDecoder
+    , RefreshRequest(..), refreshRequestEncoder, refreshRequestDecoder
+    , AuthResponse(..), authResponseEncoder, authResponseDecoder
+    , Verifier(..), verifierEncoder, verifierDecoder
+    , Account(..), accountEncoder, accountDecoder
+    , Role(..), roleEncoder, roleDecoder
+    , Permission(..), permissionEncoder, permissionDecoder
+    )
 
-{-| @docs AuthRequest, authRequestEncoder, authRequestDecoder
+{-|
+
+@docs AuthRequest, authRequestEncoder, authRequestDecoder
 @docs RefreshRequest, refreshRequestEncoder, refreshRequestDecoder
 @docs AuthResponse, authResponseEncoder, authResponseDecoder
 @docs Verifier, verifierEncoder, verifierDecoder
 @docs Account, accountEncoder, accountDecoder
 @docs Role, roleEncoder, roleDecoder
 @docs Permission, permissionEncoder, permissionDecoder
+
 -}
 
-import Set exposing (Set)
 import Dict exposing (Dict)
-import Json.Decode as Decode exposing (..)
-import Json.Decode.Extra exposing ((|:), withDefault)
-import Json.Encode as Encode exposing (..)
 import Exts.Maybe exposing (catMaybes)
+import Json.Decode as Decode exposing (..)
+import Json.Decode.Extra exposing (andMap, withDefault)
+import Json.Encode as Encode exposing (..)
+import Set exposing (Set)
 
 
 {-| Describes the AuthRequest component type.
@@ -41,16 +52,15 @@ authRequestEncoder (AuthRequest model) =
 -}
 authRequestDecoder : Decoder AuthRequest
 authRequestDecoder =
-    (Decode.succeed
+    Decode.succeed
         (\username password ->
             AuthRequest
                 { username = username
                 , password = password
                 }
         )
-    )
-        |: Decode.maybe (field "username" Decode.string)
-        |: Decode.maybe (field "password" Decode.string)
+        |> andMap (Decode.maybe (field "username" Decode.string))
+        |> andMap (Decode.maybe (field "password" Decode.string))
 
 
 {-| Describes the RefreshRequest component type.
@@ -75,14 +85,13 @@ refreshRequestEncoder (RefreshRequest model) =
 -}
 refreshRequestDecoder : Decoder RefreshRequest
 refreshRequestDecoder =
-    (Decode.succeed
+    Decode.succeed
         (\refreshToken ->
             RefreshRequest
                 { refreshToken = refreshToken
                 }
         )
-    )
-        |: Decode.maybe (field "refreshToken" Decode.string)
+        |> andMap (Decode.maybe (field "refreshToken" Decode.string))
 
 
 {-| Describes the AuthResponse component type.
@@ -109,16 +118,15 @@ authResponseEncoder (AuthResponse model) =
 -}
 authResponseDecoder : Decoder AuthResponse
 authResponseDecoder =
-    (Decode.succeed
+    Decode.succeed
         (\token refreshToken ->
             AuthResponse
                 { token = token
                 , refreshToken = refreshToken
                 }
         )
-    )
-        |: Decode.maybe (field "token" Decode.string)
-        |: Decode.maybe (field "refreshToken" Decode.string)
+        |> andMap (Decode.maybe (field "token" Decode.string))
+        |> andMap (Decode.maybe (field "refreshToken" Decode.string))
 
 
 {-| Describes the Verifier component type.
@@ -145,16 +153,15 @@ verifierEncoder (Verifier model) =
 -}
 verifierDecoder : Decoder Verifier
 verifierDecoder =
-    (Decode.succeed
+    Decode.succeed
         (\alg key ->
             Verifier
                 { alg = alg
                 , key = key
                 }
         )
-    )
-        |: Decode.maybe (field "alg" Decode.string)
-        |: Decode.maybe (field "key" Decode.string)
+        |> andMap (Decode.maybe (field "alg" Decode.string))
+        |> andMap (Decode.maybe (field "key" Decode.string))
 
 
 {-| Describes the Account component type.
@@ -189,7 +196,7 @@ accountEncoder (Account model) =
 -}
 accountDecoder : Decoder Account
 accountDecoder =
-    (Decode.succeed
+    Decode.succeed
         (\username password salt root roles id ->
             Account
                 { username = username
@@ -200,13 +207,12 @@ accountDecoder =
                 , id = id
                 }
         )
-    )
-        |: Decode.maybe (field "username" Decode.string)
-        |: Decode.maybe (field "password" Decode.string)
-        |: Decode.maybe (field "salt" Decode.string)
-        |: Decode.maybe (field "root" Decode.bool)
-        |: ((field "roles" (Decode.maybe (Decode.list (Decode.lazy (\_ -> roleDecoder))))) |> withDefault Nothing)
-        |: Decode.maybe (field "id" Decode.int |> Decode.map toString)
+        |> andMap (Decode.maybe (field "username" Decode.string))
+        |> andMap (Decode.maybe (field "password" Decode.string))
+        |> andMap (Decode.maybe (field "salt" Decode.string))
+        |> andMap (Decode.maybe (field "root" Decode.bool))
+        |> andMap (field "roles" (Decode.maybe (Decode.list (Decode.lazy (\_ -> roleDecoder)))) |> withDefault Nothing)
+        |> andMapp (Decode.maybe (field "id" Decode.int |> Decode.map toString))
 
 
 {-| Describes the Role component type.
@@ -235,7 +241,7 @@ roleEncoder (Role model) =
 -}
 roleDecoder : Decoder Role
 roleDecoder =
-    (Decode.succeed
+    Decode.succeed
         (\name permissions id ->
             Role
                 { name = name
@@ -243,10 +249,9 @@ roleDecoder =
                 , id = id
                 }
         )
-    )
-        |: Decode.maybe (field "name" Decode.string)
-        |: ((field "permissions" (Decode.maybe (Decode.list (Decode.lazy (\_ -> permissionDecoder))))) |> withDefault Nothing)
-        |: Decode.maybe (field "id" Decode.int |> Decode.map toString)
+        |> andMap (Decode.maybe (field "name" Decode.string))
+        |> andMap (field "permissions" (Decode.maybe (Decode.list (Decode.lazy (\_ -> permissionDecoder)))) |> withDefault Nothing)
+        |> andMap (Decode.maybe (field "id" Decode.int |> Decode.map toString))
 
 
 {-| Describes the Permission component type.
@@ -273,13 +278,12 @@ permissionEncoder (Permission model) =
 -}
 permissionDecoder : Decoder Permission
 permissionDecoder =
-    (Decode.succeed
+    Decode.succeed
         (\name id ->
             Permission
                 { name = name
                 , id = id
                 }
         )
-    )
-        |: Decode.maybe (field "name" Decode.string)
-        |: Decode.maybe (field "id" Decode.int |> Decode.map toString)
+        |> andMap (Decode.maybe (field "name" Decode.string))
+        |> andMap (Decode.maybe (field "id" Decode.int |> Decode.map toString))
