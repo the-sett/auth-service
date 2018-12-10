@@ -16,7 +16,9 @@
             "elm-community/list-extra": "8.1.0",
             "elm-community/maybe-extra": "5.0.0",
             "krisajenkins/elm-exts": "28.0.0",
-            "rgrempel/elm-http-decorators": "3.0.0"
+            "rgrempel/elm-http-decorators": "3.0.0",
+            "the-sett/auth-elm": "3.0.3",
+            "the-sett/elm-update-helper": "1.4.1"
         },
         "indirect": {
             "elm/parser": "1.1.0",
@@ -25,7 +27,9 @@
             "elm/url": "1.0.0",
             "elm/virtual-dom": "1.0.2",
             "etaque/elm-response": "3.1.0",
-            "rtfeldman/elm-iso8601-date-strings": "1.1.2"
+            "rtfeldman/elm-iso8601-date-strings": "1.1.2",
+            "the-sett/elm-state-machines": "1.0.1",
+            "truqu/elm-base64": "2.0.4"
         }
     },
     "test-dependencies": {
