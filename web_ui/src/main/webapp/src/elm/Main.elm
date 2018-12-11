@@ -48,16 +48,6 @@ update msg model =
         SwitchTo page ->
             ( { model | page = page }, Cmd.none )
 
-        NoOp ->
-            ( model, Cmd.none )
-
-
-jumpToId : String -> Cmd Msg
-jumpToId id =
-    Browser.Dom.getElement id
-        |> Task.andThen (\info -> Browser.Dom.setViewport 0 (Debug.log "viewport" info).element.y)
-        |> Task.attempt (\_ -> NoOp)
-
 
 {-| Top level view function.
 -}

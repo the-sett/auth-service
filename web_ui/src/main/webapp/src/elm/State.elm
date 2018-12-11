@@ -13,7 +13,6 @@ import Auth
 type Msg
     = Toggle Bool
     | SwitchTo Page
-    | NoOp
 
 
 type Page
