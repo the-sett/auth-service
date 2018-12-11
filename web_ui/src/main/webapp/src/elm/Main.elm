@@ -10,6 +10,7 @@ import Html
 import Html.Styled exposing (div, input, text, toUnstyled)
 import Html.Styled.Attributes exposing (checked, type_)
 import Html.Styled.Events exposing (onCheck)
+import Layout.Application
 import Layout.Initial
 import Page.Accounts
 import Page.Welcome

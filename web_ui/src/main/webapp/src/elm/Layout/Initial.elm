@@ -31,7 +31,7 @@ global devices =
             (\device ->
                 let
                     headerPx =
-                        Responsive.rhythm 3.0 device
+                        Responsive.rhythm 12.5 device
                 in
                 Css.property "background" <|
                     "linear-gradient(rgb(120, 116, 120) 0%, "
@@ -47,89 +47,12 @@ pageBody template =
     (\devices model ->
         div
             []
-            [ debugToggle devices model
-            , topHeader devices model
-            , case template of
+            [ case template of
                 Dynamic fn ->
                     fn devices model
 
                 Static fn ->
                     Html.Styled.map never <| fn devices
-            , footer devices
             ]
     )
         |> Dynamic
-
-
-topHeader : ResponsiveStyle -> Model -> Html Msg
-topHeader responsive model =
-    styled div
-        []
-        []
-        [ Grid.grid
-            [ sm
-                [ Grid.columns 12
-                , Styles.styles
-                    [ wrapper responsive
-                    , Responsive.deviceStyle responsive <|
-                        \device -> Css.height (Responsive.rhythmPx 3 device)
-                    ]
-                ]
-            ]
-            []
-            [ Grid.row
-                [ sm [ Grid.middle ] ]
-                []
-                [ Grid.col
-                    [ sm
-                        [ Grid.columns 1
-                        , Styles.styles
-                            [ Responsive.deviceStyles responsive <|
-                                \device ->
-                                    [ Css.height (Responsive.rhythmPx 3 device)
-                                    , Css.width (Responsive.rhythmPx 3 device)
-                                    ]
-                            ]
-                        ]
-                    ]
-                    []
-                    [ styled div
-                        [ Responsive.deviceStyles responsive (Responsive.rhythmSplit 0.1 3)
-                        ]
-                        []
-                        [ Svg.Styled.fromUnstyled Logo.logo ]
-                    ]
-                ]
-            ]
-            responsive
-        ]
-
-
-debugToggle responsive model =
-    styled div
-        [ Css.position Css.fixed
-        , Responsive.deviceStyles responsive <|
-            \device ->
-                [ Css.right (Responsive.rhythmPx 2 device)
-                , Css.top (Responsive.rhythmPx 1 device)
-                ]
-        , if model.debug then
-            Css.backgroundColor (Css.rgb 50 230 50) |> Css.important
-
-          else
-            Css.backgroundColor (Css.rgb 255 255 255)
-        , Css.hover [ Css.backgroundColor (Css.rgb 50 210 50) ]
-        , Css.padding2 (Css.px 5) (Css.px 10)
-        , Css.margin (Css.px -5)
-        , Css.boxShadow5 (Css.px 0) (Css.px 0) (Css.px 3) (Css.px 0) (Css.rgba 0 0 0 0.75)
-        , Css.borderRadius (Css.px 4)
-        , Css.property "user-select" "none"
-        ]
-        [ onClick <| Toggle (not model.debug) ]
-        [ text "grid"
-        ]
-
-
-footer : ResponsiveStyle -> Html msg
-footer devices =
-    node "footer" [ class "thesett-footer mdl-mega-footer" ] []

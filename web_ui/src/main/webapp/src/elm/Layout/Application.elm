@@ -10,6 +10,7 @@ import Responsive exposing (ResponsiveStyle)
 import State exposing (Model, Msg(..), Page(..))
 import Structure exposing (Layout, Template(..))
 import Styles exposing (md, sm)
+import Styling
 import Svg.Styled
 import TheSett.Laf as Laf exposing (wrapper)
 import TheSett.Logo as Logo
@@ -31,7 +32,7 @@ global devices =
             (\device ->
                 let
                     headerPx =
-                        Responsive.rhythm 9.5 device
+                        Responsive.rhythm 10.5 device
                 in
                 Css.property "background" <|
                     "linear-gradient(rgb(120, 116, 120) 0%, "
@@ -64,7 +65,9 @@ pageBody template =
 topHeader : ResponsiveStyle -> Model -> Html Msg
 topHeader responsive model =
     styled div
-        [ Css.boxShadow5 (Css.px 0) (Css.px 0) (Css.px 6) (Css.px 0) (Css.rgba 0 0 0 0.75) ]
+        [ Css.boxShadow5 (Css.px 0) (Css.px 0) (Css.px 6) (Css.px 0) (Css.rgba 0 0 0 0.75)
+        , Css.backgroundColor <| Styling.paperWhite
+        ]
         []
         [ Grid.grid
             [ sm

@@ -20,9 +20,11 @@ import Responsive exposing (ResponsiveStyle)
 import Structure exposing (Template(..))
 import Styles exposing (lg, md, sm, xl)
 import Styling
+import Svg.Styled
 import TheSett.Buttons as Buttons
 import TheSett.Cards as Cards
 import TheSett.Laf as Laf
+import TheSett.Logo as Logo
 import TheSett.Textfield as Textfield
 import Update2
 
@@ -168,7 +170,7 @@ framing : ResponsiveStyle -> List (Html.Styled.Html msg) -> Html.Styled.Html msg
 framing devices innerHtml =
     styled div
         [ Responsive.deviceStyle devices
-            (\device -> Css.marginTop <| Responsive.rhythmPx 3 device)
+            (\device -> Css.marginTop <| Responsive.rhythmPx 6 device)
         ]
         []
         [ Grid.grid
@@ -217,9 +219,53 @@ card imageUrl title cardBody controls devices =
             , sm [ Cards.src imageUrl ]
             ]
             []
-            []
+            [ topHeader devices ]
         , Cards.title title
         , Cards.body cardBody
         , Cards.controls controls
         ]
         devices
+
+
+topHeader : ResponsiveStyle -> Html.Styled.Html msg
+topHeader responsive =
+    styled div
+        []
+        []
+        [ Grid.grid
+            [ sm
+                [ Grid.columns 12
+                , Styles.styles
+                    [ Responsive.deviceStyle responsive <|
+                        \device -> Css.height (Responsive.rhythmPx 3 device)
+                    ]
+                ]
+            ]
+            []
+            [ Grid.row
+                [ sm [ Grid.middle ] ]
+                []
+                [ Grid.col
+                    [ sm
+                        [ Grid.columns 1
+                        , Grid.offset 0.1
+                        , Styles.styles
+                            [ Responsive.deviceStyles responsive <|
+                                \device ->
+                                    [ Css.height (Responsive.rhythmPx 3 device)
+                                    , Css.width (Responsive.rhythmPx 3 device)
+                                    ]
+                            ]
+                        ]
+                    ]
+                    []
+                    [ styled div
+                        [ Responsive.deviceStyles responsive (Responsive.rhythmSplit 0.5 6)
+                        ]
+                        []
+                        [ Svg.Styled.fromUnstyled Logo.logo ]
+                    ]
+                ]
+            ]
+            responsive
+        ]
