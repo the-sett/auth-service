@@ -15,5 +15,5 @@ main =
         { init = init
         , subscriptions = subscriptions
         , update = update
-        , view = \model -> { title = "The Sett LAF", body = [ view model ] }
+        , view = view
         }

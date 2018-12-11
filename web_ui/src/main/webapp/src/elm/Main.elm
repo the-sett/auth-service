@@ -6,6 +6,7 @@ import Browser
 import Browser.Dom exposing (getViewportOf, setViewportOf)
 import Config exposing (config)
 import Css.Global
+import Html
 import Html.Styled exposing (div, input, text, toUnstyled)
 import Html.Styled.Attributes exposing (checked, type_)
 import Html.Styled.Events exposing (onCheck)
@@ -57,13 +58,23 @@ jumpToId id =
         |> Task.attempt (\_ -> NoOp)
 
 
+{-| Top level view function.
+-}
+view : Model -> Browser.Document Msg
 view model =
-    styledView model
+    { title = "Auth Service"
+    , body = [ body model ]
+    }
+
+
+body : Model -> Html.Html Msg
+body model =
+    styledBody model
         |> toUnstyled
 
 
-styledView : Model -> Html.Styled.Html Msg
-styledView model =
+styledBody : Model -> Html.Styled.Html Msg
+styledBody model =
     let
         innerView =
             [ Laf.responsiveMeta
