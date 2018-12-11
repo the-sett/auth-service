@@ -1,4 +1,4 @@
-module Structure exposing (Layout, Template(..))
+module Structure exposing (Layout, Template(..), lift)
 
 {-| Defines the structure of a reactive application as layouts applied to templates.
 
@@ -39,3 +39,16 @@ type alias Layout msg model =
         { template : Template msg model
         , global : ResponsiveSnippet
         }
+
+
+{-| Lifts a template into another template.
+-}
+lift : (a -> msg) -> (model -> b) -> Template a b -> Template msg model
+lift msgFn modelFn template =
+    case template of
+        Dynamic fn ->
+            Dynamic
+                (\devices model -> fn devices (modelFn model) |> Html.Styled.map msgFn)
+
+        Static fn ->
+            Static fn
