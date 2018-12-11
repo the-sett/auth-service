@@ -1,6 +1,7 @@
-module Layout exposing (layout)
+module Layout.Application exposing (global, layout)
 
 import Css
+import Css.Global
 import Grid
 import Html.Styled exposing (Html, a, button, div, input, li, nav, node, styled, text, ul)
 import Html.Styled.Attributes exposing (attribute, checked, class, href, id, type_)
@@ -16,7 +17,29 @@ import TheSett.Logo as Logo
 
 layout : Layout Msg Model
 layout template =
-    pageBody template
+    { template = pageBody template
+    , global = global
+    }
+
+
+global : ResponsiveStyle -> List Css.Global.Snippet
+global devices =
+    [ Css.Global.each
+        [ Css.Global.html ]
+        [ Css.height <| Css.pct 100
+        , Responsive.deviceStyle devices
+            (\device ->
+                let
+                    headerPx =
+                        Responsive.rhythm 9.5 device
+                in
+                Css.property "background" <|
+                    "linear-gradient(rgb(120, 116, 120) 0%, "
+                        ++ String.fromFloat headerPx
+                        ++ "px, rgb(225, 212, 214) 0px, rgb(208, 212, 214) 100%)"
+            )
+        ]
+    ]
 
 
 pageBody : Template Msg Model -> Template Msg Model

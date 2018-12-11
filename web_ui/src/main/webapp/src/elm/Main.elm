@@ -10,7 +10,7 @@ import Html
 import Html.Styled exposing (div, input, text, toUnstyled)
 import Html.Styled.Attributes exposing (checked, type_)
 import Html.Styled.Events exposing (onCheck)
-import Layout
+import Layout.Initial
 import Page.Accounts
 import Page.Welcome
 import State exposing (Model, Msg(..), Page(..), Session(..))
@@ -76,12 +76,16 @@ body model =
 styledBody : Model -> Html.Styled.Html Msg
 styledBody model =
     let
+        { template, global } =
+            Layout.Initial.layout <| Body.view (viewForPage model.page)
+
         innerView =
             [ Laf.responsiveMeta
             , Laf.fonts
             , Laf.style Laf.devices
+            , Css.Global.global <| global Laf.devices
             , case
-                Layout.layout <| Body.view (viewForPage model.page)
+                template
               of
                 Dynamic fn ->
                     fn Laf.devices model

@@ -7,6 +7,7 @@ styling can be applied.
 
 -}
 
+import Css.Global
 import Html.Styled exposing (Html)
 import Responsive exposing (ResponsiveStyle)
 
@@ -19,8 +20,22 @@ type Template msg model
     | Static (ResponsiveStyle -> Html Never)
 
 
+{-| A responsive snippet is a CSS global snippet that is device responsive.
+-}
+type alias ResponsiveSnippet =
+    ResponsiveStyle -> List Css.Global.Snippet
+
+
 {-| Defines the type of a layout. A layout is a higher level template; it takes a
 template as input and produces a template as output.
+
+A layout also produces a responsive CSS snippet for the layout to further customize
+its style.
+
 -}
 type alias Layout msg model =
-    Template msg model -> Template msg model
+    Template msg model
+    ->
+        { template : Template msg model
+        , global : ResponsiveSnippet
+        }
