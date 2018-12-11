@@ -64,8 +64,7 @@ pageBody template =
 topHeader : ResponsiveStyle -> Model -> Html Msg
 topHeader responsive model =
     styled div
-        [ Css.boxShadow5 (Css.px 0) (Css.px 0) (Css.px 6) (Css.px 0) (Css.rgba 0 0 0 0.75)
-        ]
+        [ Css.boxShadow5 (Css.px 0) (Css.px 0) (Css.px 6) (Css.px 0) (Css.rgba 0 0 0 0.75) ]
         []
         [ Grid.grid
             [ sm

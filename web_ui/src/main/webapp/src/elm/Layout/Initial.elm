@@ -31,7 +31,7 @@ global devices =
             (\device ->
                 let
                     headerPx =
-                        Responsive.rhythm 9.5 device
+                        Responsive.rhythm 3.0 device
                 in
                 Css.property "background" <|
                     "linear-gradient(rgb(120, 116, 120) 0%, "
@@ -64,8 +64,7 @@ pageBody template =
 topHeader : ResponsiveStyle -> Model -> Html Msg
 topHeader responsive model =
     styled div
-        [ Css.boxShadow5 (Css.px 0) (Css.px 0) (Css.px 6) (Css.px 0) (Css.rgba 0 0 0 0.75)
-        ]
+        []
         []
         [ Grid.grid
             [ sm
@@ -99,20 +98,6 @@ topHeader responsive model =
                         ]
                         []
                         [ Svg.Styled.fromUnstyled Logo.logo ]
-                    ]
-                , Grid.col
-                    [ sm [ Styles.hidden ]
-                    , md [ Styles.visible, Grid.columns 10, Grid.center, Styles.styles [ Css.textAlign Css.center ] ]
-                    ]
-                    []
-                    [ styled ul
-                        [ Css.display Css.inline ]
-                        []
-                        [ styled li
-                            [ Css.display Css.inline ]
-                            []
-                            [ styled a [ Css.padding (Css.px 10) ] [ onClick <| SwitchTo Accounts ] [ text "Accounts" ] ]
-                        ]
                     ]
                 ]
             ]
