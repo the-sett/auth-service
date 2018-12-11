@@ -63,8 +63,12 @@ type alias Model =
 
 type Msg
     = AuthMsg Auth.Msg
-    | AccountApi
-    | RoleApi
+    | FetchAccountList (Result Http.Error (List Model.Account))
+    | FetchAccount (Result Http.Error Model.Account)
+    | UpdateAccount (Result Http.Error Model.Account)
+    | CreateAccount (Result Http.Error Model.Account)
+    | DeleteAccount (Result Http.Error ())
+    | FetchRoleList (Result Http.Error (List Model.Role))
     | Init
     | Toggle String
     | ToggleAll
@@ -349,10 +353,22 @@ update action model =
         AuthMsg authMsg ->
             ( model, Cmd.none )
 
-        AccountApi ->
+        FetchAccountList _ ->
             ( model, Cmd.none )
 
-        RoleApi ->
+        FetchAccount _ ->
+            ( model, Cmd.none )
+
+        UpdateAccount _ ->
+            ( model, Cmd.none )
+
+        CreateAccount _ ->
+            ( model, Cmd.none )
+
+        DeleteAccount _ ->
+            ( model, Cmd.none )
+
+        FetchRoleList _ ->
             ( model, Cmd.none )
 
         Init ->
@@ -406,7 +422,7 @@ updateInit model =
         , accountToEdit = Nothing
         , moreStatus = Set.empty
       }
-    , Account.Service.invokeFindAll model.config.apiRoot AccountApi
+    , Account.Service.invokeFindAll model.config.apiRoot FetchAccountList
     )
 
 
@@ -454,7 +470,7 @@ updateAdd model =
             resetAccountForm model
     in
     ( { resetModel | viewState = CreateView }
-    , Role.Service.invokeFindAll model.config.apiRoot RoleApi
+    , Role.Service.invokeFindAll model.config.apiRoot FetchRoleList
     )
 
 
@@ -477,7 +493,7 @@ updateConfirmDelete model =
       }
     , List.map
         (\id ->
-            Account.Service.invokeDelete model.config.apiRoot AccountApi id
+            Account.Service.invokeDelete model.config.apiRoot DeleteAccount id
         )
         toDelete
         |> Cmd.batch
@@ -510,8 +526,8 @@ updateEdit id model =
                 , selectedRoles = selectedRoles
               }
             , Cmd.batch
-                [ Account.Service.invokeRetrieve model.config.apiRoot AccountApi id
-                , Role.Service.invokeFindAll model.config.apiRoot RoleApi
+                [ Account.Service.invokeRetrieve model.config.apiRoot UpdateAccount id
+                , Role.Service.invokeFindAll model.config.apiRoot FetchRoleList
                 ]
             )
 
@@ -520,7 +536,7 @@ updateCreate : Model -> ( Model, Cmd Msg )
 updateCreate model =
     ( model
     , Account.Service.invokeCreate model.config.apiRoot
-        AccountApi
+        CreateAccount
         (Model.Account
             { id = Nothing
             , username = model.username
@@ -528,6 +544,7 @@ updateCreate model =
             , root = Just False
             , roles = Just <| Dict.values model.selectedRoles
             , salt = Nothing
+            , uuid = ""
             }
         )
     )
@@ -560,7 +577,7 @@ updateSave model =
                     ( model
                     , Account.Service.invokeUpdate
                         model.config.apiRoot
-                        AccountApi
+                        UpdateAccount
                         id
                         modifiedAccount
                     )
@@ -847,4 +864,4 @@ roleLookup model =
     --     , onSelectedChanged SelectChanged
     --     ]
     -- ]
-    div [] []
+    [ div [] [] ]

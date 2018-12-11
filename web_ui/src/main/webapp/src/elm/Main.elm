@@ -16,8 +16,6 @@ import Config exposing (Config)
 import Dict exposing (Dict)
 import Html exposing (Html, a, div, h1, text)
 import Html.Attributes exposing (attribute, href, id)
-import Permissions
-import Roles
 import Task.Extra exposing (message)
 import Update2
 import Update3
