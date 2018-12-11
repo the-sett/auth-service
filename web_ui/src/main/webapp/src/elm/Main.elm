@@ -93,19 +93,15 @@ styledView model =
 
 viewForPage : Page -> Template Msg Model
 viewForPage page =
-    -- case page of
-    --     Typography ->
-    --         Demo.Typography.view
-    --
-    --     Buttons ->
-    --         Demo.Buttons.view
-    --
-    --     Grid ->
-    --         Demo.Grid.view
-    --
-    --     Cards ->
-    --         Demo.Cards.view
-    --
-    --     Markdown ->
-    --         Demo.MkDown.view
-    Static (\_ -> div [] [])
+    let
+        empty =
+            (\_ -> div [] [])
+                |> Static
+    in
+    case page of
+        Welcome ->
+            Page.Welcome.initialView
+
+        Accounts ->
+            --Page.Accounts.view
+            empty
