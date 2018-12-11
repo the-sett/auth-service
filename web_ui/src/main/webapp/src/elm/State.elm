@@ -11,11 +11,8 @@ type Msg
 
 
 type Page
-    = Typography
-    | Buttons
-    | Grid
-    | Cards
-    | Markdown
+    = Welcome
+    | Accounts
 
 
 type alias Model =

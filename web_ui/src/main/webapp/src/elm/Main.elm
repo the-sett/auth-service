@@ -8,6 +8,8 @@ import Html.Styled exposing (div, input, text, toUnstyled)
 import Html.Styled.Attributes exposing (checked, type_)
 import Html.Styled.Events exposing (onCheck)
 import Layout
+import Page.Accounts
+import Page.Welcome
 import State exposing (Model, Msg(..), Page(..))
 import Structure exposing (Template(..))
 import Task
@@ -17,7 +19,7 @@ import TheSett.Logo
 
 
 init () =
-    ( { debug = False, page = Typography }, Cmd.none )
+    ( { debug = False, page = Welcome }, Cmd.none )
 
 
 subscriptions _ =

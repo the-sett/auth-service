@@ -21,7 +21,7 @@ import Model
 import Role.Service
 import Set exposing (Set)
 import Task.Extra exposing (message)
-import Utils
+import Utils.Utils
     exposing
         ( checkAll
         , cleanString

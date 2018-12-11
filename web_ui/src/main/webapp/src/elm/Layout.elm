@@ -88,23 +88,7 @@ topHeader responsive model =
                         [ styled li
                             [ Css.display Css.inline ]
                             []
-                            [ styled a [ Css.padding (Css.px 10) ] [ onClick <| SwitchTo Typography ] [ text "Typography" ] ]
-                        , styled li
-                            [ Css.display Css.inline ]
-                            []
-                            [ styled a [ Css.padding (Css.px 10) ] [ onClick <| SwitchTo Buttons ] [ text "Buttons" ] ]
-                        , styled li
-                            [ Css.display Css.inline ]
-                            []
-                            [ styled a [ Css.padding (Css.px 10) ] [ onClick <| SwitchTo Grid ] [ text "Grids" ] ]
-                        , styled li
-                            [ Css.display Css.inline ]
-                            []
-                            [ styled a [ Css.padding (Css.px 10) ] [ onClick <| SwitchTo Cards ] [ text "Cards" ] ]
-                        , styled li
-                            [ Css.display Css.inline ]
-                            []
-                            [ styled a [ Css.padding (Css.px 10) ] [ onClick <| SwitchTo Markdown ] [ text "Markdown" ] ]
+                            [ styled a [ Css.padding (Css.px 10) ] [ onClick <| SwitchTo Accounts ] [ text "Accounts" ] ]
                         ]
                     ]
                 ]
