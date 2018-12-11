@@ -1,30 +1,19 @@
 module Top exposing (main)
 
+import Browser
 import Config exposing (config)
-import Main
-    exposing
-        ( Model
-        , Msg
-        , delta2url
-        , init
-        , location2messages
-        , subscriptions
-        , update
-        , view
-        )
+import Main exposing (init, subscriptions, update, view)
+import State exposing (Model, Msg(..))
 
 
 
 -- Entry point
 
 
-main : Routing.RouteUrlProgram Never Model Msg
 main =
-    Routing.program
-        { init = init config
+    Browser.document
+        { init = init
         , subscriptions = subscriptions
         , update = update
-        , view = view
-        , delta2url = delta2url
-        , location2messages = location2messages
+        , view = \model -> { title = "The Sett LAF", body = [ view model ] }
         }
