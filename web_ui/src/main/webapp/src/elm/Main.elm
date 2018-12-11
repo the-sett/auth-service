@@ -1,8 +1,10 @@
 module Main exposing (init, subscriptions, update, view)
 
+import Auth
 import Body
 import Browser
 import Browser.Dom exposing (getViewportOf, setViewportOf)
+import Config exposing (config)
 import Css.Global
 import Html.Styled exposing (div, input, text, toUnstyled)
 import Html.Styled.Attributes exposing (checked, type_)
@@ -10,7 +12,7 @@ import Html.Styled.Events exposing (onCheck)
 import Layout
 import Page.Accounts
 import Page.Welcome
-import State exposing (Model, Msg(..), Page(..))
+import State exposing (Model, Msg(..), Page(..), Session(..))
 import Structure exposing (Template(..))
 import Task
 import TheSett.Debug
@@ -19,7 +21,16 @@ import TheSett.Logo
 
 
 init () =
-    ( { debug = False, page = Welcome }, Cmd.none )
+    ( { debug = False
+      , page = Welcome
+      , auth =
+            Auth.init
+                { authApiRoot = config.authRoot
+                }
+      , session = Initial
+      }
+    , Cmd.none
+    )
 
 
 subscriptions _ =
