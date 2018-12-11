@@ -24,6 +24,7 @@ import TheSett.Buttons as Buttons
 import TheSett.Cards as Cards
 import TheSett.Laf as Laf
 import TheSett.Textfield as Textfield
+import Update2
 
 
 type alias Model =
@@ -55,8 +56,7 @@ update action model =
         LafMsg lafMsg ->
             let
                 ( newModel, lafCmds ) =
-                    Laf.update LafMsg lafMsg model.laf
-                        |> Tuple.mapFirst (\laf -> { model | laf = laf })
+                    Update2.lift .laf (\x m -> { m | laf = x }) LafMsg Laf.update lafMsg model
             in
             ( newModel, lafCmds, Cmd.none )
 
