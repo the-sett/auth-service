@@ -7,7 +7,6 @@ import Html.Styled exposing (Html, a, button, div, input, li, nav, node, styled,
 import Html.Styled.Attributes exposing (attribute, checked, class, href, id, type_)
 import Html.Styled.Events exposing (onClick)
 import Responsive exposing (ResponsiveStyle)
-import State exposing (Model, Msg(..), Page(..))
 import Structure exposing (Layout, Template(..))
 import Styles exposing (md, sm)
 import Svg.Styled
@@ -15,7 +14,7 @@ import TheSett.Laf as Laf exposing (wrapper)
 import TheSett.Logo as Logo
 
 
-layout : Layout Msg Model
+layout : Layout msg model
 layout template =
     { template = pageBody template
     , global = global
@@ -42,7 +41,7 @@ global devices =
     ]
 
 
-pageBody : Template Msg Model -> Template Msg Model
+pageBody : Template msg model -> Template msg model
 pageBody template =
     (\devices model ->
         div
