@@ -6,6 +6,7 @@ module State exposing
     )
 
 import Auth
+import Page.Welcome
 
 
 {-| Keeping the update structure flat for this simple application.
@@ -13,10 +14,11 @@ import Auth
 type Msg
     = Toggle Bool
     | SwitchTo Page
+    | WelcomeMsg Page.Welcome.Msg
 
 
 type Page
-    = Welcome
+    = Welcome Page.Welcome.Model
     | Accounts
 
 

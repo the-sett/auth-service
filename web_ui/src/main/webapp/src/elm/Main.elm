@@ -12,19 +12,20 @@ import Html.Styled.Attributes exposing (checked, type_)
 import Html.Styled.Events exposing (onCheck)
 import Layout.Application
 import Layout.Initial
-import Page.Accounts
-import Page.Welcome
+import Page.Accounts as Accounts
+import Page.Welcome as Welcome
 import State exposing (Model, Msg(..), Page(..), Session(..))
 import Structure exposing (Template(..))
 import Task
 import TheSett.Debug
 import TheSett.Laf as Laf
 import TheSett.Logo
+import Update3
 
 
 init () =
     ( { debug = False
-      , page = Welcome
+      , page = Welcome Welcome.init
       , auth =
             Auth.init
                 { authApiRoot = config.authRoot
@@ -41,12 +42,21 @@ subscriptions _ =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case Debug.log "update" msg of
-        Toggle state ->
+    case ( msg, model.page ) of
+        ( Toggle state, _ ) ->
             ( { model | debug = state }, Cmd.none )
 
-        SwitchTo page ->
+        ( SwitchTo page, _ ) ->
             ( { model | page = page }, Cmd.none )
+
+        ( WelcomeMsg welcomeMsg, Welcome welcomeModel ) ->
+            Welcome.update welcomeMsg welcomeModel
+                |> Update3.mapModel (\newWelcomeModel -> { model | page = Welcome newWelcomeModel })
+                |> Update3.mapCmd WelcomeMsg
+                |> Update3.eval (\authMsg newModel -> ( newModel, Cmd.none ))
+
+        ( _, _ ) ->
+            ( model, Cmd.none )
 
 
 {-| Top level view function.
@@ -105,8 +115,8 @@ viewForPage page =
                 |> Static
     in
     case page of
-        Welcome ->
-            Page.Welcome.initialView
+        Welcome _ ->
+            Welcome.initialView
 
         Accounts ->
             --Page.Accounts.view
