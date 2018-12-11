@@ -1,4 +1,4 @@
-module Accounts exposing
+module Page.Accounts exposing
     ( Model
     , Msg(..)
     , dialog

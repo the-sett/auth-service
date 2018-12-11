@@ -1,4 +1,4 @@
-module Roles exposing (Model, Msg(..), dialog, init, root, update)
+module Page.Roles exposing (Model, Msg(..), dialog, init, root, update)
 
 import Auth
 import Config exposing (Config)

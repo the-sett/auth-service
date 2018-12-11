@@ -1,4 +1,4 @@
-module Welcome exposing
+module Page.Welcome exposing
     ( Model
     , Msg
     , init

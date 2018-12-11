@@ -1,22 +1,21 @@
-module Utils
-    exposing
-        ( checkAll
-        , cleanString
-        , dictifyEntities
-        , error
-        , indexedFoldr
-        , leftIntersect
-        , nth
-        , symDiff
-        , toggleSet
-        , valOrEmpty
-        )
+module Utils.Utils exposing
+    ( checkAll
+    , cleanString
+    , dictifyEntities
+    , error
+    , indexedFoldr
+    , leftIntersect
+    , nth
+    , symDiff
+    , toggleSet
+    , valOrEmpty
+    )
 
-import Dict exposing (Dict)
-import Set exposing (Set)
-import Maybe.Extra exposing (isJust)
-import Http
 import Auth
+import Dict exposing (Dict)
+import Http
+import Maybe.Extra exposing (isJust)
+import Set exposing (Set)
 
 
 {-| Combines a list of unary tests on some model into a single unary test on the
@@ -34,10 +33,12 @@ error : (Auth.Msg -> msg) -> Http.Error -> model -> ( model, Cmd msg )
 error tagger httpError model =
     case httpError of
         Http.BadStatus response ->
-            if (response.status.code == 401) then
+            if response.status.code == 401 then
                 ( model, Auth.unauthed |> Cmd.map tagger )
-            else if (response.status.code == 403) then
+
+            else if response.status.code == 403 then
                 ( model, Auth.unauthed |> Cmd.map tagger )
+
             else
                 ( model, Cmd.none )
 
@@ -61,7 +62,7 @@ symDiff dict1 dict2 =
         insertNeither _ _ _ dict =
             dict
     in
-        Dict.merge Dict.insert insertNeither Dict.insert dict1 dict2 Dict.empty
+    Dict.merge Dict.insert insertNeither Dict.insert dict1 dict2 Dict.empty
 
 
 {-| Computes the key intersection of two dictionaries, keeping the values from the left.
@@ -75,7 +76,7 @@ leftIntersect dict1 dict2 =
         ignore _ _ dict =
             dict
     in
-        Dict.merge ignore insertLeft ignore dict1 dict2 Dict.empty
+    Dict.merge ignore insertLeft ignore dict1 dict2 Dict.empty
 
 
 {-| Tranforms a list of entities (records with a String id), into a Dict, with the ids
@@ -107,7 +108,7 @@ indexedFoldr fun acc list =
         ( highest, result ) =
             Dict.foldr (\key -> \item -> \( idx, items ) -> ( idx + 1, fun idx key item items )) ( 0, acc ) list
     in
-        result
+    result
 
 
 {-| Performs a left fold on a dictionary, supplying item indexs as the dictionary is iterated.
@@ -118,7 +119,7 @@ indexedFoldl fun acc list =
         ( highest, result ) =
             Dict.foldl (\key -> \item -> \( idx, items ) -> ( idx + 1, fun idx key item items )) ( 0, acc ) list
     in
-        result
+    result
 
 
 {-| Cleans string input to a maybe.
@@ -127,6 +128,7 @@ cleanString : String -> Maybe String
 cleanString val =
     if "" == val then
         Nothing
+
     else
         Just val
 
@@ -150,5 +152,6 @@ toggleSet : comparable -> Set comparable -> Set comparable
 toggleSet key set =
     if Set.member key set then
         Set.remove key set
+
     else
         Set.insert key set

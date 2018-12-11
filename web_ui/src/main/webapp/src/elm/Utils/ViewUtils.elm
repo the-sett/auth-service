@@ -1,4 +1,4 @@
-module ViewUtils exposing
+module Utils.ViewUtils exposing
     ( cancelButton
     , column644
     , columnAll12

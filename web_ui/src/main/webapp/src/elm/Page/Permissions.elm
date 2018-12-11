@@ -1,4 +1,4 @@
-module Permissions exposing (Model, Msg(..), dialog, init, root, update)
+module Page.Permissions exposing (Model, Msg(..), dialog, init, root, update)
 
 import Auth
 import Config exposing (Config)
