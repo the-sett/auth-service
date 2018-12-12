@@ -92,7 +92,7 @@ styledBody : Model -> Html.Styled.Html Msg
 styledBody model =
     let
         { template, global } =
-            Layout.Initial.layout <| Body.view (viewForPage model.page)
+            Layout.Initial.layout <| Body.view (pageView model)
 
         innerView =
             [ Laf.responsiveMeta
@@ -121,16 +121,27 @@ styledBody model =
             div [] innerView
 
 
-viewForPage : Page -> Template Msg Model
-viewForPage page =
+pageView : Model -> Template Msg Model
+pageView model =
     let
         empty =
             (\_ -> div [] [])
                 |> Static
     in
-    case page of
+    case model.page of
         Welcome welcomeModel ->
-            Welcome.initialView
+            case model.session of
+                Initial ->
+                    Welcome.initialView
+
+                LoggedOut ->
+                    Structure.lift WelcomeMsg (always welcomeModel) Welcome.loginView
+
+                FailedAuth ->
+                    Structure.lift WelcomeMsg (always welcomeModel) Welcome.loginView
+
+                _ ->
+                    Welcome.initialView
 
         Accounts ->
             --Page.Accounts.view
