@@ -134,21 +134,19 @@ pageView model =
             (\_ -> div [] [])
                 |> Static
     in
-    case model.page of
-        Welcome welcomeModel ->
-            case model.session of
-                Initial ->
-                    Welcome.initialView
+    case ( model.session, model.page ) of
+        ( Initial, Welcome welcomeModel ) ->
+            Welcome.initialView
 
-                LoggedOut ->
-                    Structure.lift WelcomeMsg (always welcomeModel) Welcome.loginView
+        ( LoggedOut, Welcome welcomeModel ) ->
+            Structure.lift WelcomeMsg (always welcomeModel) Welcome.loginView
 
-                FailedAuth ->
-                    Structure.lift WelcomeMsg (always welcomeModel) Welcome.notPermittedView
+        ( FailedAuth, Welcome welcomeModel ) ->
+            Structure.lift WelcomeMsg (always welcomeModel) Welcome.notPermittedView
 
-                _ ->
-                    Welcome.initialView
-
-        Accounts ->
+        ( LoggedIn scopes, page ) ->
             --Page.Accounts.view
+            empty
+
+        ( _, _ ) ->
             empty
