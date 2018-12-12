@@ -6,6 +6,7 @@ module State exposing
     )
 
 import Auth
+import Page.Accounts
 import Page.Welcome
 
 
@@ -14,13 +15,13 @@ import Page.Welcome
 type Msg
     = AuthMsg Auth.Msg
     | Toggle Bool
-    | SwitchTo Page
+    | SwitchTo String
     | WelcomeMsg Page.Welcome.Msg
 
 
 type Page
     = Welcome Page.Welcome.Model
-    | Accounts
+    | Accounts Page.Accounts.Model
 
 
 type alias Model =

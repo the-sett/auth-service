@@ -54,7 +54,8 @@ update_ msg model =
             ( { model | debug = state }, Cmd.none )
 
         ( SwitchTo page, _ ) ->
-            ( { model | page = page }, Cmd.none )
+            --( { model | page = page }, Cmd.none )
+            ( model, Cmd.none )
 
         ( WelcomeMsg welcomeMsg, Welcome welcomeModel ) ->
             Welcome.update welcomeMsg welcomeModel
@@ -145,8 +146,12 @@ pageView model =
             Structure.lift WelcomeMsg (always welcomeModel) Welcome.notPermittedView
 
         ( LoggedIn scopes, page ) ->
-            --Page.Accounts.view
-            empty
+            case page of
+                Accounts accountsModel ->
+                    empty
+
+                _ ->
+                    empty
 
         ( _, _ ) ->
             empty
