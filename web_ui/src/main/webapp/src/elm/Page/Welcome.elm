@@ -248,12 +248,12 @@ topHeader responsive =
                 [ Grid.col
                     [ sm
                         [ Grid.columns 1
-                        , Grid.offset 0.1
                         , Styles.styles
                             [ Responsive.deviceStyles responsive <|
                                 \device ->
                                     [ Css.height (Responsive.rhythmPx 3 device)
                                     , Css.width (Responsive.rhythmPx 3 device)
+                                    , Css.marginLeft (Responsive.rhythmPx 0.5 device)
                                     ]
                             ]
                         ]
