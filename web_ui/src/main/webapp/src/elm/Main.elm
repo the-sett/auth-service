@@ -39,7 +39,13 @@ subscriptions _ =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case ( Debug.log "update" msg, model.page ) of
+    update_ (Debug.log "msg" msg) model
+        |> Debug.log "result"
+
+
+update_ : Msg -> Model -> ( Model, Cmd Msg )
+update_ msg model =
+    case ( msg, model.page ) of
         ( AuthMsg innerMsg, _ ) ->
             Update3.lift .auth (\x m -> { m | auth = x }) AuthMsg Auth.update innerMsg model
                 |> Update3.evalMaybe (\status -> \nextModel -> ( { nextModel | session = authStatusToSession status }, Cmd.none )) Cmd.none
@@ -138,7 +144,7 @@ pageView model =
                     Structure.lift WelcomeMsg (always welcomeModel) Welcome.loginView
 
                 FailedAuth ->
-                    Structure.lift WelcomeMsg (always welcomeModel) Welcome.loginView
+                    Structure.lift WelcomeMsg (always welcomeModel) Welcome.notPermittedView
 
                 _ ->
                     Welcome.initialView
