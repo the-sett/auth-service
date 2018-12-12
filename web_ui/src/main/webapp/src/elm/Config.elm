@@ -27,7 +27,7 @@ config : Config
 config =
     { applicationContextRoot = "/auth/"
     , apiRoot = "/auth/api/"
-    , authRoot = "/auth/"
+    , authRoot = "http://localhost:9073/auth/"
     }
 
 

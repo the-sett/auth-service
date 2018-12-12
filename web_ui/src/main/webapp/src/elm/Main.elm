@@ -39,7 +39,7 @@ subscriptions _ =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case ( msg, model.page ) of
+    case ( Debug.log "update" msg, model.page ) of
         ( AuthMsg innerMsg, _ ) ->
             Update3.lift .auth (\x m -> { m | auth = x }) AuthMsg Auth.update innerMsg model
                 |> Update3.evalMaybe (\status -> \nextModel -> ( { nextModel | session = authStatusToSession status }, Cmd.none )) Cmd.none
