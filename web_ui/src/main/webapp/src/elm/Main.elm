@@ -29,7 +29,7 @@ init () =
       , page = Welcome Welcome.init
       , session = Initial
       }
-    , Cmd.none
+    , Auth.refresh |> Cmd.map AuthMsg
     )
 
 
