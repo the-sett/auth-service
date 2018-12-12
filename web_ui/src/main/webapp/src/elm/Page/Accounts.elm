@@ -12,14 +12,15 @@ import Array exposing (Array)
 import Auth
 import Config exposing (Config)
 import Dict exposing (Dict)
-import Html exposing (Html, div, h4, span, text)
-import Html.Attributes exposing (action, attribute, class, colspan, title)
 import Html.Events exposing (on)
+import Html.Styled exposing (Html, div, h4, span, text)
+import Html.Styled.Attributes exposing (action, attribute, class, colspan, title)
 import Http
 import List.Extra
 import Model
 import Role.Service
 import Set exposing (Set)
+import Structure exposing (Template(..))
 import Task.Extra exposing (message)
 import Utils.Utils
     exposing
@@ -587,19 +588,22 @@ updateSave model =
 -- Views
 
 
-view : Model -> Html Msg
-view model =
-    div [ class "layout-fixed-width" ]
-        [ case model.viewState of
-            ListView ->
-                table model
+view : Template Msg Model
+view =
+    (\devices model ->
+        div [ class "layout-fixed-width" ]
+            [ case model.viewState of
+                ListView ->
+                    table model
 
-            CreateView ->
-                createAccountForm model
+                CreateView ->
+                    createAccountForm model
 
-            EditView ->
-                editAccountForm model
-        ]
+                EditView ->
+                    editAccountForm model
+            ]
+    )
+        |> Dynamic
 
 
 table : Model -> Html Msg

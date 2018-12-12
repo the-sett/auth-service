@@ -148,7 +148,7 @@ pageView model =
         ( LoggedIn scopes, page ) ->
             case page of
                 Accounts accountsModel ->
-                    empty
+                    Structure.lift AccountsMsg (always accountsModel) Accounts.view
 
                 _ ->
                     empty

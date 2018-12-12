@@ -17,6 +17,7 @@ type Msg
     | Toggle Bool
     | SwitchTo String
     | WelcomeMsg Page.Welcome.Msg
+    | AccountsMsg Page.Accounts.Msg
 
 
 type Page
