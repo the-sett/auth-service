@@ -108,12 +108,11 @@ loginView =
                     [ onInput UpdateUsername ]
                     [ text "Username" ]
                     devices
-                , Textfield.text
+                , Textfield.password
                     LafMsg
                     [ 2 ]
                     model.laf
-                    [ Textfield.disabled
-                    , Textfield.value model.password
+                    [ Textfield.value model.password
                     ]
                     [ onInput UpdatePassword ]
                     [ text "Password" ]
@@ -142,11 +141,13 @@ notPermittedView =
                     LafMsg
                     [ 1 ]
                     model.laf
-                    [ Textfield.value model.username ]
+                    [ Textfield.disabled
+                    , Textfield.value model.username
+                    ]
                     []
                     [ text "Username" ]
                     devices
-                , Textfield.text
+                , Textfield.password
                     LafMsg
                     [ 2 ]
                     model.laf
