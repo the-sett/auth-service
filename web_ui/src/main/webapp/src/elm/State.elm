@@ -12,7 +12,8 @@ import Page.Welcome
 {-| Keeping the update structure flat for this simple application.
 -}
 type Msg
-    = Toggle Bool
+    = AuthMsg Auth.Msg
+    | Toggle Bool
     | SwitchTo Page
     | WelcomeMsg Page.Welcome.Msg
 
@@ -23,9 +24,9 @@ type Page
 
 
 type alias Model =
-    { debug : Bool
+    { auth : Auth.Model
+    , debug : Bool
     , page : Page
-    , auth : Auth.Model
     , session : Session
     }
 

@@ -24,12 +24,9 @@ import Update3
 
 
 init () =
-    ( { debug = False
+    ( { auth = Auth.init { authApiRoot = config.authRoot }
+      , debug = False
       , page = Welcome Welcome.init
-      , auth =
-            Auth.init
-                { authApiRoot = config.authRoot
-                }
       , session = Initial
       }
     , Cmd.none
@@ -43,6 +40,10 @@ subscriptions _ =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case ( msg, model.page ) of
+        ( AuthMsg innerMsg, _ ) ->
+            Update3.lift .auth (\x m -> { m | auth = x }) AuthMsg Auth.update innerMsg model
+                |> Update3.evalMaybe (\status -> \nextModel -> ( { nextModel | session = authStatusToSession status }, Cmd.none )) Cmd.none
+
         ( Toggle state, _ ) ->
             ( { model | debug = state }, Cmd.none )
 
@@ -53,10 +54,23 @@ update msg model =
             Welcome.update welcomeMsg welcomeModel
                 |> Update3.mapModel (\newWelcomeModel -> { model | page = Welcome newWelcomeModel })
                 |> Update3.mapCmd WelcomeMsg
-                |> Update3.eval (\authMsg newModel -> ( newModel, Cmd.none ))
+                |> Update3.eval (\authMsg newModel -> ( newModel, Cmd.map AuthMsg authMsg ))
 
         ( _, _ ) ->
             ( model, Cmd.none )
+
+
+authStatusToSession : Auth.Status -> Session
+authStatusToSession status =
+    case status of
+        Auth.LoggedOut ->
+            LoggedOut
+
+        Auth.Failed ->
+            FailedAuth
+
+        Auth.LoggedIn access ->
+            LoggedIn access
 
 
 {-| Top level view function.
@@ -115,7 +129,7 @@ viewForPage page =
                 |> Static
     in
     case page of
-        Welcome _ ->
+        Welcome welcomeModel ->
             Welcome.initialView
 
         Accounts ->
