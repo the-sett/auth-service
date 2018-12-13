@@ -4,6 +4,7 @@ import Auth
 import Body
 import Browser
 import Browser.Dom exposing (getViewportOf, setViewportOf)
+import Browser.Navigation as Navigation
 import Config exposing (config)
 import Css.Global
 import Html
@@ -21,10 +22,13 @@ import TheSett.Debug
 import TheSett.Laf as Laf
 import TheSett.Logo
 import Update3
+import Url
 
 
-init () =
-    ( { auth = Auth.init { authApiRoot = config.authRoot }
+init : () -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
+init () url key =
+    ( { navKey = key
+      , auth = Auth.init { authApiRoot = config.authRoot }
       , debug = False
       , page = Welcome Welcome.init
       , session = Initial

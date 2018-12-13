@@ -6,6 +6,7 @@ module State exposing
     )
 
 import Auth
+import Browser.Navigation as Navigation
 import Page.Accounts
 import Page.Welcome
 
@@ -18,6 +19,7 @@ type Msg
     | SwitchTo String
     | WelcomeMsg Page.Welcome.Msg
     | AccountsMsg Page.Accounts.Msg
+    | Noop
 
 
 type Page
@@ -26,7 +28,8 @@ type Page
 
 
 type alias Model =
-    { auth : Auth.Model
+    { navKey : Navigation.Key
+    , auth : Auth.Model
     , debug : Bool
     , page : Page
     , session : Session

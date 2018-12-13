@@ -11,9 +11,11 @@ import State exposing (Model, Msg(..))
 
 
 main =
-    Browser.document
+    Browser.application
         { init = init
         , subscriptions = subscriptions
         , update = update
         , view = view
+        , onUrlRequest = \_ -> Noop
+        , onUrlChange = \_ -> Noop
         }
