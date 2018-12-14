@@ -16,6 +16,6 @@ main =
         , subscriptions = subscriptions
         , update = update
         , view = view
-        , onUrlRequest = \_ -> Noop
-        , onUrlChange = \_ -> Noop
+        , onUrlRequest = LinkClicked
+        , onUrlChange = UrlChanged
         }

@@ -52,7 +52,22 @@ update_ msg model =
     case ( msg, model.page ) of
         ( AuthMsg innerMsg, _ ) ->
             Update3.lift .auth (\x m -> { m | auth = x }) AuthMsg Auth.update innerMsg model
-                |> Update3.evalMaybe (\status -> \nextModel -> ( { nextModel | session = authStatusToSession status }, Cmd.none )) Cmd.none
+                |> Update3.evalMaybe updateOnAuthStatus Cmd.none
+
+        ( LinkClicked urlRequest, _ ) ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model
+                    , Navigation.pushUrl model.navKey (Url.toString url)
+                    )
+
+                Browser.External href ->
+                    ( model
+                    , Navigation.load href
+                    )
+
+        ( UrlChanged url, _ ) ->
+            updateUrl url model
 
         ( Toggle state, _ ) ->
             ( { model | debug = state }, Cmd.none )
@@ -71,6 +86,34 @@ update_ msg model =
             ( model, Cmd.none )
 
 
+{-| Navigates to #acounts on log in, and to #welcome on log out.
+The model is also updated to retain the new authentication status.
+-}
+updateOnAuthStatus : Auth.Status -> Model -> ( Model, Cmd Msg )
+updateOnAuthStatus status model =
+    case status of
+        Auth.LoggedOut ->
+            ( { model | session = authStatusToSession status }
+            , State.replaceUrl model.navKey State.WelcomeRoute
+            )
+
+        Auth.LoggedIn access ->
+            if List.member "auth-admin" access.scopes then
+                ( { model | session = authStatusToSession status }
+                , State.replaceUrl model.navKey State.AccountsRoute
+                )
+
+            else
+                ( { model | session = authStatusToSession Auth.Failed }
+                , State.replaceUrl model.navKey State.WelcomeRoute
+                )
+
+        _ ->
+            ( { model | session = authStatusToSession status }
+            , Cmd.none
+            )
+
+
 authStatusToSession : Auth.Status -> Session
 authStatusToSession status =
     case status of
@@ -82,6 +125,27 @@ authStatusToSession status =
 
         Auth.LoggedIn access ->
             LoggedIn access
+
+
+
+-- Router
+
+
+updateUrl : Url.Url -> Model -> ( Model, Cmd Msg )
+updateUrl url model =
+    case ( model.session, State.fromUrl url ) of
+        ( _, Nothing ) ->
+            ( model, Cmd.none )
+
+        ( _, Just State.WelcomeRoute ) ->
+            ( { model | page = Welcome Welcome.init }, Cmd.none )
+
+        ( LoggedIn scope, Just State.AccountsRoute ) ->
+            ( { model | page = Accounts <| Accounts.init config }, Cmd.none )
+
+        ( _, _ ) ->
+            --( { model | page = Welcome Welcome.init }, State.replaceUrl model.navKey State.WelcomeRoute )
+            ( model, Cmd.none )
 
 
 {-| Top level view function.
