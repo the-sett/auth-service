@@ -7,7 +7,7 @@ import Html.Styled exposing (Html, a, button, div, input, li, nav, node, styled,
 import Html.Styled.Attributes exposing (attribute, checked, class, href, id, type_)
 import Html.Styled.Events exposing (onClick)
 import Responsive exposing (ResponsiveStyle)
-import Routes exposing (Route(..))
+import Routes
 import Structure exposing (Layout, Template(..))
 import Styles exposing (md, sm)
 import Styling
@@ -112,10 +112,8 @@ topHeader responsive model =
                             [ Css.display Css.inline ]
                             []
                             [ styled a
-                                [ Css.padding (Css.px 10)
-                                ]
-                                [ Routes.href AccountsRoute
-                                ]
+                                [ Css.padding (Css.px 10) ]
+                                [ Routes.href Routes.Accounts ]
                                 [ text "Accounts" ]
                             ]
                         ]

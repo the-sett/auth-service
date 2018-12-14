@@ -15,7 +15,7 @@ import Layout.Application
 import Layout.Initial
 import Page.Accounts as Accounts
 import Page.Welcome as Welcome
-import Routes exposing (Route(..))
+import Routes
 import Structure exposing (Layout, Template(..))
 import Task
 import TheSett.Debug
@@ -125,18 +125,18 @@ updateOnAuthStatus status model =
     case status of
         Auth.LoggedOut ->
             ( { model | session = authStatusToSession status }
-            , Routes.replaceUrl model.navKey WelcomeRoute
+            , Routes.replaceUrl model.navKey Routes.Welcome
             )
 
         Auth.LoggedIn access ->
             if List.member "auth-admin" access.scopes then
                 ( { model | session = authStatusToSession status }
-                , Routes.replaceUrl model.navKey AccountsRoute
+                , Routes.replaceUrl model.navKey Routes.Accounts
                 )
 
             else
                 ( { model | session = authStatusToSession Auth.Failed }
-                , Routes.replaceUrl model.navKey WelcomeRoute
+                , Routes.replaceUrl model.navKey Routes.Welcome
                 )
 
         _ ->
@@ -168,10 +168,10 @@ updateUrl url model =
         ( _, Nothing ) ->
             ( model, Cmd.none )
 
-        ( _, Just Routes.WelcomeRoute ) ->
+        ( _, Just Routes.Welcome ) ->
             ( { model | page = Welcome Welcome.init }, Cmd.none )
 
-        ( LoggedIn scope, Just Routes.AccountsRoute ) ->
+        ( LoggedIn scope, Just Routes.Accounts ) ->
             ( { model | page = Accounts <| Accounts.init config }, Cmd.none )
 
         ( _, _ ) ->

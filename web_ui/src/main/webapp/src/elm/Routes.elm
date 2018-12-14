@@ -19,15 +19,15 @@ import Url.Parser as Parser exposing ((</>), Parser, oneOf, s, string)
 
 
 type Route
-    = WelcomeRoute
-    | AccountsRoute
+    = Welcome
+    | Accounts
 
 
 parser : Parser (Route -> a) a
 parser =
     oneOf
-        [ Parser.map WelcomeRoute Parser.top
-        , Parser.map AccountsRoute (s "accounts")
+        [ Parser.map Welcome Parser.top
+        , Parser.map Accounts (s "accounts")
         ]
 
 
@@ -56,10 +56,10 @@ routeToString route =
     let
         path =
             case route of
-                WelcomeRoute ->
+                Welcome ->
                     []
 
-                AccountsRoute ->
+                Accounts ->
                     [ "accounts" ]
     in
     "/" ++ String.join "/" path
