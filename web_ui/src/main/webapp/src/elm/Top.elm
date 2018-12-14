@@ -2,8 +2,7 @@ module Top exposing (main)
 
 import Browser
 import Config exposing (config)
-import Main exposing (init, subscriptions, update, view)
-import State exposing (Model, Msg(..))
+import Main exposing (Model, Msg(..), init, subscriptions, update, view)
 
 
 

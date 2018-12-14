@@ -1,9 +1,5 @@
-module State exposing
-    ( Model
-    , Msg(..)
-    , Page(..)
-    , Route(..)
-    , Session(..)
+module Routes exposing
+    ( Route(..)
     , fromUrl
     , href
     , parser
@@ -14,48 +10,12 @@ module State exposing
 import Auth
 import Browser
 import Browser.Navigation as Navigation
-import Html exposing (Attribute)
-import Html.Attributes as Attributes
+import Html.Styled exposing (Attribute)
+import Html.Styled.Attributes as Attributes
 import Page.Accounts
 import Page.Welcome
 import Url exposing (Url)
 import Url.Parser as Parser exposing ((</>), Parser, oneOf, s, string)
-
-
-{-| Keeping the update structure flat for this simple application.
--}
-type Msg
-    = AuthMsg Auth.Msg
-    | Toggle Bool
-    | LinkClicked Browser.UrlRequest
-    | UrlChanged Url.Url
-    | SwitchTo String
-    | WelcomeMsg Page.Welcome.Msg
-    | AccountsMsg Page.Accounts.Msg
-
-
-type Page
-    = Welcome Page.Welcome.Model
-    | Accounts Page.Accounts.Model
-
-
-type alias Model =
-    { navKey : Navigation.Key
-    , auth : Auth.Model
-    , debug : Bool
-    , page : Page
-    , session : Session
-    }
-
-
-type Session
-    = Initial
-    | LoggedOut
-    | FailedAuth
-    | LoggedIn
-        { scopes : List String
-        , subject : String
-        }
 
 
 type Route

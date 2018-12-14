@@ -7,7 +7,7 @@ import Html.Styled exposing (Html, a, button, div, input, li, nav, node, styled,
 import Html.Styled.Attributes exposing (attribute, checked, class, href, id, type_)
 import Html.Styled.Events exposing (onClick)
 import Responsive exposing (ResponsiveStyle)
-import State exposing (Model, Msg(..), Page(..))
+import Routes exposing (Route(..))
 import Structure exposing (Layout, Template(..))
 import Styles exposing (md, sm)
 import Styling
@@ -16,7 +16,7 @@ import TheSett.Laf as Laf exposing (wrapper)
 import TheSett.Logo as Logo
 
 
-layout : Layout Msg Model
+layout : Layout msg model
 layout template =
     { template = pageBody template
     , global = global
@@ -35,21 +35,19 @@ global devices =
                         Responsive.rhythm 10.5 device
                 in
                 Css.property "background" <|
-                    "linear-gradient(rgb(120, 116, 120) 0%, "
-                        ++ String.fromFloat headerPx
-                        ++ "px, rgb(225, 212, 214) 0px, rgb(208, 212, 214) 100%)"
+                    "linear-gradient(rgb(225, 212, 214) 0px, rgb(208, 212, 214) 100%)"
             )
         ]
     ]
 
 
-pageBody : Template Msg Model -> Template Msg Model
+pageBody : Template msg model -> Template msg model
 pageBody template =
     (\devices model ->
         div
             []
-            [ debugToggle devices model
-            , topHeader devices model
+            [ -- debugToggle devices model
+              topHeader devices model
             , case template of
                 Dynamic fn ->
                     fn devices model
@@ -62,7 +60,7 @@ pageBody template =
         |> Dynamic
 
 
-topHeader : ResponsiveStyle -> Model -> Html Msg
+topHeader : ResponsiveStyle -> model -> Html msg
 topHeader responsive model =
     styled div
         [ Css.boxShadow5 (Css.px 0) (Css.px 0) (Css.px 6) (Css.px 0) (Css.rgba 0 0 0 0.75)
@@ -113,7 +111,13 @@ topHeader responsive model =
                         [ styled li
                             [ Css.display Css.inline ]
                             []
-                            [ styled a [ Css.padding (Css.px 10) ] [ onClick <| SwitchTo "accounts" ] [ text "Accounts" ] ]
+                            [ styled a
+                                [ Css.padding (Css.px 10)
+                                ]
+                                [ Routes.href AccountsRoute
+                                ]
+                                [ text "Accounts" ]
+                            ]
                         ]
                     ]
                 ]
@@ -122,6 +126,15 @@ topHeader responsive model =
         ]
 
 
+
+-- Move this up to top-level
+
+
+type Msg
+    = Toggle Bool
+
+
+debugToggle : ResponsiveStyle -> { m | debug : Bool } -> Html Msg
 debugToggle responsive model =
     styled div
         [ Css.position Css.fixed
@@ -142,7 +155,8 @@ debugToggle responsive model =
         , Css.borderRadius (Css.px 4)
         , Css.property "user-select" "none"
         ]
-        [ onClick <| Toggle (not model.debug) ]
+        [ onClick <| Toggle (not model.debug)
+        ]
         [ text "grid"
         ]
 

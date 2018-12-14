@@ -1,4 +1,4 @@
-module Main exposing (init, subscriptions, update, view)
+module Main exposing (Model, Msg(..), init, subscriptions, update, view)
 
 import Auth
 import Body
@@ -15,14 +15,49 @@ import Layout.Application
 import Layout.Initial
 import Page.Accounts as Accounts
 import Page.Welcome as Welcome
-import State exposing (Model, Msg(..), Page(..), Session(..))
-import Structure exposing (Template(..))
+import Routes exposing (Route(..))
+import Structure exposing (Layout, Template(..))
 import Task
 import TheSett.Debug
 import TheSett.Laf as Laf
 import TheSett.Logo
 import Update3
 import Url
+
+
+{-| Keeping the update structure flat for this simple application.
+-}
+type Msg
+    = AuthMsg Auth.Msg
+    | Toggle Bool
+    | LinkClicked Browser.UrlRequest
+    | UrlChanged Url.Url
+    | WelcomeMsg Welcome.Msg
+    | AccountsMsg Accounts.Msg
+
+
+type Page
+    = Welcome Welcome.Model
+    | Accounts Accounts.Model
+
+
+type alias Model =
+    { navKey : Navigation.Key
+    , auth : Auth.Model
+    , debug : Bool
+    , page : Page
+    , session : Session
+    }
+
+
+type Session
+    = Initial
+    | LoggedOut
+    | FailedAuth
+    | LoggedIn
+        { scopes : List String
+        , subject : String
+        }
 
 
 init : () -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
@@ -72,10 +107,6 @@ update_ msg model =
         ( Toggle state, _ ) ->
             ( { model | debug = state }, Cmd.none )
 
-        ( SwitchTo page, _ ) ->
-            --( { model | page = page }, Cmd.none )
-            ( model, Cmd.none )
-
         ( WelcomeMsg welcomeMsg, Welcome welcomeModel ) ->
             Welcome.update welcomeMsg welcomeModel
                 |> Update3.mapModel (\newWelcomeModel -> { model | page = Welcome newWelcomeModel })
@@ -94,18 +125,18 @@ updateOnAuthStatus status model =
     case status of
         Auth.LoggedOut ->
             ( { model | session = authStatusToSession status }
-            , State.replaceUrl model.navKey State.WelcomeRoute
+            , Routes.replaceUrl model.navKey WelcomeRoute
             )
 
         Auth.LoggedIn access ->
             if List.member "auth-admin" access.scopes then
                 ( { model | session = authStatusToSession status }
-                , State.replaceUrl model.navKey State.AccountsRoute
+                , Routes.replaceUrl model.navKey AccountsRoute
                 )
 
             else
                 ( { model | session = authStatusToSession Auth.Failed }
-                , State.replaceUrl model.navKey State.WelcomeRoute
+                , Routes.replaceUrl model.navKey WelcomeRoute
                 )
 
         _ ->
@@ -133,14 +164,14 @@ authStatusToSession status =
 
 updateUrl : Url.Url -> Model -> ( Model, Cmd Msg )
 updateUrl url model =
-    case ( model.session, State.fromUrl url ) of
+    case ( model.session, Routes.fromUrl url ) of
         ( _, Nothing ) ->
             ( model, Cmd.none )
 
-        ( _, Just State.WelcomeRoute ) ->
+        ( _, Just Routes.WelcomeRoute ) ->
             ( { model | page = Welcome Welcome.init }, Cmd.none )
 
-        ( LoggedIn scope, Just State.AccountsRoute ) ->
+        ( LoggedIn scope, Just Routes.AccountsRoute ) ->
             ( { model | page = Accounts <| Accounts.init config }, Cmd.none )
 
         ( _, _ ) ->
@@ -167,7 +198,7 @@ styledBody : Model -> Html.Styled.Html Msg
 styledBody model =
     let
         { template, global } =
-            Layout.Initial.layout <| Body.view (pageView model)
+            layoutForPage model.page <| Body.view (pageView model)
 
         innerView =
             [ Laf.responsiveMeta
@@ -194,6 +225,16 @@ styledBody model =
 
         False ->
             div [] innerView
+
+
+layoutForPage : Page -> Layout Msg Model
+layoutForPage page =
+    case page of
+        Welcome _ ->
+            Layout.Initial.layout
+
+        Accounts _ ->
+            Layout.Application.layout
 
 
 pageView : Model -> Template Msg Model
