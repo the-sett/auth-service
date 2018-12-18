@@ -93,16 +93,16 @@
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>
-                    </execution>                    
+                    </execution>
                     <execution>
-                        <id>grunt build</id>
+                        <id>webpack build</id>
                         <goals>
-                            <goal>grunt</goal>
+                            <goal>webpack</goal>
                         </goals>
                         <phase>generate-resources</phase>
-                        <configuration>
+                        <!--<configuration>
                             <arguments>package</arguments>
-                        </configuration>
+                        </configuration>-->
                     </execution>
                 </executions>
             </plugin>
