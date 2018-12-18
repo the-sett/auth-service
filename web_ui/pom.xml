@@ -100,9 +100,9 @@
                             <goal>webpack</goal>
                         </goals>
                         <phase>generate-resources</phase>
-                        <!--<configuration>
-                            <arguments>package</arguments>
-                        </configuration>-->
+                        <configuration>
+                            <arguments>-p</arguments>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
