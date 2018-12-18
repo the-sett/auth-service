@@ -21,6 +21,7 @@ import Task
 import TheSett.Debug
 import TheSett.Laf as Laf
 import TheSett.Logo
+import Update2
 import Update3
 import Url
 
@@ -78,8 +79,8 @@ subscriptions _ =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    --|> Debug.log "result"
     update_ (Debug.log "msg" msg) model
-        |> Debug.log "result"
 
 
 update_ : Msg -> Model -> ( Model, Cmd Msg )
@@ -112,6 +113,11 @@ update_ msg model =
                 |> Update3.mapModel (\newWelcomeModel -> { model | page = Welcome newWelcomeModel })
                 |> Update3.mapCmd WelcomeMsg
                 |> Update3.eval (\authMsg newModel -> ( newModel, Cmd.map AuthMsg authMsg ))
+
+        ( AccountsMsg accountsMsg, Accounts accountsModel ) ->
+            Accounts.update accountsMsg accountsModel
+                |> Tuple.mapFirst (\newAccountsModel -> { model | page = Accounts newAccountsModel })
+                |> Tuple.mapSecond (Cmd.map AccountsMsg)
 
         ( _, _ ) ->
             ( model, Cmd.none )
@@ -172,7 +178,11 @@ updateUrl url model =
             ( { model | page = Welcome Welcome.init }, Cmd.none )
 
         ( LoggedIn scope, Just Routes.Accounts ) ->
-            ( { model | page = Accounts <| Accounts.init config }, Cmd.none )
+            let
+                ( accountsMdl, initCmd ) =
+                    Accounts.init config
+            in
+            ( { model | page = Accounts <| accountsMdl }, Cmd.map AccountsMsg initCmd )
 
         ( _, _ ) ->
             --( { model | page = Welcome Welcome.init }, State.replaceUrl model.navKey State.WelcomeRoute )

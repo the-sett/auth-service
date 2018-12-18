@@ -86,21 +86,23 @@ type Msg
     | Create
 
 
-init : Config -> Model
+init : Config -> ( Model, Cmd Msg )
 init config =
-    { config = config
-    , selected = Dict.empty
-    , accounts = Dict.empty
-    , accountToEdit = Nothing
-    , viewState = ListView
-    , username = Nothing
-    , password1 = Nothing
-    , password2 = Nothing
-    , roleLookup = Dict.empty
-    , selectedRoles = Dict.empty
-    , numToDelete = 0
-    , moreStatus = Set.empty
-    }
+    ( { config = config
+      , selected = Dict.empty
+      , accounts = Dict.empty
+      , accountToEdit = Nothing
+      , viewState = ListView
+      , username = Nothing
+      , password1 = Nothing
+      , password2 = Nothing
+      , roleLookup = Dict.empty
+      , selectedRoles = Dict.empty
+      , numToDelete = 0
+      , moreStatus = Set.empty
+      }
+    , message Init
+    )
 
 
 resetAccountForm : Model -> Model
@@ -631,7 +633,19 @@ table model =
     --         ]
     --     , controlBar model
     --     ]
-    div [] []
+    div []
+        [ Html.Styled.table []
+            [ Html.Styled.thead []
+                [ Html.Styled.tr []
+                    [ Html.Styled.th [] [ text "select all checkbox" ]
+                    , Html.Styled.th [] [ text "Username" ]
+                    , Html.Styled.th [] [ text "Roles" ]
+                    , Html.Styled.th [] [ text "Actions" ]
+                    ]
+                ]
+            ]
+        , Html.Styled.tbody [] (indexedFoldr (accountToRow model) [] model.accounts)
+        ]
 
 
 roleToChip : Model.Role -> List (Html Msg) -> List (Html Msg)
